@@ -71,8 +71,10 @@ async function audit(page, label, { disableRules = [] } = {}) {
 }
 
 async function open(theme, framework, path) {
+  // Reduced motion turns the kit's animations off, so colours are measured at rest, not mid-fade.
   const context = await browser.newContext({
     viewport: { width: 1280, height: 800 },
+    reducedMotion: 'reduce',
   });
   await context.addInitScript(
     ([t, f]) => {

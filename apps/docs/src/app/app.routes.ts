@@ -75,5 +75,19 @@ export const appRoutes: Route[] = [
         (m) => m.AlertDialogPageComponent,
       ),
   },
+  {
+    path: 'components/data-table',
+    loadComponent: () =>
+      import('./pages/data-table-page.component').then(
+        (m) => m.DataTablePageComponent,
+      ),
+  },
+  {
+    path: 'components/pagination',
+    loadComponent: () =>
+      import('./pages/pagination-page.component').then(
+        (m) => m.PaginationPageComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

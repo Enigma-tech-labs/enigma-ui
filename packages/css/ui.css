@@ -223,6 +223,7 @@
   padding-inline: 1.5rem;
   font-size: 1.125rem;
 }
+.ui-button[aria-disabled='true'],
 .ui-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -383,9 +384,179 @@ textarea.ui-input {
   color: var(--ui-danger);
 }
 
+/* Visually hidden, still read by screen readers. */
+.ui-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * Data table. A real <table> with a caption that names it. The wrapper scrolls
+ * sideways on narrow screens and takes focus while it does, so the keyboard can scroll it.
+ */
+.ui-table-wrap {
+  position: relative;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow-x: auto;
+}
+.ui-table-wrap:focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+.ui-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  color: var(--ui-text);
+}
+.ui-table__caption {
+  padding-block-end: var(--ui-space-3);
+  caption-side: top;
+  text-align: start;
+  font-weight: 600;
+}
+.ui-table th,
+.ui-table td {
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border-block-end: 1px solid var(--ui-divider);
+  text-align: start;
+  vertical-align: middle;
+}
+.ui-table th {
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  font-size: var(--ui-text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ui-table thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  border-block-end-color: var(--ui-border);
+}
+.ui-table tbody tr:hover {
+  background: var(--ui-bg);
+}
+.ui-table .ui-table__cell--center {
+  text-align: center;
+}
+.ui-table .ui-table__cell--end {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.ui-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+  min-block-size: 2.75rem;
+  margin-block: calc(var(--ui-space-3) * -1);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.ui-table__sort:hover {
+  color: var(--ui-text);
+}
+.ui-table__sort:focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+.ui-table__sort-icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+  flex: none;
+}
+.ui-table__empty {
+  padding-block: var(--ui-space-8);
+  color: var(--ui-text-muted);
+  text-align: center;
+}
+.ui-table__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--ui-surface) 70%, transparent);
+  color: var(--ui-primary);
+  font-size: 1.5rem;
+}
+
+/*
+ * Pagination. Previous and next stay focusable at the first and last page
+ * (aria-disabled, not disabled), so focus never jumps away from the reader.
+ */
+.ui-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3) var(--ui-space-6);
+}
+.ui-pagination__summary {
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.ui-pagination__size {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+}
+.ui-pagination__size .ui-input {
+  inline-size: auto;
+}
+.ui-pagination__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-pagination__page,
+.ui-pagination__step {
+  padding-inline: var(--ui-space-2);
+  font-variant-numeric: tabular-nums;
+}
+.ui-pagination__page[aria-current='page'] {
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+.ui-pagination__gap {
+  display: inline-block;
+  min-inline-size: 1.5rem;
+  color: var(--ui-text-muted);
+  text-align: center;
+}
+.ui-pagination__arrow {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+.ui-pagination__arrow:dir(rtl) {
+  transform: scaleX(-1);
+}
+@media (max-width: 40rem) {
+  .ui-pagination__page:not([aria-current='page']),
+  .ui-pagination__gap {
+    display: none;
+  }
+}
+
 /* Card: a surface that groups related content. Flat: shadows are for floating layers only. */
 .ui-card {
   display: grid;
+  /* Content may shrink below its widest part, so a wide table scrolls inside the card. */
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: var(--ui-space-4);
   padding: var(--ui-space-6);

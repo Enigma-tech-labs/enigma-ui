@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "peerDependencies": {
     "@angular/cdk": "^22.2.0",
+    "@angular/common": "^22.2.0",
     "@angular/core": "^22.2.0",
     "@angular/forms": "^22.2.0",
     "rxjs": "^7.8.0"
   },
   "sideEffects": false,
-  "description": "Accessible Angular 22 components in the Enigma Technology Lab design system, right to left ready: alert dialog, badge, button, card, dialog, select, text field and textarea.",
+  "description": "Accessible Angular 22 components in the Enigma Technology Lab design system, right to left ready: alert dialog, badge, button, card, data table, dialog, pagination, select, text field and textarea.",
   "license": "MIT",
   "repository": {
     "type": "git",

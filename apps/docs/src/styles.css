@@ -308,11 +308,32 @@ code {
   border-radius: var(--ui-radius);
   background: var(--ui-bg);
 }
+.doc-preview > * {
+  min-inline-size: 0;
+}
+/* Grid content may shrink below its widest part, so wide tables and code scroll inside. */
+.doc-card,
+.doc-section,
+.doc-stack {
+  grid-template-columns: minmax(0, 1fr);
+}
 .doc-field {
   inline-size: min(100%, 22rem);
 }
 .doc-flat {
   margin: 0;
+}
+.doc-wide {
+  inline-size: 100%;
+}
+.doc-stack {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+.doc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
 }
 
 /* Code */

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import {
   Dialog as AriaDialog,
   Heading,
@@ -9,6 +9,7 @@ import {
 } from 'react-aria-components';
 import { Button } from './button.js';
 import { cx } from './class-names.js';
+import { useOverflow } from './use-overflow.js';
 
 export type DialogSize = 'sm' | 'md' | 'lg';
 
@@ -42,24 +43,6 @@ export interface DialogProps {
   children?: ReactNode;
 }
 
-/** True while the element's content is taller than the element. */
-function useScrolls(open: boolean) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [scrolls, setScrolls] = useState(false);
-  useEffect(() => {
-    const body = ref.current;
-    if (!open || !body) return;
-    const check = () => setScrolls(body.scrollHeight > body.clientHeight + 1);
-    check();
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(check);
-    observer.observe(body);
-    Array.from(body.children).forEach((child) => observer.observe(child));
-    return () => observer.disconnect();
-  }, [open]);
-  return [ref, scrolls] as const;
-}
-
 /**
  * A modal dialog on React Aria: focus moves into it and stays there, the page behind
  * does not scroll, and focus returns to the opener on close.
@@ -91,7 +74,7 @@ export function Dialog({
 }: DialogProps) {
   const descriptionId = useId();
   // While the body scrolls it takes focus, so the keyboard can scroll it too.
-  const [bodyRef, scrolls] = useScrolls(open);
+  const [bodyRef, scrolls] = useOverflow<HTMLDivElement>('y', open);
   const alert = role === 'alertdialog';
   const closable = dismissable && !alert;
 

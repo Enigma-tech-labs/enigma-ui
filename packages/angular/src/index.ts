@@ -20,3 +20,15 @@ export { SelectComponent } from './lib/select/select.component';
 export type { SelectOption } from './lib/select/select.component';
 export { TextareaComponent } from './lib/textarea/textarea.component';
 export { TextFieldComponent } from './lib/text-field/text-field.component';
+export {
+  DataTableComponent,
+  TableCellDirective,
+} from './lib/data-table/data-table.component';
+export type {
+  TableCellContext,
+  TableColumn,
+  TableSort,
+} from './lib/data-table/data-table.component';
+export { pageSlots } from './lib/pagination/page-slots';
+export { PaginationComponent } from './lib/pagination/pagination.component';
+export type { PaginationLabels } from './lib/pagination/pagination.component';

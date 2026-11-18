@@ -20,3 +20,13 @@ export { Textarea } from './lib/textarea.js';
 export type { TextareaProps } from './lib/textarea.js';
 export { TextField } from './lib/text-field.js';
 export type { TextFieldProps } from './lib/text-field.js';
+export { DataTable } from './lib/data-table.js';
+export type {
+  DataTableProps,
+  TableColumn,
+  TableSort,
+} from './lib/data-table.js';
+export { pageSlots } from './lib/page-slots.js';
+export { Pagination } from './lib/pagination.js';
+export type { PaginationLabels, PaginationProps } from './lib/pagination.js';
+export { useOverflow } from './lib/use-overflow.js';
