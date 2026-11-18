@@ -78,7 +78,7 @@
   },
   "analytics": false,
   "release": {
-    "projects": ["css", "angular"],
+    "projects": ["css", "angular", "react"],
     "version": {
       "conventionalCommits": true,
       "preVersionCommand": "pnpm nx run angular:build"

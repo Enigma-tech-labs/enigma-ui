@@ -62,6 +62,23 @@ describe('SelectComponent', () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  it('marks the keyboard-active option with the kit class', async () => {
+    const { fixture, trigger, option } = await setup();
+    trigger.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }),
+    );
+    await fixture.whenStable();
+    const listbox = document.querySelector<HTMLElement>('[role="listbox"]')!;
+    listbox.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }),
+    );
+    await fixture.whenStable();
+
+    const active = document.querySelectorAll('.ui-option--active');
+    expect(active).toHaveLength(1);
+    expect([option(0), option(1)]).toContain(active[0]);
+  });
+
   it('shows a value set from the form control', async () => {
     const { fixture, trigger } = await setup();
     fixture.componentInstance.city.setValue('cai');

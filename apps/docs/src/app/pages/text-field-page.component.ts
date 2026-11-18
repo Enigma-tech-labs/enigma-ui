@@ -79,6 +79,9 @@ export class TextFieldPageComponent {
   );
 
   protected readonly usage = {
+    react: `import { TextField } from '@enigma-tech-lab/react';
+// Every other prop goes to the input: value, onChange, name, ref,
+// so it works with React Hook Form's register() too.`,
     angular: `import { TextFieldComponent } from '@enigma-tech-lab/angular';
 // Works with formControlName, [formControl] and ngModel.`,
     html: `<div class="ui-field">
@@ -88,6 +91,13 @@ export class TextFieldPageComponent {
   };
 
   protected readonly hint = {
+    react: `<TextField
+  label="Email"
+  type="email"
+  hint="We only use it for order updates."
+  autoComplete="email"
+  name="email"
+/>`,
     angular: `<ui-text-field
   label="Email"
   type="email"
@@ -103,6 +113,14 @@ export class TextFieldPageComponent {
   };
 
   protected readonly error = {
+    react: `const [name, setName] = useState('');
+
+<TextField
+  label="Full name"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  error={name ? undefined : 'Enter your full name'}
+/>`,
     angular: `<ui-text-field
   label="Full name"
   formControlName="name"
@@ -116,6 +134,7 @@ export class TextFieldPageComponent {
   };
 
   protected readonly disabled = {
+    react: `<TextField label="Order number" defaultValue="ORD-1042" disabled />`,
     angular: `order = new FormControl({ value: 'ORD-1042', disabled: true });
 
 <ui-text-field label="Order number" [formControl]="order" />`,
@@ -126,6 +145,8 @@ export class TextFieldPageComponent {
   };
 
   protected readonly arabic = {
+    react: `{/* dir="rtl" on the page or any ancestor */}
+<TextField label="البريد الإلكتروني" type="email" hint="بنستخدمه لتحديثات الطلب بس." />`,
     angular: `<!-- dir="rtl" on the page or any ancestor -->
 <ui-text-field label="البريد الإلكتروني" type="email" hint="بنستخدمه لتحديثات الطلب بس." />`,
     html: `<!-- dir="rtl" on the page or any ancestor -->
@@ -137,6 +158,41 @@ export class TextFieldPageComponent {
   };
 
   protected readonly api = {
+    react: [
+      {
+        name: 'label',
+        type: 'string',
+        description: 'Required. The visible label, tied to the input.',
+      },
+      {
+        name: 'type',
+        type: "'text' | 'email' | 'password' | 'search' | 'tel' | 'url'",
+        default: "'text'",
+        description: 'The input type.',
+      },
+      {
+        name: 'hint',
+        type: 'string',
+        description: 'Help text under the input, read with it.',
+      },
+      {
+        name: 'error',
+        type: 'string',
+        description:
+          'The translated error. Marks the input invalid and announces the message.',
+      },
+      {
+        name: 'testId',
+        type: 'string',
+        description: 'data-testid on the input, for tests.',
+      },
+      {
+        name: '...props',
+        type: 'input props',
+        description:
+          'Every native input prop: value, defaultValue, onChange, name, autoComplete, disabled, ref.',
+      },
+    ],
     angular: [
       {
         name: 'label',

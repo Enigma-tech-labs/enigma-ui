@@ -60,7 +60,10 @@ export class ApiTableComponent {
   protected readonly current = computed(
     () => this.rows()[this.settings.framework()] ?? [],
   );
-  protected readonly heading = computed(() =>
-    this.settings.framework() === 'html' ? 'Classes and attributes' : 'Inputs',
+  protected readonly heading = computed(
+    () =>
+      ({ angular: 'Inputs', react: 'Props', html: 'Classes and attributes' })[
+        this.settings.framework()
+      ],
   );
 }

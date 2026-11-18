@@ -1,9 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { effect, inject, Injectable, signal } from '@angular/core';
 
-/** Frameworks the docs show code for. Add 'react' and 'vue' here when their packages exist. */
+/** Frameworks the docs show code for. Add 'vue' here when its package exists. */
 export const FRAMEWORKS = [
   { id: 'angular', label: 'Angular' },
+  { id: 'react', label: 'React' },
   { id: 'html', label: 'HTML + CSS' },
 ] as const;
 export type Framework = (typeof FRAMEWORKS)[number]['id'];

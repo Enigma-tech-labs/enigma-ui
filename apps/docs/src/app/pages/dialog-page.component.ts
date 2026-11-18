@@ -115,11 +115,34 @@ export class DialogPageComponent {
   }
 
   protected readonly usage = {
+    react: `import { Button, Dialog, DialogActions } from '@enigma-tech-lab/react';`,
     angular: `import { ButtonComponent, DialogComponent, UiDialog } from '@enigma-tech-lab/angular';`,
     html: `<dialog class="ui-dialog" aria-labelledby="title">...</dialog>`,
   };
 
   protected readonly confirm = {
+    react: `export function DeleteFile() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button type="button" variant="danger" onClick={() => setOpen(true)}>
+        Delete file
+      </Button>
+      <Dialog title="Delete report.pdf?" open={open} onOpenChange={setOpen}>
+        <p>This removes the file for everyone. It cannot be undone.</p>
+        <DialogActions>
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button type="button" variant="danger" onClick={remove}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}`,
     angular: `@Component({
   selector: 'app-delete-file-dialog',
   imports: [DialogComponent, ButtonComponent],
@@ -161,6 +184,36 @@ open(): void {
   };
 
   protected readonly api = {
+    react: [
+      {
+        name: 'title',
+        type: 'string',
+        description: 'Required. The heading; it names the dialog.',
+      },
+      {
+        name: 'open',
+        type: 'boolean',
+        description: 'Required. Whether the dialog is open.',
+      },
+      {
+        name: 'onOpenChange',
+        type: '(open: boolean) => void',
+        description:
+          'Required. Called with false on Escape, a backdrop click or the close button.',
+      },
+      {
+        name: 'closeLabel',
+        type: 'string',
+        default: "'Close'",
+        description:
+          'Accessible name of the close button; pass the translated text.',
+      },
+      {
+        name: '<DialogActions>',
+        type: 'component',
+        description: 'Wrap the buttons in it; they line up at the end.',
+      },
+    ],
     angular: [
       {
         name: 'UiDialog.open(component, data?)',

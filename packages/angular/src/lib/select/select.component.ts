@@ -94,7 +94,9 @@ let nextId = 0;
       >
         @for (option of options(); track option.value) {
           <li
+            #opt="cdkOption"
             class="ui-option"
+            [class.ui-option--active]="opt.isActive()"
             [cdkOption]="option.value"
             [cdkOptionDisabled]="!!option.disabled"
             [attr.data-testid]="

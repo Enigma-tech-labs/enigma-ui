@@ -134,12 +134,26 @@ export class SelectPageComponent {
   ];
 
   protected readonly usage = {
+    react: `import { Select, type SelectOption } from '@enigma-tech-lab/react';`,
     angular: `import { SelectComponent, type SelectOption } from '@enigma-tech-lab/angular';
 // Works with formControlName, [formControl] and ngModel.`,
     html: `<select class="ui-input" id="city">...</select>`,
   };
 
   protected readonly basic = {
+    react: `const cities: SelectOption<string>[] = [
+  { value: 'cai', label: 'Cairo' },
+  { value: 'alx', label: 'Alexandria' },
+];
+const [city, setCity] = useState<string | null>(null);
+
+<Select
+  label="City"
+  placeholder="Choose a city"
+  options={cities}
+  value={city}
+  onChange={setCity}
+/>`,
     angular: `cities: SelectOption<string>[] = [
   { value: 'cai', label: 'Cairo' },
   { value: 'alx', label: 'Alexandria' },
@@ -157,6 +171,13 @@ export class SelectPageComponent {
   };
 
   protected readonly error = {
+    react: `const sizes: SelectOption<string>[] = [
+  { value: 's', label: 'Small' },
+  { value: 'm', label: 'Medium' },
+  { value: 'l', label: 'Large', disabled: true },
+];
+
+<Select label="Size" options={sizes} error="Choose a size" />`,
     angular: `sizes: SelectOption<string>[] = [
   { value: 's', label: 'Small' },
   { value: 'm', label: 'Medium' },
@@ -177,6 +198,8 @@ export class SelectPageComponent {
   };
 
   protected readonly arabic = {
+    react: `{/* dir="rtl" on the page or any ancestor */}
+<Select label="المدينة" placeholder="اختار المدينة" options={cities} />`,
     angular: `<!-- dir="rtl" on the page or any ancestor -->
 <ui-select label="المدينة" placeholder="اختار المدينة" [options]="cities" formControlName="city" />`,
     html: `<!-- dir="rtl" on the page or any ancestor -->
@@ -190,6 +213,57 @@ export class SelectPageComponent {
   };
 
   protected readonly api = {
+    react: [
+      {
+        name: 'label',
+        type: 'string',
+        description:
+          'Required. The visible label; it names the button and the list.',
+      },
+      {
+        name: 'options',
+        type: 'SelectOption<T>[]',
+        description:
+          'Required. { value, label, disabled? } for each option; value is a string or number.',
+      },
+      {
+        name: 'value / defaultValue',
+        type: 'T | null',
+        description: 'The chosen value, controlled or not.',
+      },
+      {
+        name: 'onChange',
+        type: '(value: T) => void',
+        description: 'Called with the value of the picked option.',
+      },
+      {
+        name: 'placeholder',
+        type: 'string',
+        description: 'Shown while nothing is chosen.',
+      },
+      {
+        name: 'error',
+        type: 'string',
+        description:
+          'The translated error. Marks the field invalid and announces the message.',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        default: 'false',
+        description: 'Disables the select.',
+      },
+      {
+        name: 'name',
+        type: 'string',
+        description: 'Field name, so the value is sent with a native form.',
+      },
+      {
+        name: 'testId',
+        type: 'string',
+        description: 'data-testid on the button; options get -option-<index>.',
+      },
+    ],
     angular: [
       {
         name: 'label',

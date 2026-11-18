@@ -71,11 +71,16 @@ export class ButtonPageComponent {
   }
 
   protected readonly usage = {
+    react: `import { Button } from '@enigma-tech-lab/react';`,
     angular: `import { ButtonComponent } from '@enigma-tech-lab/angular';`,
     html: `<button class="ui-button ui-button--primary ui-button--md">Save</button>`,
   };
 
   protected readonly variants = {
+    react: `<Button>Save</Button>
+<Button variant="secondary">Cancel</Button>
+<Button variant="ghost">Skip</Button>
+<Button variant="danger">Delete</Button>`,
     angular: `<button ui-button>Save</button>
 <button ui-button variant="secondary">Cancel</button>
 <button ui-button variant="ghost">Skip</button>
@@ -87,6 +92,9 @@ export class ButtonPageComponent {
   };
 
   protected readonly sizes = {
+    react: `<Button size="sm">Small</Button>
+<Button>Medium</Button>
+<Button size="lg">Large</Button>`,
     angular: `<button ui-button size="sm">Small</button>
 <button ui-button>Medium</button>
 <button ui-button size="lg">Large</button>`,
@@ -96,6 +104,9 @@ export class ButtonPageComponent {
   };
 
   protected readonly loading = {
+    react: `<Button loading={saving} onClick={save}>
+  Save changes
+</Button>`,
     angular: `<button ui-button [loading]="saving()" (click)="save()">Save changes</button>`,
     html: `<button class="ui-button ui-button--primary ui-button--md" disabled aria-busy="true">
   <span class="ui-spinner" aria-hidden="true"></span>
@@ -104,11 +115,15 @@ export class ButtonPageComponent {
   };
 
   protected readonly disabled = {
+    react: `<Button disabled>Save</Button>`,
     angular: `<button ui-button disabled>Save</button>`,
     html: `<button class="ui-button ui-button--primary ui-button--md" disabled>Save</button>`,
   };
 
   protected readonly arabic = {
+    react: `{/* dir="rtl" on the page or any ancestor */}
+<Button>حفظ</Button>
+<Button variant="secondary">إلغاء</Button>`,
     angular: `<!-- dir="rtl" on the page or any ancestor -->
 <button ui-button>حفظ</button>
 <button ui-button variant="secondary">إلغاء</button>`,
@@ -118,6 +133,33 @@ export class ButtonPageComponent {
   };
 
   protected readonly api = {
+    react: [
+      {
+        name: 'variant',
+        type: "'primary' | 'secondary' | 'ghost' | 'danger'",
+        default: "'primary'",
+        description: 'How much the button stands out.',
+      },
+      {
+        name: 'size',
+        type: "'sm' | 'md' | 'lg'",
+        default: "'md'",
+        description:
+          'Padding and text size. Height never drops under 44 pixels.',
+      },
+      {
+        name: 'loading',
+        type: 'boolean',
+        default: 'false',
+        description: 'Disables the button, sets aria-busy and shows a spinner.',
+      },
+      {
+        name: '...props',
+        type: 'button props',
+        description:
+          'Every native button prop: type, onClick, disabled, form, ref.',
+      },
+    ],
     angular: [
       {
         name: 'variant',

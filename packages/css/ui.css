@@ -274,7 +274,8 @@
   font-size: var(--ui-font-size);
 }
 .ui-input[aria-invalid='true'],
-.ui-select__trigger[aria-invalid='true'] {
+.ui-select__trigger[aria-invalid='true'],
+.ui-field--invalid .ui-select__trigger {
   border-color: var(--ui-danger);
   border-width: 2px;
 }
@@ -321,10 +322,14 @@
   padding-inline: 0.75rem;
   border-radius: calc(var(--ui-radius) - 0.125rem);
   cursor: pointer;
+  outline: none;
 }
-.ui-option.cdk-option-active {
+/* The option the keyboard is on. The highlight alone is too faint to mark focus, so a ring in the focus colour marks it. */
+.ui-option--active {
   background: var(--ui-highlight);
   color: var(--ui-on-highlight);
+  outline: 2px solid var(--ui-focus);
+  outline-offset: -2px;
 }
 .ui-option[aria-selected='true'] {
   font-weight: 600;
@@ -339,7 +344,14 @@
 }
 
 /* Dialog */
+/* The backdrop covers the page and centres the panel (React Aria nests the panel in it). */
 .ui-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
   background: var(--ui-backdrop);
 }
 .ui-dialog-panel,

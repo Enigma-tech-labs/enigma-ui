@@ -90,9 +90,10 @@ import { PageComponent } from '../shared/page.component';
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Frameworks</h2>
         <p>
-          Angular and plain HTML + CSS are ready. React (on React Aria) and Vue
-          (on Reka UI) are next. Every framework uses the same stylesheet, so
-          the components look the same everywhere.
+          Angular (on the Angular CDK), React (on React Aria) and plain HTML +
+          CSS are ready; Vue (on Reka UI) is next. Every framework uses the same
+          stylesheet, so the components look the same everywhere. That is also
+          why one live example on each page serves every framework.
         </p>
       </section>
     </app-page>
@@ -100,11 +101,14 @@ import { PageComponent } from '../shared/page.component';
 })
 export class GettingStartedComponent {
   protected readonly install = {
+    react: `pnpm add @enigma-tech-lab/react`,
     angular: 'pnpm add @enigma-tech-lab/angular @angular/cdk',
     html: 'pnpm add @enigma-tech-lab/css',
   };
 
   protected readonly styles = {
+    react: `// main.tsx, once, before your own styles
+import '@enigma-tech-lab/css/ui.css';`,
     angular: `/* src/styles.css */
 @import '@enigma-tech-lab/css/ui.css';
 @import '@angular/cdk/overlay-prebuilt.css';`,
@@ -113,6 +117,11 @@ export class GettingStartedComponent {
   };
 
   protected readonly first = {
+    react: `import { Button } from '@enigma-tech-lab/react';
+
+export function SaveBar() {
+  return <Button>Save</Button>;
+}`,
     angular: `import { Component } from '@angular/core';
 import { ButtonComponent } from '@enigma-tech-lab/angular';
 

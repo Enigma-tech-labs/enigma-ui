@@ -2,11 +2,13 @@
 
 The design system of Enigma Technology Lab: accessible, Arabic and English from the start, and built to work with any frontend.
 
+**[Read the docs](https://enigma-tech-labs.github.io/enigma-ui/)**: every component live, with the code for your framework.
+
 | Package                                        | What it is                                                                                          | Status                                    |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------- |
 | [`@enigma-tech-lab/css`](packages/css)         | Fonts, design tokens and every component style, in plain CSS. Works in any stack, framework or not. | Ready                                     |
 | [`@enigma-tech-lab/angular`](packages/angular) | Angular 22 components on the Angular CDK.                                                           | Ready: button, text field, select, dialog |
-| `@enigma-tech-lab/react`                       | React components on React Aria.                                                                     | Next                                      |
+| [`@enigma-tech-lab/react`](packages/react)     | React 19 components on React Aria.                                                                  | Ready: button, text field, select, dialog |
 | `@enigma-tech-lab/vue`                         | Vue components on Reka UI.                                                                          | Planned                                   |
 
 ## How it fits together
@@ -47,6 +49,17 @@ pnpm add @enigma-tech-lab/angular @angular/cdk
 
 ```ts
 import { ButtonComponent, SelectComponent, TextFieldComponent } from '@enigma-tech-lab/angular';
+```
+
+React:
+
+```shell
+pnpm add @enigma-tech-lab/react
+```
+
+```tsx
+import '@enigma-tech-lab/css/ui.css';
+import { Button, Select, TextField } from '@enigma-tech-lab/react';
 ```
 
 A client re-brands by overriding `--ui-primary`, `--ui-focus`, `--ui-highlight` and their `--ui-on-*` pairs after `ui.css`.
