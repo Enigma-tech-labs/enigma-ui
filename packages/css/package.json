@@ -1,0 +1,35 @@
+{
+  "name": "@enigma-tech-lab/css",
+  "version": "0.0.0",
+  "description": "The Enigma Technology Lab design system in plain CSS: brand fonts, light and dark tokens measured to 7:1, and the component styles. Works in any stack.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enigma-tech-labs/enigma-ui.git",
+    "directory": "packages/css"
+  },
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "css",
+    "accessibility",
+    "rtl",
+    "arabic"
+  ],
+  "files": [
+    "ui.css",
+    "fonts",
+    "README.md"
+  ],
+  "style": "./ui.css",
+  "exports": {
+    "./ui.css": "./ui.css",
+    "./fonts/*": "./fonts/*"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

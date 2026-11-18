@@ -1,0 +1,386 @@
+/*
+ * @enigma-tech-lab/css — the Enigma Technology Lab design system: fonts, tokens, component styles.
+ *
+ * Source of every value: the Enigma brand book (colour, type). Product UI needs shades the brand
+ * book doesn't name, so each one below is the brand colour itself, or the brand colour darkened
+ * or lightened along its own hue until it reaches 7:1 for small text. Status colours (success,
+ * warning) are not brand colours; they are chosen to pass 7:1 and to stay clear of brand red.
+ *
+ * Every colour is a light-dark() pair; the contrast of each pair is checked in tokens.spec.ts.
+ * Pick a theme with color-scheme on any ancestor, or data-theme="light" / "dark".
+ * A client re-brands by overriding --ui-primary, --ui-focus, --ui-highlight and their "on" pairs.
+ */
+
+/* Fonts: the brand's five faces, all SIL Open Font License (licences in fonts/licenses). */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('./fonts/plex-sans.woff2') format('woff2');
+  font-weight: 100 700;
+  font-stretch: 75% 100%;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('./fonts/plex-sans-arabic-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('./fonts/plex-sans-arabic-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('./fonts/plex-sans-arabic-600.woff2') format('woff2');
+  font-weight: 600 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Archivo';
+  src: url('./fonts/archivo.woff2') format('woff2');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alexandria';
+  src: url('./fonts/alexandria.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('./fonts/plex-mono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('./fonts/plex-mono-500.woff2') format('woff2');
+  font-weight: 500 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* The brand, as is. Fills, borders, logo and large text only (white on blue 5.4, white on red 4.1). */
+  --ui-brand-red: #dc4b4b;
+  --ui-brand-blue: #0059ff;
+  --ui-ink: #0b1020;
+  --ui-paper: #f6f7fb;
+  --ui-slate: #586087;
+
+  /* Neutrals: paper/ink grounds, slate for secondary text (darkened/lightened to 7:1). */
+  --ui-bg: light-dark(#f6f7fb, #0b1020);
+  --ui-surface: light-dark(#ffffff, #151b30);
+  --ui-text: light-dark(#0b1020, #f6f7fb);
+  --ui-text-muted: light-dark(#454c6e, #c9cee3);
+  --ui-border: light-dark(#586087, #9fa5c0);
+  --ui-divider: light-dark(#e4e7f2, #262d48);
+  --ui-secondary: light-dark(#e4e7f2, #232a45);
+  --ui-on-secondary: light-dark(#0b1020, #f6f7fb);
+
+  /* Primary is brand blue: darkened on light, the brand's own #8fb4ff tint on dark. */
+  --ui-primary: light-dark(#0047cc, #8fb4ff);
+  --ui-on-primary: light-dark(#ffffff, #0b1020);
+  --ui-focus: light-dark(#0047cc, #8fb4ff);
+  --ui-highlight: light-dark(#dbe6ff, #1d3a8a);
+  --ui-on-highlight: light-dark(#0b1020, #f6f7fb);
+
+  /*
+   * Brand red carries danger in product UI. Red and blue never meet as large areas (brand rule),
+   * so red stays for errors, destructive actions and alerts, and blue carries everything else.
+   */
+  --ui-danger: light-dark(#9a1d1d, #f2a3a3);
+  --ui-on-danger: light-dark(#ffffff, #0b1020);
+  --ui-danger-soft: light-dark(#fdeeee, #3a1418);
+  --ui-success: light-dark(#14532d, #86efac);
+  --ui-on-success: light-dark(#ffffff, #0b1020);
+  --ui-success-soft: light-dark(#e3f5e9, #0f2e1c);
+  --ui-warning: light-dark(#7a3a0a, #fcd34d);
+  --ui-on-warning: light-dark(#ffffff, #0b1020);
+  --ui-warning-soft: light-dark(#fdf1dc, #33260a);
+  --ui-backdrop: rgb(11 16 32 / 0.6);
+
+  /* Type: Plex for body, Archivo Expanded / Alexandria for headlines, Plex Mono for labels.
+     Each stack lists a Latin face then an Arabic one, so mixed text picks the right face per glyph. */
+  --ui-font: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --ui-font-display:
+    'Archivo', 'Alexandria', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --ui-font-mono:
+    'IBM Plex Mono', 'IBM Plex Sans Arabic', ui-monospace, monospace;
+  --ui-font-size: 1rem;
+  --ui-text-sm: 0.875rem;
+  --ui-text-lg: 1.25rem;
+  --ui-text-xl: 1.5rem;
+  --ui-text-2xl: 2rem;
+  --ui-text-3xl: 2.75rem;
+
+  /* Space, shape, depth */
+  --ui-gap: 0.5rem;
+  --ui-space-1: 0.25rem;
+  --ui-space-2: 0.5rem;
+  --ui-space-3: 0.75rem;
+  --ui-space-4: 1rem;
+  --ui-space-6: 1.5rem;
+  --ui-space-8: 2rem;
+  --ui-space-12: 3rem;
+  --ui-radius: 0.5rem;
+  --ui-control-height: 2.75rem;
+  --ui-shadow: 0 8px 24px rgb(11 16 32 / 0.18);
+
+  font-family: var(--ui-font);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Headline: Archivo Expanded ExtraBold in English, Alexandria ExtraBold in Arabic. */
+.ui-heading {
+  margin: 0;
+  font-family: var(--ui-font-display);
+  font-weight: 800;
+  font-stretch: 125%;
+  line-height: 1.15;
+}
+
+/* Label: the lab-report detail, small upper-case mono. Arabic is never letter-spaced. */
+.ui-label {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.ui-label:lang(ar) {
+  letter-spacing: 0;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Focus ring shared by every control */
+.ui-button:focus-visible,
+.ui-input:focus-visible,
+.ui-select__trigger:focus-visible,
+.ui-listbox:focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+
+/* Button */
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-gap);
+  min-block-size: var(--ui-control-height);
+  min-inline-size: var(--ui-control-height);
+  padding-inline: 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius);
+  font: inherit;
+  font-size: var(--ui-font-size);
+  font-weight: 600;
+  cursor: pointer;
+}
+.ui-button--primary {
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+.ui-button--secondary {
+  background: var(--ui-secondary);
+  color: var(--ui-on-secondary);
+  border-color: var(--ui-border);
+}
+.ui-button--ghost {
+  background: transparent;
+  color: var(--ui-text);
+}
+.ui-button--danger {
+  background: var(--ui-danger);
+  color: var(--ui-on-danger);
+}
+.ui-button--sm {
+  --ui-control-height: 2.75rem;
+  padding-inline: 0.75rem;
+}
+.ui-button--lg {
+  --ui-control-height: 3.25rem;
+  padding-inline: 1.5rem;
+  font-size: 1.125rem;
+}
+.ui-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ui-button[aria-busy='true'] {
+  cursor: progress;
+}
+.ui-spinner {
+  inline-size: 1em;
+  block-size: 1em;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  animation: ui-spin 0.8s linear infinite;
+}
+@keyframes ui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Field: label, control, hint, error */
+.ui-field {
+  display: grid;
+  gap: 0.375rem;
+  color: var(--ui-text);
+}
+.ui-field__label {
+  font-weight: 600;
+}
+.ui-field__hint {
+  margin: 0;
+  color: var(--ui-text-muted);
+}
+.ui-field__error {
+  margin: 0;
+  color: var(--ui-danger);
+  font-weight: 600;
+}
+.ui-input,
+.ui-select__trigger {
+  min-block-size: var(--ui-control-height);
+  padding-inline: 0.75rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font: inherit;
+  font-size: var(--ui-font-size);
+}
+.ui-input[aria-invalid='true'],
+.ui-select__trigger[aria-invalid='true'] {
+  border-color: var(--ui-danger);
+  border-width: 2px;
+}
+.ui-input:disabled,
+.ui-select__trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Select */
+.ui-select__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-gap);
+  inline-size: 100%;
+  text-align: start;
+  cursor: pointer;
+}
+.ui-select__placeholder {
+  color: var(--ui-text-muted);
+}
+.ui-select__chevron {
+  inline-size: 1rem;
+  block-size: 1rem;
+  flex: none;
+}
+.ui-listbox {
+  margin: 0.25rem 0 0;
+  padding: 0.25rem;
+  list-style: none;
+  max-block-size: 16rem;
+  overflow-y: auto;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  box-shadow: var(--ui-shadow);
+}
+.ui-option {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--ui-control-height);
+  padding-inline: 0.75rem;
+  border-radius: calc(var(--ui-radius) - 0.125rem);
+  cursor: pointer;
+}
+.ui-option.cdk-option-active {
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+}
+.ui-option[aria-selected='true'] {
+  font-weight: 600;
+}
+.ui-option[aria-selected='true']::after {
+  content: '✓';
+  margin-inline-start: auto;
+}
+.ui-option[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Dialog */
+.ui-dialog-backdrop {
+  background: var(--ui-backdrop);
+}
+.ui-dialog-panel {
+  max-inline-size: min(32rem, calc(100vw - 2rem));
+  inline-size: 100%;
+}
+.ui-dialog {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: calc(var(--ui-radius) * 2);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+.ui-dialog__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.ui-dialog__title {
+  margin: 0;
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-text-lg);
+  font-weight: 800;
+  font-stretch: 125%;
+}
+.ui-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: var(--ui-gap);
+}
+.ui-dialog__actions:empty {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-spinner {
+    animation: none;
+    border-inline-end-color: currentColor;
+    opacity: 0.6;
+  }
+}
