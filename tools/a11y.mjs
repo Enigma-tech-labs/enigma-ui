@@ -115,11 +115,13 @@ for (const theme of ['light', 'dark']) {
     ['angular', 'components/bottom-sheet', 'Order 1042', 'dialog'],
     ['html', 'components/bottom-sheet', 'Order 1042', 'dialog'],
     ['html', 'components/alert-dialog', 'Delete file', 'alertdialog'],
+    ['angular', 'components/toast', 'Pay', 'region', 'Notifications'],
+    ['angular', 'components/toast', 'Delete order', 'region', 'Notifications'],
   ];
-  for (const [framework, path, button, role] of states) {
+  for (const [framework, path, button, role, name] of states) {
     const { page, close } = await open(theme, framework, path);
     await page.getByRole('button', { name: button, exact: true }).click();
-    await page.getByRole(role).waitFor();
+    await page.getByRole(role, name ? { name } : {}).waitFor();
     await audit(page, `${theme} ${framework} /${path}: "${button}" open`);
     audits++;
     await close();

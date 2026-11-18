@@ -152,5 +152,36 @@ export const appRoutes: Route[] = [
         (m) => m.FileFieldPageComponent,
       ),
   },
+  {
+    path: 'components/alert',
+    loadComponent: () =>
+      import('./pages/alert-page.component').then((m) => m.AlertPageComponent),
+  },
+  {
+    path: 'components/toast',
+    loadComponent: () =>
+      import('./pages/toast-page.component').then((m) => m.ToastPageComponent),
+  },
+  {
+    path: 'components/spinner',
+    loadComponent: () =>
+      import('./pages/spinner-page.component').then(
+        (m) => m.SpinnerPageComponent,
+      ),
+  },
+  {
+    path: 'components/progress',
+    loadComponent: () =>
+      import('./pages/progress-page.component').then(
+        (m) => m.ProgressPageComponent,
+      ),
+  },
+  {
+    path: 'components/skeleton',
+    loadComponent: () =>
+      import('./pages/skeleton-page.component').then(
+        (m) => m.SkeletonPageComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

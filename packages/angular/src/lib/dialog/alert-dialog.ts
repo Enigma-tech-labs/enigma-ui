@@ -5,6 +5,7 @@ import {
   ButtonComponent,
   type ButtonVariant,
 } from '../button/button.component';
+import { ToneIconComponent } from '../alert/tone-icon.component';
 import { DialogCloseDirective, DialogComponent, UiDialog } from './dialog';
 
 export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
@@ -43,7 +44,12 @@ export interface ConfirmOptions {
 /** The content of an alert dialog: tone icon, title, message and actions, centred. */
 @Component({
   selector: 'ui-alert-dialog',
-  imports: [DialogComponent, ButtonComponent, DialogCloseDirective],
+  imports: [
+    DialogComponent,
+    ButtonComponent,
+    DialogCloseDirective,
+    ToneIconComponent,
+  ],
   template: `
     <ui-dialog
       [title]="options.title"
@@ -57,32 +63,7 @@ export interface ConfirmOptions {
           class="ui-dialog__icon ui-dialog__icon--{{ tone }}"
           aria-hidden="true"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            @switch (tone) {
-              @case ('success') {
-                <path d="M5 12.5l4.5 4.5L19 7.5" />
-              }
-              @case ('warning') {
-                <path d="M12 4l9 16H3z" />
-                <path d="M12 10v4M12 17h.01" />
-              }
-              @case ('danger') {
-                <circle cx="12" cy="12" r="9" />
-                <path d="M9 9l6 6M15 9l-6 6" />
-              }
-              @default {
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 11v5M12 8h.01" />
-              }
-            }
-          </svg>
+          <svg ui-tone-icon [tone]="tone"></svg>
         </span>
       }
       <div ui-dialog-actions>

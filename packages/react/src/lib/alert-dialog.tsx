@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, type ButtonVariant } from './button.js';
 import { Dialog } from './dialog.js';
+import { ToneIcon, type AlertTone } from './tone-icon.js';
 
-export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
+export type { AlertTone } from './tone-icon.js';
 
 export interface AlertAction<R> {
   /** The translated text of the button. */
@@ -43,28 +44,6 @@ export interface AlertDialogProps<R> extends AlertOptions<R> {
   onAction: (value: R | undefined) => void;
 }
 
-const icons: Record<AlertTone, ReactNode> = {
-  info: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 11v5M12 8h.01" />
-    </>
-  ),
-  success: <path d="M5 12.5l4.5 4.5L19 7.5" />,
-  warning: (
-    <>
-      <path d="M12 4l9 16H3z" />
-      <path d="M12 10v4M12 17h.01" />
-    </>
-  ),
-  danger: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M9 9l6 6M15 9l-6 6" />
-    </>
-  ),
-};
-
 function initialFocusIndex<R>(actions: readonly AlertAction<R>[]): number {
   const marked = actions.findIndex((a) => a.initialFocus);
   if (marked !== -1) return marked;
@@ -100,16 +79,7 @@ export function AlertDialog<R>({
             className={`ui-dialog__icon ui-dialog__icon--${tone}`}
             aria-hidden="true"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {icons[tone]}
-            </svg>
+            <ToneIcon tone={tone} />
           </span>
         )
       }

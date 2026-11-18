@@ -42,8 +42,16 @@ const pairs: [foreground: string, background: string, min: number][] = [
   ['warning', 'warning-soft', 7],
   ['text-muted', 'bg', 7],
   ['primary', 'bg', 7],
+  // Alert and toast: body text on the soft tones.
+  ['text', 'success-soft', 7],
+  ['text', 'warning-soft', 7],
+  ['text', 'danger-soft', 7],
   ['border', 'surface', 3],
   ['focus', 'bg', 3],
+  // Graphics: the info icon on its fill, the progress fill on its track, a switch knob.
+  ['primary', 'highlight', 3],
+  ['primary', 'secondary', 3],
+  ['border', 'bg', 3],
 ];
 
 describe('design tokens', () => {
