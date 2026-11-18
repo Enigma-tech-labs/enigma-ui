@@ -36,13 +36,8 @@ export interface DialogProps {
    */
   dismissable?: boolean;
   /**
-   * `false`: a click on the backdrop no longer closes it; Escape and the close button
-   * still do. For a form that must not be lost to a stray click.
-   */
-  closeOnBackdrop?: boolean;
-  /**
-   * `'alertdialog'` for a message that needs an answer: a backdrop click is ignored,
-   * the close button is hidden, and Escape still calls `onOpenChange(false)`.
+   * `'alertdialog'` for a message that needs an answer: only its buttons close it,
+   * never Escape or a click on the backdrop, and the close button is hidden.
    */
   role?: 'dialog' | 'alertdialog';
   /** Accessible name of the close button; pass the translated text. */
@@ -77,7 +72,6 @@ export function Dialog({
   open,
   onOpenChange,
   dismissable = true,
-  closeOnBackdrop = true,
   role = 'dialog',
   closeLabel = 'Close',
   icon,
@@ -95,9 +89,8 @@ export function Dialog({
       className="ui-dialog-backdrop"
       isOpen={open}
       onOpenChange={onOpenChange}
-      isDismissable={closable && closeOnBackdrop}
-      // An alert ignores the backdrop, but Escape still means "no answer".
-      isKeyboardDismissDisabled={!closable && !alert}
+      isDismissable={closable}
+      isKeyboardDismissDisabled={!closable}
     >
       <Modal>
         <AriaDialog

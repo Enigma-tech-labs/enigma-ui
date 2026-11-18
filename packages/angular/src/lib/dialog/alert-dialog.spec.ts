@@ -45,18 +45,15 @@ describe('UiAlertDialog', () => {
     expect(await answer).toBe(true);
   });
 
-  it('resolves false on Cancel and on Escape, and ignores the backdrop', async () => {
+  it('resolves false on Cancel, and ignores Escape and the backdrop', async () => {
     const cancelled = confirmDelete();
     await stable();
     action(0).click();
     expect(await cancelled).toBe(false);
 
-    const escaped = confirmDelete();
+    confirmDelete();
     await stable();
     document.querySelector<HTMLElement>('.cdk-overlay-backdrop')!.click();
-    await stable();
-    expect(alertEl()).not.toBeNull();
-
     document.body.dispatchEvent(
       new KeyboardEvent('keydown', {
         key: 'Escape',
@@ -64,7 +61,8 @@ describe('UiAlertDialog', () => {
         bubbles: true,
       }),
     );
-    expect(await escaped).toBe(false);
+    await stable();
+    expect(alertEl()).not.toBeNull();
   });
 
   it('resolves with the value of the chosen action and focuses the marked one', async () => {

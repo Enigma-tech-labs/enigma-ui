@@ -172,8 +172,8 @@ const terms = [
       </app-example>
 
       <app-example
-        title="Ignore clicks outside"
-        description="For a form that a stray click must not throw away: a click on the backdrop does nothing, while Escape and the close button still close it. Works the same on a drawer and a bottom sheet."
+        title="Only its buttons close it"
+        description="For a form that a stray click or key must not throw away: a click outside and Escape do nothing, and the close button is hidden, so Cancel and Save are the way out. Works the same on a drawer and a bottom sheet."
         [code]="backdrop"
       >
         @if (html()) {
@@ -187,6 +187,8 @@ const terms = [
           <dialog
             #nativeLocked
             class="ui-dialog"
+            closedby="none"
+            (cancel)="$event.preventDefault()"
             aria-labelledby="doc-note-title"
           >
             <header class="ui-dialog__header">
@@ -224,7 +226,7 @@ const terms = [
             ui-button
             variant="secondary"
             type="button"
-            (click)="open(noteDialog, { closeOnBackdrop: false })"
+            (click)="open(noteDialog, { dismissable: false })"
           >
             Write a note
           </button>
@@ -371,13 +373,13 @@ edit(content: TemplateRef<unknown>) {
   };
 
   protected readonly backdrop = {
-    angular: `this.dialog.open(content, { closeOnBackdrop: false });
+    angular: `this.dialog.open(content, { dismissable: false });
 // a drawer or sheet too: the variant lives on <ui-dialog>, the option on open()`,
-    react: `<Dialog closeOnBackdrop={false} title="Note for the driver" open={open} onOpenChange={setOpen}>
+    react: `<Dialog dismissable={false} title="Note for the driver" open={open} onOpenChange={setOpen}>
   ...
 </Dialog>`,
-    html: `<!-- Leave out closedby="any": a native dialog then ignores clicks outside, and Escape still closes it -->
-<dialog class="ui-dialog" aria-labelledby="note-title">...</dialog>`,
+    html: `<!-- closedby="none" turns Escape off; the cancel handler covers browsers without closedby -->
+<dialog class="ui-dialog" closedby="none" oncancel="event.preventDefault()" aria-labelledby="note-title">...</dialog>`,
   };
 
   protected readonly long = {
@@ -431,14 +433,7 @@ edit(content: TemplateRef<unknown>) {
         type: 'boolean',
         default: 'true',
         description:
-          'false: Escape and the backdrop no longer close it, and the close button is hidden.',
-      },
-      {
-        name: 'config.closeOnBackdrop',
-        type: 'boolean',
-        default: 'true',
-        description:
-          'false: a click on the backdrop does nothing; Escape and the close button still close it.',
+          'false: only your own buttons close it. Escape and a click outside do nothing, and the close button is hidden.',
       },
       {
         name: 'config.initialFocus',
@@ -514,14 +509,7 @@ edit(content: TemplateRef<unknown>) {
         type: 'boolean',
         default: 'true',
         description:
-          'false: Escape and the backdrop no longer close it, and the close button is hidden.',
-      },
-      {
-        name: 'closeOnBackdrop',
-        type: 'boolean',
-        default: 'true',
-        description:
-          'false: a click on the backdrop does nothing; Escape and the close button still close it.',
+          'false: only your own buttons close it. Escape and a click outside do nothing, and the close button is hidden.',
       },
       {
         name: 'closeLabel',
@@ -547,7 +535,7 @@ edit(content: TemplateRef<unknown>) {
         name: 'closedby="any"',
         type: 'attribute',
         description:
-          'A click outside closes it too, in browsers that support it; Escape always does. Leave it out to ignore clicks outside.',
+          'A click outside closes it too, in browsers that support it; Escape always does. closedby="none" plus oncancel="event.preventDefault()": only your buttons close it.',
       },
       {
         name: 'aria-labelledby / aria-describedby',

@@ -143,21 +143,6 @@ describe('UiDialog', () => {
     expect(document.querySelector('[role="dialog"]')).not.toBeNull();
   });
 
-  it('ignores the backdrop when closeOnBackdrop is false, but not Escape', async () => {
-    const { dialog, results } = await open({ closeOnBackdrop: false });
-    expect(
-      dialog.querySelector('[data-testid="ui-dialog-close"]'),
-    ).not.toBeNull();
-
-    document.querySelector<HTMLElement>('.cdk-overlay-backdrop')!.click();
-    await stable();
-    expect(results).toEqual([]);
-
-    escape();
-    await stable();
-    expect(results).toEqual([undefined]);
-  });
-
   it('opens a template, passing the data to it', async () => {
     const host = TestBed.createComponent(TemplateHost);
     await host.whenStable();

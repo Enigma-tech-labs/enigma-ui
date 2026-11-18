@@ -243,7 +243,7 @@ show(content: TemplateRef<unknown>) {
         name: 'everything else',
         type: '',
         description:
-          'title, description, open, onOpenChange, actions, dismissable, closeOnBackdrop and closeLabel work as in the dialog.',
+          'title, description, open, onOpenChange, actions, dismissable and closeLabel work as in the dialog.',
       },
     ],
     html: [

@@ -74,19 +74,18 @@ describe('useAlertDialog', () => {
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
-  it('answers false on Cancel and on Escape, and returns focus', async () => {
+  it('answers false on Cancel, ignores Escape, and returns focus', async () => {
     const onAnswer = vi.fn();
     render(<ConfirmHost onAnswer={onAnswer} />);
     const opener = screen.getByRole('button', { name: 'Delete file' });
 
     await userEvent.click(opener);
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('alertdialog')).not.toBeNull();
+    expect(onAnswer).not.toHaveBeenCalled();
+
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     await waitFor(() => expect(onAnswer).toHaveBeenLastCalledWith(false));
-
-    await userEvent.click(opener);
-    await userEvent.keyboard('{Escape}');
-    await waitFor(() => expect(onAnswer).toHaveBeenCalledTimes(2));
-    expect(onAnswer).toHaveBeenLastCalledWith(false);
     await waitFor(() => expect(document.activeElement).toBe(opener));
   });
 

@@ -39,7 +39,7 @@ export interface ConfirmOptions {
 
 export interface AlertDialogProps<R> extends AlertOptions<R> {
   open: boolean;
-  /** The value of the pressed action, or `undefined` on Escape. */
+  /** The value of the pressed action; `undefined` only if the app closes it. */
   onAction: (value: R | undefined) => void;
 }
 
@@ -73,8 +73,8 @@ function initialFocusIndex<R>(actions: readonly AlertAction<R>[]): number {
 }
 
 /**
- * A message that needs an answer: `role="alertdialog"`, a backdrop click is ignored,
- * Escape answers `undefined`, and focus starts on the safest button.
+ * A message that needs an answer: `role="alertdialog"`, only its buttons answer
+ * (never Escape or a click outside), and focus starts on the safest button.
  */
 export function AlertDialog<R>({
   open,

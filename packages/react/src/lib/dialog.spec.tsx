@@ -84,20 +84,13 @@ describe('Dialog', () => {
     [true, 'closes'],
     [false, 'stays open'],
   ])(
-    'with closeOnBackdrop %s, a click outside %s',
-    async (closeOnBackdrop, outcome) => {
-      await open({ closeOnBackdrop });
+    'with dismissable %s, a click outside %s',
+    async (dismissable, outcome) => {
+      await open({ dismissable });
       await userEvent.click(document.querySelector('.ui-dialog-backdrop')!);
       expect(screen.queryByRole('dialog') === null).toBe(outcome === 'closes');
     },
   );
-
-  it('keeps Escape and the close button when closeOnBackdrop is false', async () => {
-    await open({ closeOnBackdrop: false });
-    expect(screen.getByTestId('ui-dialog-close')).not.toBeNull();
-    await userEvent.keyboard('{Escape}');
-    expect(screen.queryByRole('dialog')).toBeNull();
-  });
 
   it('stays open when not dismissable, without a close button', async () => {
     await open({ dismissable: false });

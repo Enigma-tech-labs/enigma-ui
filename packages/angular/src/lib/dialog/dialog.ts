@@ -9,13 +9,11 @@ import {
   ElementRef,
   inject,
   Injectable,
-  InjectionToken,
   input,
   signal,
   TemplateRef,
   viewChild,
 } from '@angular/core';
-import { filter, take } from 'rxjs';
 import { ButtonComponent } from '../button/button.component';
 
 export type DialogSize = 'sm' | 'md' | 'lg';
@@ -30,13 +28,8 @@ export interface UiDialogConfig<D = unknown> {
    */
   dismissable?: boolean;
   /**
-   * `false`: a click on the backdrop no longer closes it; Escape and the close button
-   * still do. For a form that must not be lost to a stray click.
-   */
-  closeOnBackdrop?: boolean;
-  /**
-   * `'alertdialog'` for a message that needs an answer: a backdrop click is ignored,
-   * the close button is hidden, and Escape closes it with no result.
+   * `'alertdialog'` for a message that needs an answer: only its buttons close it,
+   * never Escape or a click on the backdrop, and the close button is hidden.
    */
   role?: 'dialog' | 'alertdialog';
   /** A CSS selector inside the dialog to focus first. Defaults to the heading. */
@@ -61,35 +54,18 @@ export class UiDialog {
     content: ComponentType<C> | TemplateRef<C>,
     config: UiDialogConfig<D> = {},
   ): DialogRef<R, C> {
-    const alert = config.role === 'alertdialog';
-    const dismissable = config.dismissable !== false;
-    // The CDK only turns Escape and the backdrop off together, so Escape is put back below.
-    const escapeOnly =
-      dismissable && (alert || config.closeOnBackdrop === false);
-    const ref = this.dialog.open<R, D, C>(content, {
+    return this.dialog.open<R, D, C>(content, {
       data: config.data,
       role: config.role ?? 'dialog',
-      disableClose: !dismissable || escapeOnly,
+      // An alert waits for one of its buttons: Escape and the backdrop do nothing.
+      disableClose:
+        config.role === 'alertdialog' || config.dismissable === false,
       backdropClass: 'ui-dialog-backdrop',
-      providers: [{ provide: CLOSE_BUTTON, useValue: dismissable && !alert }],
       autoFocus: config.initialFocus ?? 'first-heading',
       restoreFocus: true,
     });
-    if (escapeOnly) {
-      // The backdrop is ignored, but Escape still closes it (for an alert: "no answer").
-      ref.keydownEvents
-        .pipe(
-          filter((event) => event.key === 'Escape'),
-          take(1),
-        )
-        .subscribe(() => ref.close());
-    }
-    return ref;
   }
 }
-
-/** Whether <ui-dialog> shows its close button; set by UiDialog.open(). */
-const CLOSE_BUTTON = new InjectionToken<boolean>('ui-dialog close button');
 
 let nextId = 0;
 
@@ -122,7 +98,7 @@ let nextId = 0;
           </p>
         }
       </div>
-      @if (closable) {
+      @if (!ref.disableClose) {
         <button
           ui-button
           variant="ghost"
@@ -166,9 +142,6 @@ export class DialogComponent {
   readonly closeLabel = input('Close');
 
   protected readonly ref = inject(DialogRef);
-  /** Opened without UiDialog (the CDK directly): shown unless closing is off. */
-  protected readonly closable =
-    inject(CLOSE_BUTTON, { optional: true }) ?? !this.ref.disableClose;
   /** While the body scrolls it takes focus, so the keyboard can scroll it too. */
   protected readonly scrolls = signal(false);
   private readonly body = viewChild.required<ElementRef<HTMLElement>>('body');

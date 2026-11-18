@@ -16,7 +16,7 @@ import { PageComponent } from '../shared/page.component';
   template: `
     <app-page
       title="Alert dialog"
-      lead="A short message that needs an answer before the reader goes on: confirm a delete, keep or discard changes. A click outside does nothing, Escape answers 'no answer', and focus starts on the safest button."
+      lead="A short message that needs an answer before the reader goes on: confirm a delete, keep or discard changes. Only its buttons answer: Escape and a click outside do nothing, because the reader has to choose. Focus starts on the safest button."
       [usage]="usage"
     >
       <app-example
@@ -36,9 +36,11 @@ import { PageComponent } from '../shared/page.component';
             #nativeConfirm
             class="ui-dialog ui-dialog--sm ui-dialog--alert"
             role="alertdialog"
+            closedby="none"
+            (cancel)="$event.preventDefault()"
             aria-labelledby="doc-delete-title"
             aria-describedby="doc-delete-message"
-            (close)="answer.set(nativeConfirm.returnValue || 'no answer')"
+            (close)="answer.set(nativeConfirm.returnValue)"
           >
             <header class="ui-dialog__header">
               <span
@@ -177,6 +179,7 @@ private readonly alerts = inject(UiAlertDialog);`,
 const { alert, confirm, dialog } = useAlertDialog();
 // render {dialog} once in the component, then await alert() or confirm()`,
     html: `<dialog class="ui-dialog ui-dialog--sm ui-dialog--alert" role="alertdialog"
+  closedby="none" oncancel="event.preventDefault()"
   aria-labelledby="title" aria-describedby="message">...</dialog>`,
   };
 
@@ -209,6 +212,7 @@ return (
   </>
 );`,
     html: `<dialog class="ui-dialog ui-dialog--sm ui-dialog--alert" id="delete-file" role="alertdialog"
+  closedby="none" oncancel="event.preventDefault()"
   aria-labelledby="delete-title" aria-describedby="delete-message">
   <header class="ui-dialog__header">
     <span class="ui-dialog__icon ui-dialog__icon--danger" aria-hidden="true"><svg>...</svg></span>
@@ -222,7 +226,7 @@ return (
     <button class="ui-button ui-button--danger ui-button--md" value="delete">Delete</button>
   </form>
 </dialog>
-<!-- returnValue: "delete", "cancel", or "" on Escape. No closedby="any": a click outside must not answer. -->`,
+<!-- returnValue is "delete" or "cancel". closedby="none" turns Escape off; oncancel covers browsers without closedby. -->`,
   };
 
   protected readonly choices = {
@@ -236,7 +240,7 @@ return (
     { label: 'Save', value: 'save', variant: 'primary', initialFocus: true },
   ],
 });
-// 'discard' | 'stay' | 'save', or undefined on Escape`,
+// 'discard' | 'stay' | 'save'`,
     react: `const choice = await alert({
   title: 'Unsaved changes',
   message: 'You changed the delivery address. Save it before you leave?',
@@ -247,7 +251,7 @@ return (
     { label: 'Save', value: 'save', variant: 'primary', initialFocus: true },
   ],
 });
-// 'discard' | 'stay' | 'save', or undefined on Escape`,
+// 'discard' | 'stay' | 'save'`,
     html: `<form method="dialog" class="ui-dialog__actions">
   <button class="ui-button ui-button--danger ui-button--md" value="discard">Discard</button>
   <button class="ui-button ui-button--secondary ui-button--md" value="stay">Keep editing</button>
@@ -280,7 +284,7 @@ return (
       {
         name: 'alert(options)',
         type: 'Promise<R | undefined>',
-        description: 'The value of the pressed action, or undefined on Escape.',
+        description: 'The value of the pressed action.',
       },
       {
         name: 'confirm(options)',
@@ -327,7 +331,7 @@ return (
       {
         name: 'alert(options)',
         type: 'Promise<R | undefined>',
-        description: 'The value of the pressed action, or undefined on Escape.',
+        description: 'The value of the pressed action.',
       },
       {
         name: 'confirm(options)',

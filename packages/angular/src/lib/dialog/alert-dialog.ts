@@ -114,8 +114,8 @@ export class AlertDialogComponent<R> {
 }
 
 /**
- * Alert dialogs: a message that needs an answer. `role="alertdialog"`, a backdrop
- * click is ignored, Escape resolves `undefined`, and focus starts on the safest button.
+ * Alert dialogs: a message that needs an answer. `role="alertdialog"`, only its
+ * buttons answer (never Escape or a click outside), and focus starts on the safest button.
  *
  * ```ts
  * const choice = await inject(UiAlertDialog).alert({
@@ -131,7 +131,7 @@ export class AlertDialogComponent<R> {
 export class UiAlertDialog {
   private readonly dialog = inject(UiDialog);
 
-  /** Resolves with the value of the pressed action, or `undefined` on Escape. */
+  /** Resolves with the value of the pressed action; `undefined` only if the app closes it. */
   alert<R>(options: AlertOptions<R>): Promise<R | undefined> {
     const ref = this.dialog.open<R, AlertOptions<R>>(AlertDialogComponent, {
       data: options,
