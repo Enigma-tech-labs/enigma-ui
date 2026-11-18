@@ -29,6 +29,9 @@ let nextId = 0;
       [value]="value()"
       [disabled]="disabled()"
       [attr.autocomplete]="autocomplete()"
+      [attr.min]="min() ?? null"
+      [attr.max]="max() ?? null"
+      [attr.step]="step() ?? null"
       [attr.aria-invalid]="error() ? true : null"
       [attr.aria-describedby]="describedBy()"
       [attr.data-testid]="testId()"
@@ -47,9 +50,26 @@ let nextId = 0;
 })
 export class TextFieldComponent implements ControlValueAccessor {
   readonly label = input.required<string>();
+  /**
+   * `date`, `time` and `datetime-local` use the browser's own picker, in the reader's
+   * language and calendar. `number` writes a number (or `null`) to the form control.
+   */
   readonly type = input<
-    'text' | 'email' | 'password' | 'search' | 'tel' | 'url'
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'number'
+    | 'date'
+    | 'time'
+    | 'datetime-local'
   >('text');
+  /** Lowest and highest value for number, date and time fields (`'2026-01-31'` for a date). */
+  readonly min = input<string | number>();
+  readonly max = input<string | number>();
+  readonly step = input<string | number>();
   readonly hint = input<string>();
   readonly error = input<string>();
   readonly autocomplete = input<string>();
@@ -65,20 +85,21 @@ export class TextFieldComponent implements ControlValueAccessor {
         .join(' ') || null,
   );
 
-  private onChange: (value: string) => void = () => undefined;
+  private onChange: (value: string | number | null) => void = () => undefined;
   protected onTouched: () => void = () => undefined;
 
   protected update(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.value.set(value);
-    this.onChange(value);
+    if (this.type() !== 'number') this.onChange(value);
+    else this.onChange(value === '' ? null : Number(value));
   }
 
-  writeValue(value: string | null): void {
-    this.value.set(value ?? '');
+  writeValue(value: string | number | null): void {
+    this.value.set(value == null ? '' : String(value));
   }
 
-  registerOnChange(fn: (value: string) => void): void {
+  registerOnChange(fn: (value: string | number | null) => void): void {
     this.onChange = fn;
   }
 

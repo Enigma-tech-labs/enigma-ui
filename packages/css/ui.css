@@ -176,7 +176,10 @@
 .ui-button:focus-visible,
 .ui-input:focus-visible,
 .ui-select__trigger:focus-visible,
-.ui-listbox:focus-visible {
+.ui-listbox:focus-visible,
+.ui-check input:focus-visible,
+.ui-switch__input:focus-visible,
+.ui-file:focus-visible {
   outline: 3px solid var(--ui-focus);
   outline-offset: 2px;
 }
@@ -812,7 +815,210 @@ dialog.ui-dialog::backdrop {
   }
 }
 
+/*
+ * Checkbox and radio: the native inputs in the primary colour. The whole label is the
+ * hit area and at least 44px tall, so the small box is never the only target.
+ */
+.ui-check {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  inline-size: fit-content;
+  min-block-size: var(--ui-control-height);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.ui-check input {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  margin: 0;
+  accent-color: var(--ui-primary);
+  cursor: inherit;
+}
+.ui-check:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+/* The options of a radio group, one per line or side by side. */
+.ui-choices {
+  display: grid;
+}
+.ui-choices--inline {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--ui-space-6);
+}
+.ui-field--invalid .ui-choices {
+  padding-inline-start: var(--ui-space-3);
+  border-inline-start: 3px solid var(--ui-danger);
+}
+
+/*
+ * Switch: an on/off setting that applies at once. A checkbox with role="switch";
+ * the knob's side shows the state, so colour is never the only sign.
+ */
+.ui-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-4);
+  min-block-size: var(--ui-control-height);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.ui-switch__input {
+  appearance: none;
+  position: relative;
+  flex: none;
+  inline-size: 2.75rem;
+  block-size: 1.5rem;
+  margin: 0;
+  border: 2px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-surface);
+  cursor: inherit;
+  transition: background-color 120ms;
+}
+.ui-switch__input::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  inline-size: 1rem;
+  block-size: 1rem;
+  border-radius: 50%;
+  background: var(--ui-border);
+  transition: translate 120ms;
+}
+.ui-switch__input:checked {
+  border-color: var(--ui-primary);
+  background: var(--ui-primary);
+}
+.ui-switch__input:checked::before {
+  background: var(--ui-on-primary);
+  translate: 1.25rem 0;
+}
+.ui-switch__input:checked:dir(rtl)::before {
+  translate: -1.25rem 0;
+}
+.ui-switch:has(.ui-switch__input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+@media (forced-colors: active) {
+  .ui-switch__input {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+    background: Canvas;
+  }
+  .ui-switch__input::before {
+    background: CanvasText;
+  }
+  .ui-switch__input:checked {
+    border-color: Highlight;
+    background: Highlight;
+  }
+  .ui-switch__input:checked::before {
+    background: HighlightText;
+  }
+}
+
+/* Fieldset: a titled group of fields, such as an address inside a longer form. */
+.ui-fieldset {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-4);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--ui-text);
+}
+/* A legend sits outside the fieldset's grid, so it brings its own space. */
+.ui-fieldset__legend {
+  padding: 0 0 var(--ui-space-4);
+  font-size: var(--ui-text-lg);
+  font-weight: 600;
+}
+.ui-fieldset__legend + .ui-field__hint {
+  margin-block-start: calc(var(--ui-space-3) * -1);
+}
+
+/* Combobox: a text field that filters a list. The list is the select's .ui-listbox. */
+.ui-field--invalid .ui-input {
+  border-color: var(--ui-danger);
+  border-width: 2px;
+}
+.ui-listbox__empty {
+  margin: 0.25rem 0 0;
+  padding: var(--ui-space-3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  box-shadow: var(--ui-shadow);
+}
+
+/*
+ * File field: the native file input, so the picker, the chosen names and form submit
+ * all work as usual. The zone around it also takes files dropped on it.
+ */
+.ui-dropzone {
+  display: grid;
+  justify-items: start;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-4);
+  border: 2px dashed var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+.ui-dropzone--over {
+  border-style: solid;
+  border-color: var(--ui-focus);
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+}
+.ui-dropzone__text {
+  margin: 0;
+  color: var(--ui-text-muted);
+}
+.ui-dropzone--over .ui-dropzone__text {
+  color: inherit;
+}
+.ui-field--invalid .ui-dropzone {
+  border-color: var(--ui-danger);
+}
+.ui-file {
+  max-inline-size: 100%;
+  border-radius: var(--ui-radius);
+  color: inherit;
+  font: inherit;
+}
+.ui-file::file-selector-button {
+  min-block-size: var(--ui-control-height);
+  margin-inline-end: var(--ui-space-3);
+  padding-inline: 1rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-secondary);
+  color: var(--ui-on-secondary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ui-file:disabled,
+.ui-file:disabled::file-selector-button {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .ui-switch__input,
+  .ui-switch__input::before {
+    transition: none;
+  }
   .ui-dialog,
   .ui-dialog-backdrop,
   dialog.ui-dialog::backdrop {

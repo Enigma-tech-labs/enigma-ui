@@ -36,3 +36,9 @@ export type {
 export { pageSlots } from './lib/pagination/page-slots';
 export { PaginationComponent } from './lib/pagination/pagination.component';
 export type { PaginationLabels } from './lib/pagination/pagination.component';
+export { CheckboxComponent } from './lib/checkbox/checkbox.component';
+export { ComboboxComponent } from './lib/combobox/combobox.component';
+export { FieldsetComponent } from './lib/fieldset/fieldset.component';
+export { FileFieldComponent } from './lib/file-field/file-field.component';
+export { RadioGroupComponent } from './lib/radio-group/radio-group.component';
+export { SwitchComponent } from './lib/switch/switch.component';

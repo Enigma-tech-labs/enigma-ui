@@ -9,7 +9,18 @@ export interface TextFieldProps extends Omit<
 > {
   /** The visible label, tied to the input. */
   label: string;
-  type?: 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
+  /** `date`, `time` and `datetime-local` use the browser's own picker, in the reader's language and calendar. */
+  type?:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'url'
+    | 'number'
+    | 'date'
+    | 'time'
+    | 'datetime-local';
   /** Help text under the input, read with it. */
   hint?: string;
   /** The translated error. Marks the input invalid and announces the message. */

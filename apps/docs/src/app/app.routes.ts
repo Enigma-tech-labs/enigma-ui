@@ -103,5 +103,54 @@ export const appRoutes: Route[] = [
         (m) => m.PaginationPageComponent,
       ),
   },
+  {
+    path: 'components/checkbox',
+    loadComponent: () =>
+      import('./pages/checkbox-page.component').then(
+        (m) => m.CheckboxPageComponent,
+      ),
+  },
+  {
+    path: 'components/radio-group',
+    loadComponent: () =>
+      import('./pages/radio-group-page.component').then(
+        (m) => m.RadioGroupPageComponent,
+      ),
+  },
+  {
+    path: 'components/switch',
+    loadComponent: () =>
+      import('./pages/switch-page.component').then(
+        (m) => m.SwitchPageComponent,
+      ),
+  },
+  {
+    path: 'components/fieldset',
+    loadComponent: () =>
+      import('./pages/fieldset-page.component').then(
+        (m) => m.FieldsetPageComponent,
+      ),
+  },
+  {
+    path: 'components/combobox',
+    loadComponent: () =>
+      import('./pages/combobox-page.component').then(
+        (m) => m.ComboboxPageComponent,
+      ),
+  },
+  {
+    path: 'components/date-field',
+    loadComponent: () =>
+      import('./pages/date-field-page.component').then(
+        (m) => m.DateFieldPageComponent,
+      ),
+  },
+  {
+    path: 'components/file-field',
+    loadComponent: () =>
+      import('./pages/file-field-page.component').then(
+        (m) => m.FileFieldPageComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];
