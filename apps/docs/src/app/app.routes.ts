@@ -51,5 +51,22 @@ export const appRoutes: Route[] = [
         (m) => m.DialogPageComponent,
       ),
   },
+  {
+    path: 'components/badge',
+    loadComponent: () =>
+      import('./pages/badge-page.component').then((m) => m.BadgePageComponent),
+  },
+  {
+    path: 'components/card',
+    loadComponent: () =>
+      import('./pages/card-page.component').then((m) => m.CardPageComponent),
+  },
+  {
+    path: 'components/textarea',
+    loadComponent: () =>
+      import('./pages/textarea-page.component').then(
+        (m) => m.TextareaPageComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

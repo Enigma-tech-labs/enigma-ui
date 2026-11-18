@@ -102,10 +102,13 @@ export class AppComponent {
     {
       title: 'Components',
       links: [
+        { path: '/components/badge', label: 'Badge' },
         { path: '/components/button', label: 'Button' },
-        { path: '/components/text-field', label: 'Text field' },
-        { path: '/components/select', label: 'Select' },
+        { path: '/components/card', label: 'Card' },
         { path: '/components/dialog', label: 'Dialog' },
+        { path: '/components/select', label: 'Select' },
+        { path: '/components/text-field', label: 'Text field' },
+        { path: '/components/textarea', label: 'Textarea' },
       ],
     },
   ];

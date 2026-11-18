@@ -33,10 +33,13 @@ import { PageComponent } from '../shared/page.component';
           framework.
         </p>
         <ul class="doc-list">
+          <li><a routerLink="/components/badge">Badge</a></li>
           <li><a routerLink="/components/button">Button</a></li>
-          <li><a routerLink="/components/text-field">Text field</a></li>
-          <li><a routerLink="/components/select">Select</a></li>
+          <li><a routerLink="/components/card">Card</a></li>
           <li><a routerLink="/components/dialog">Dialog</a></li>
+          <li><a routerLink="/components/select">Select</a></li>
+          <li><a routerLink="/components/text-field">Text field</a></li>
+          <li><a routerLink="/components/textarea">Textarea</a></li>
         </ul>
       </section>
 

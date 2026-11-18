@@ -1,8 +1,14 @@
+export { Badge } from './lib/badge.js';
+export type { BadgeProps, BadgeVariant } from './lib/badge.js';
 export { Button } from './lib/button.js';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './lib/button.js';
-export { TextField } from './lib/text-field.js';
-export type { TextFieldProps } from './lib/text-field.js';
-export { Select } from './lib/select.js';
-export type { SelectOption, SelectProps } from './lib/select.js';
+export { Card } from './lib/card.js';
+export type { CardProps } from './lib/card.js';
 export { Dialog, DialogActions } from './lib/dialog.js';
 export type { DialogProps } from './lib/dialog.js';
+export { Select } from './lib/select.js';
+export type { SelectOption, SelectProps } from './lib/select.js';
+export { Textarea } from './lib/textarea.js';
+export type { TextareaProps } from './lib/textarea.js';
+export { TextField } from './lib/text-field.js';
+export type { TextFieldProps } from './lib/text-field.js';

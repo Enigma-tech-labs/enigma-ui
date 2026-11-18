@@ -297,6 +297,9 @@ code {
 .doc-field {
   inline-size: min(100%, 22rem);
 }
+.doc-flat {
+  margin: 0;
+}
 
 /* Code */
 .doc-code {
