@@ -39,6 +39,7 @@ import { PageComponent } from '../shared/page.component';
           <li><a routerLink="/components/card">Card</a></li>
           <li><a routerLink="/components/data-table">Data table</a></li>
           <li><a routerLink="/components/dialog">Dialog</a></li>
+          <li><a routerLink="/components/drawer">Drawer</a></li>
           <li><a routerLink="/components/pagination">Pagination</a></li>
           <li><a routerLink="/components/select">Select</a></li>
           <li><a routerLink="/components/text-field">Text field</a></li>

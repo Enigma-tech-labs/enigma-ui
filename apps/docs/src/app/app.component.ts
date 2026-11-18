@@ -108,6 +108,7 @@ export class AppComponent {
         { path: '/components/card', label: 'Card' },
         { path: '/components/data-table', label: 'Data table' },
         { path: '/components/dialog', label: 'Dialog' },
+        { path: '/components/drawer', label: 'Drawer' },
         { path: '/components/pagination', label: 'Pagination' },
         { path: '/components/select', label: 'Select' },
         { path: '/components/text-field', label: 'Text field' },

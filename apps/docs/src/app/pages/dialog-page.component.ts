@@ -62,6 +62,7 @@ const terms = [
           <dialog
             #nativeForm
             class="ui-dialog"
+            closedby="any"
             aria-labelledby="doc-address-title"
             aria-describedby="doc-address-description"
             (close)="answer.set(nativeForm.returnValue || 'cancel')"
@@ -133,6 +134,7 @@ const terms = [
           <dialog
             #nativeTerms
             class="ui-dialog ui-dialog--lg"
+            closedby="any"
             aria-labelledby="doc-terms-title"
           >
             <header class="ui-dialog__header">
@@ -218,7 +220,7 @@ export class DialogPageComponent {
   UiDialog,
 } from '@enigma-tech-lab/angular';`,
     react: `import { Dialog } from '@enigma-tech-lab/react';`,
-    html: `<dialog class="ui-dialog" aria-labelledby="title">...</dialog>
+    html: `<dialog class="ui-dialog" closedby="any" aria-labelledby="title">...</dialog>
 <!-- open it with dialog.showModal(), never show() -->`,
   };
 
@@ -266,7 +268,7 @@ edit(content: TemplateRef<unknown>) {
     html: `<button class="ui-button ui-button--primary ui-button--md" type="button"
   onclick="document.getElementById('edit-address').showModal()">Edit address</button>
 
-<dialog class="ui-dialog" id="edit-address"
+<dialog class="ui-dialog" closedby="any" id="edit-address"
   aria-labelledby="address-title" aria-describedby="address-description">
   <header class="ui-dialog__header">
     <div class="ui-dialog__heading">
@@ -306,7 +308,7 @@ edit(content: TemplateRef<unknown>) {
 >
   <p>...</p>
 </Dialog>`,
-    html: `<dialog class="ui-dialog ui-dialog--lg" aria-labelledby="terms-title">
+    html: `<dialog class="ui-dialog ui-dialog--lg" closedby="any" aria-labelledby="terms-title">
   <header class="ui-dialog__header">
     <div class="ui-dialog__heading">
       <h2 class="ui-dialog__title" id="terms-title">Terms of ordering</h2>
@@ -438,6 +440,12 @@ edit(content: TemplateRef<unknown>) {
         name: 'ui-dialog--sm | --lg',
         type: 'class',
         description: '24 or 48rem wide; 32rem without it.',
+      },
+      {
+        name: 'closedby="any"',
+        type: 'attribute',
+        description:
+          'A click outside closes it too, in browsers that support it; Escape always does.',
       },
       {
         name: 'aria-labelledby / aria-describedby',

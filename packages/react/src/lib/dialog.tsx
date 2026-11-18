@@ -12,6 +12,7 @@ import { cx } from './class-names.js';
 import { useOverflow } from './use-overflow.js';
 
 export type DialogSize = 'sm' | 'md' | 'lg';
+export type DialogVariant = 'default' | 'alert' | 'drawer';
 
 export interface DialogProps {
   /** The heading; it names the dialog. */
@@ -19,8 +20,12 @@ export interface DialogProps {
   /** A sentence under the title; screen readers read it with the title. */
   description?: string;
   size?: DialogSize;
-  /** `alert`: centred heading and actions, as in an alert dialog. */
-  variant?: 'default' | 'alert';
+  /**
+   * `alert`: centred heading and actions, as in an alert dialog.
+   * `drawer`: a full-height side panel on the inline end (left in Arabic), for forms
+   * and details next to a list.
+   */
+  variant?: DialogVariant;
   open: boolean;
   /** Called with `false` on Escape, a backdrop click or the close button. */
   onOpenChange: (open: boolean) => void;
@@ -93,7 +98,7 @@ export function Dialog({
           className={cx(
             'ui-dialog',
             size !== 'md' && `ui-dialog--${size}`,
-            variant === 'alert' && 'ui-dialog--alert',
+            variant !== 'default' && `ui-dialog--${variant}`,
           )}
           aria-describedby={description ? descriptionId : undefined}
         >

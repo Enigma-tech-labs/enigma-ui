@@ -56,6 +56,11 @@ describe('Dialog', () => {
     );
   });
 
+  it('opens as a drawer with the drawer variant', async () => {
+    const { dialog } = await open({ variant: 'drawer' });
+    expect(dialog.className).toBe('ui-dialog ui-dialog--lg ui-dialog--drawer');
+  });
+
   it('closes from the close button and returns focus to the opener', async () => {
     const { opener } = await open();
     await userEvent.click(screen.getByTestId('ui-dialog-close'));

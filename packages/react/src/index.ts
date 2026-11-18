@@ -13,7 +13,7 @@ export type {
   ConfirmOptions,
 } from './lib/alert-dialog.js';
 export { Dialog } from './lib/dialog.js';
-export type { DialogProps, DialogSize } from './lib/dialog.js';
+export type { DialogProps, DialogSize, DialogVariant } from './lib/dialog.js';
 export { Select } from './lib/select.js';
 export type { SelectOption, SelectProps } from './lib/select.js';
 export { Textarea } from './lib/textarea.js';

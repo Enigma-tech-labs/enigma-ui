@@ -107,12 +107,15 @@ for (const theme of ['light', 'dark']) {
     ['angular', 'components/dialog', 'Read the terms', 'dialog'],
     ['angular', 'components/alert-dialog', 'Delete file', 'alertdialog'],
     ['angular', 'components/alert-dialog', 'Leave the page', 'alertdialog'],
+    ['angular', 'components/drawer', 'Add building', 'dialog'],
+    ['angular', 'components/drawer', 'Add building in Arabic', 'dialog'],
     ['html', 'components/dialog', 'Edit address', 'dialog'],
+    ['html', 'components/drawer', 'Add building', 'dialog'],
     ['html', 'components/alert-dialog', 'Delete file', 'alertdialog'],
   ];
   for (const [framework, path, button, role] of states) {
     const { page, close } = await open(theme, framework, path);
-    await page.getByRole('button', { name: button }).click();
+    await page.getByRole('button', { name: button, exact: true }).click();
     await page.getByRole(role).waitFor();
     await audit(page, `${theme} ${framework} /${path}: "${button}" open`);
     audits++;

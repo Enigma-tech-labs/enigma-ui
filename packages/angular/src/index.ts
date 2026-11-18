@@ -15,7 +15,11 @@ export {
   DialogComponent,
   UiDialog,
 } from './lib/dialog/dialog';
-export type { DialogSize, UiDialogConfig } from './lib/dialog/dialog';
+export type {
+  DialogSize,
+  DialogVariant,
+  UiDialogConfig,
+} from './lib/dialog/dialog';
 export { SelectComponent } from './lib/select/select.component';
 export type { SelectOption } from './lib/select/select.component';
 export { TextareaComponent } from './lib/textarea/textarea.component';

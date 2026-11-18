@@ -52,6 +52,13 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/drawer',
+    loadComponent: () =>
+      import('./pages/drawer-page.component').then(
+        (m) => m.DrawerPageComponent,
+      ),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),

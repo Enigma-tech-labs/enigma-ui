@@ -728,6 +728,57 @@ dialog.ui-dialog::backdrop {
 [ui-dialog-actions] {
   display: contents;
 }
+
+/*
+ * Drawer: the same dialog, docked full height to the inline end (right in English,
+ * left in Arabic). It places itself, so the CDK pane, React Aria's modal and a native
+ * <dialog> all put it in the same spot.
+ */
+.ui-dialog--drawer {
+  --ui-drawer-from: 100%;
+  box-sizing: border-box;
+  position: fixed;
+  inset-block: 0;
+  inset-inline: auto 0;
+  inline-size: min(var(--ui-dialog-size), 100vw);
+  block-size: 100dvh;
+  max-inline-size: none;
+  max-block-size: none;
+  margin: 0;
+  border-radius: 0;
+  pointer-events: auto;
+  animation: ui-drawer-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/*
+ * When the dialog role sits on a wrapper (the Angular CDK container), the wrapper
+ * covers the screen so it keeps the drawer's area; clicks pass through to the backdrop.
+ */
+.ui-dialog-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.ui-dialog--drawer:dir(rtl) {
+  --ui-drawer-from: -100%;
+}
+.ui-dialog--drawer .ui-dialog__header {
+  padding-block-end: var(--ui-space-4);
+  border-block-end: 1px solid var(--ui-divider);
+}
+.ui-dialog--drawer .ui-dialog__body {
+  flex: 1;
+  align-content: start;
+  padding-block: var(--ui-space-6);
+}
+.ui-dialog--drawer .ui-dialog__actions {
+  padding-block-start: var(--ui-space-4);
+  border-block-start: 1px solid var(--ui-divider);
+}
+@keyframes ui-drawer-in {
+  from {
+    transform: translateX(var(--ui-drawer-from));
+  }
+}
 @keyframes ui-fade-in {
   from {
     opacity: 0;

@@ -18,6 +18,7 @@ import { filter, take } from 'rxjs';
 import { ButtonComponent } from '../button/button.component';
 
 export type DialogSize = 'sm' | 'md' | 'lg';
+export type DialogVariant = 'default' | 'alert' | 'drawer';
 
 export interface UiDialogConfig<D = unknown> {
   /** Passed to the content: `inject(DIALOG_DATA)` in a component, `let-data` in a template. */
@@ -140,8 +141,12 @@ export class DialogComponent {
   /** A sentence under the title; screen readers read it with the title. */
   readonly description = input<string>();
   readonly size = input<DialogSize>('md');
-  /** `alert`: centred heading and actions, as in an alert dialog. */
-  readonly variant = input<'default' | 'alert'>('default');
+  /**
+   * `alert`: centred heading and actions, as in an alert dialog.
+   * `drawer`: a full-height side panel on the inline end (left in Arabic), for forms
+   * and details next to a list.
+   */
+  readonly variant = input<DialogVariant>('default');
   /** Accessible name of the close button; pass the translated text. */
   readonly closeLabel = input('Close');
 
@@ -155,7 +160,7 @@ export class DialogComponent {
     [
       'ui-dialog',
       this.size() !== 'md' && `ui-dialog--${this.size()}`,
-      this.variant() === 'alert' && 'ui-dialog--alert',
+      this.variant() !== 'default' && `ui-dialog--${this.variant()}`,
     ]
       .filter(Boolean)
       .join(' '),
@@ -171,6 +176,9 @@ export class DialogComponent {
       if (this.description()) {
         container?.setAttribute('aria-describedby', this.descriptionId);
       }
+      // A drawer places itself, which would leave the container with no size.
+      if (this.variant() === 'drawer')
+        container?.classList.add('ui-dialog-frame');
       const body = this.body().nativeElement;
       const check = () =>
         this.scrolls.set(body.scrollHeight > body.clientHeight + 1);

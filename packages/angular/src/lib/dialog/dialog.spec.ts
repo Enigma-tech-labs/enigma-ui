@@ -150,4 +150,33 @@ describe('UiDialog', () => {
     expect(dialog.querySelector('h2')?.textContent).toBe('Hello Hatem');
     expect(dialog.textContent).toContain('From a template');
   });
+
+  it('opens as a drawer with the drawer variant', async () => {
+    const host = TestBed.createComponent(DrawerHost);
+    await host.whenStable();
+    TestBed.inject(UiDialog).open(host.componentInstance.tpl());
+    await stable();
+
+    const dialog = document.querySelector('[role="dialog"]')!;
+    const { classList } = dialog.querySelector('ui-dialog')!;
+    expect([...classList].sort()).toEqual([
+      'ui-dialog',
+      'ui-dialog--drawer',
+      'ui-dialog--lg',
+    ]);
+  });
 });
+
+@Component({
+  imports: [DialogComponent],
+  template: `
+    <ng-template #tpl>
+      <ui-dialog title="Add building" size="lg" variant="drawer">
+        <p>Form</p>
+      </ui-dialog>
+    </ng-template>
+  `,
+})
+class DrawerHost {
+  readonly tpl = viewChild.required<TemplateRef<unknown>>('tpl');
+}
