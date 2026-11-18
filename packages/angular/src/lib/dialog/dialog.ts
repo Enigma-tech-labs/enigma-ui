@@ -4,12 +4,15 @@ import {
   afterNextRender,
   Component,
   computed,
+  DestroyRef,
   Directive,
   ElementRef,
   inject,
   Injectable,
   input,
+  signal,
   TemplateRef,
+  viewChild,
 } from '@angular/core';
 import { filter, take } from 'rxjs';
 import { ButtonComponent } from '../button/button.component';
@@ -124,7 +127,9 @@ let nextId = 0;
         </button>
       }
     </header>
-    <div class="ui-dialog__body"><ng-content /></div>
+    <div #body class="ui-dialog__body" [attr.tabindex]="scrolls() ? 0 : null">
+      <ng-content />
+    </div>
     <footer class="ui-dialog__actions">
       <ng-content select="[ui-dialog-actions]" />
     </footer>
@@ -141,6 +146,9 @@ export class DialogComponent {
   readonly closeLabel = input('Close');
 
   protected readonly ref = inject(DialogRef);
+  /** While the body scrolls it takes focus, so the keyboard can scroll it too. */
+  protected readonly scrolls = signal(false);
+  private readonly body = viewChild.required<ElementRef<HTMLElement>>('body');
   protected readonly titleId = `ui-dialog-title-${nextId}`;
   protected readonly descriptionId = `ui-dialog-description-${nextId++}`;
   protected readonly classes = computed(() =>
@@ -155,6 +163,7 @@ export class DialogComponent {
 
   constructor() {
     const host: HTMLElement = inject(ElementRef).nativeElement;
+    const destroyRef = inject(DestroyRef);
     // Name and describe the CDK dialog container after this heading and description.
     afterNextRender(() => {
       const container = host.closest('[role="dialog"], [role="alertdialog"]');
@@ -162,6 +171,15 @@ export class DialogComponent {
       if (this.description()) {
         container?.setAttribute('aria-describedby', this.descriptionId);
       }
+      const body = this.body().nativeElement;
+      const check = () =>
+        this.scrolls.set(body.scrollHeight > body.clientHeight + 1);
+      check();
+      if (typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver(check);
+      observer.observe(body);
+      Array.from(body.children).forEach((child) => observer.observe(child));
+      destroyRef.onDestroy(() => observer.disconnect());
     });
   }
 }

@@ -1,6 +1,7 @@
 name: CI
 
-# Every push and pull request: lint, test and build the packages and the docs site.
+# Every push and pull request: lint, test and build the packages and the docs site,
+# then audit the docs site for accessibility.
 # Pushes to main also publish the docs site to GitHub Pages
 # (one-time setup: Settings > Pages > Build and deployment > Source: GitHub Actions).
 on:
@@ -34,6 +35,9 @@ jobs:
       # The docs site lives under /enigma-ui/ on Pages; 404.html lets deep links load the app.
       - run: pnpm nx build docs --base-href=/enigma-ui/ --skip-nx-cache
       - run: cp dist/apps/docs/browser/index.html dist/apps/docs/browser/404.html
+      # Accessibility: axe (WCAG 2.2 AA + best practice) on the site as it will be published.
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: node tools/a11y.mjs
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:

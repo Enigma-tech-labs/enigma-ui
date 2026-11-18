@@ -73,6 +73,12 @@
         "staticFilePath": "dist/apps/docs/browser",
         "spa": true
       }
+    },
+    "a11y": {
+      "command": "node tools/a11y.mjs",
+      "dependsOn": ["build"],
+      "inputs": ["production", "^production", "{workspaceRoot}/tools/a11y.mjs"],
+      "cache": true
     }
   },
   "implicitDependencies": ["css", "angular"]

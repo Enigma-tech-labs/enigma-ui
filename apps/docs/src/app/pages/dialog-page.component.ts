@@ -142,7 +142,7 @@ const terms = [
                 </h2>
               </div>
             </header>
-            <div class="ui-dialog__body">
+            <div class="ui-dialog__body" tabindex="0">
               @for (paragraph of terms; track $index) {
                 <p>{{ paragraph }}</p>
                 <p>{{ paragraph }}</p>
@@ -312,7 +312,8 @@ edit(content: TemplateRef<unknown>) {
       <h2 class="ui-dialog__title" id="terms-title">Terms of ordering</h2>
     </div>
   </header>
-  <div class="ui-dialog__body">
+  <!-- tabindex="0": text-only content that scrolls must take focus, so the keyboard can scroll it -->
+  <div class="ui-dialog__body" tabindex="0">
     <p>...</p>
   </div>
   <form method="dialog" class="ui-dialog__actions">

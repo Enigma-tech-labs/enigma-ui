@@ -25,6 +25,7 @@ Every value comes from the Enigma brand book:
 - **Type.** IBM Plex Sans and IBM Plex Sans Arabic for body text, Archivo Expanded and Alexandria for headlines, IBM Plex Mono for labels. The font files ship in the package (SIL Open Font License). Arabic is never letter-spaced.
 - **Light and dark.** Every colour is a `light-dark()` pair. The theme follows the user's system setting; set `data-theme="light"` or `"dark"` on any ancestor to force one.
 - **Measured contrast.** A unit test reads `ui.css` and fails if any text pair falls under 7:1, or any border or focus ring under 3:1, in either theme.
+- **Audited on every push.** CI runs axe (WCAG 2.2 AA and best practice) on every docs page, in both themes and every framework view, with dialogs, alerts and lists open. Any problem fails the build.
 - **Right to left without a second stylesheet.** All spacing and alignment use logical properties, so `dir="rtl"` is enough.
 
 ## Use it
@@ -74,9 +75,10 @@ pnpm nx serve docs           # the docs site on http://localhost:4200
 pnpm nx run-many -t test     # Vitest, including the contrast check
 pnpm nx run-many -t lint     # ESLint, including the Angular template accessibility rules
 pnpm nx build angular        # package into dist/packages/angular
+pnpm nx a11y docs            # accessibility audit of the built docs site (axe, WCAG 2.2 AA)
 ```
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org), checked by commitlint on every commit. CI runs lint, test and build on every push and pull request, and publishes the docs site from `main`.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org), checked by commitlint on every commit. CI runs lint, test, build and the accessibility audit on every push and pull request, and publishes the docs site from `main`.
 
 ## Release
 
