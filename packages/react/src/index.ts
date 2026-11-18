@@ -52,3 +52,9 @@ export type {
 } from './lib/loading.js';
 export { ToastProvider, useToast } from './lib/toast.js';
 export type { ToastOptions, ToastProviderProps } from './lib/toast.js';
+export { Menu } from './lib/menu.js';
+export type { MenuAction, MenuProps } from './lib/menu.js';
+export { Breadcrumbs, Nav } from './lib/nav.js';
+export type { BreadcrumbsProps, NavProps } from './lib/nav.js';
+export { Tabs } from './lib/tabs.js';
+export type { TabItem, TabsProps } from './lib/tabs.js';

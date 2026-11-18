@@ -127,17 +127,46 @@ for (const theme of ['light', 'dark']) {
     await close();
   }
 
-  // The CDK puts popup lists at the end of <body>, outside any landmark. That is how
-  // overlays work and the list is announced through its button, so `region` is off here.
-  const { page, close } = await open(theme, 'angular', 'components/select');
-  await page.getByRole('button', { name: /City/ }).first().click();
-  await page.getByRole('listbox').waitFor();
-  await page.keyboard.press('ArrowDown');
-  await audit(page, `${theme} angular /components/select: list open`, {
-    disableRules: ['region'],
-  });
-  audits++;
-  await close();
+  // The CDK puts popups at the end of <body>, outside any landmark. That is how overlays
+  // work and each popup is announced through the control that opens it, so `region` is off here.
+  const popups = [
+    [
+      'components/select',
+      async (page) => {
+        await page.getByRole('button', { name: /City/ }).first().click();
+        await page.getByRole('listbox').waitFor();
+        await page.keyboard.press('ArrowDown');
+      },
+    ],
+    [
+      'components/combobox',
+      async (page) => {
+        await page
+          .getByRole('combobox', { name: 'Country', exact: true })
+          .fill('u');
+        await page.getByRole('listbox').waitFor();
+        await page.keyboard.press('ArrowDown');
+      },
+    ],
+    [
+      'components/menu',
+      async (page) => {
+        await page
+          .getByRole('button', { name: 'Actions', exact: true })
+          .click();
+        await page.getByRole('menu').waitFor();
+      },
+    ],
+  ];
+  for (const [path, openPopup] of popups) {
+    const { page, close } = await open(theme, 'angular', path);
+    await openPopup(page);
+    await audit(page, `${theme} angular /${path}: popup open`, {
+      disableRules: ['region'],
+    });
+    audits++;
+    await close();
+  }
 }
 
 await browser.close();

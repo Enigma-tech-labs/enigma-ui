@@ -48,3 +48,10 @@ export { SkeletonComponent } from './lib/skeleton/skeleton.component';
 export { SpinnerComponent } from './lib/spinner/spinner.component';
 export { ToastRegionComponent, UiToast } from './lib/toast/toast';
 export type { Toast, ToastOptions } from './lib/toast/toast';
+export {
+  MenuComponent,
+  MenuItemComponent,
+  MenuTriggerDirective,
+} from './lib/menu/menu';
+export { BreadcrumbsComponent, NavComponent } from './lib/nav/nav.component';
+export { TabComponent, TabsComponent } from './lib/tabs/tabs.component';

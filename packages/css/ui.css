@@ -1223,6 +1223,204 @@ dialog.ui-dialog::backdrop {
   }
 }
 
+/*
+ * Tabs: views of one thing side by side, such as an order's details and history.
+ * The chosen tab gets a bar and full-strength text, not only a colour.
+ */
+.ui-tabs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-4);
+}
+.ui-tabs__list {
+  display: flex;
+  gap: var(--ui-space-1);
+  overflow-x: auto;
+  border-block-end: 1px solid var(--ui-divider);
+}
+.ui-tab {
+  flex: none;
+  min-block-size: var(--ui-control-height);
+  padding-inline: var(--ui-space-4);
+  border: 0;
+  border-block-end: 3px solid transparent;
+  background: none;
+  color: var(--ui-text-muted);
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ui-tab:hover {
+  color: var(--ui-text);
+}
+.ui-tab[aria-selected='true'] {
+  border-block-end-color: var(--ui-primary);
+  color: var(--ui-text);
+}
+.ui-tab:disabled,
+.ui-tab[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ui-tab:focus-visible,
+.ui-tabs__panel:focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: -3px;
+}
+@media (forced-colors: active) {
+  .ui-tab {
+    border-block-end-color: Canvas;
+  }
+  .ui-tab[aria-selected='true'] {
+    border-block-end-color: Highlight;
+  }
+}
+
+/* Breadcrumbs: where the page sits. The last item is the page itself, not a link. */
+.ui-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-1) var(--ui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ui-text-muted);
+}
+.ui-breadcrumbs li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+}
+/* The slash is drawn, not read: screen readers already hear a list. */
+.ui-breadcrumbs li + li::before {
+  content: '/';
+  content: '/' / '';
+}
+.ui-breadcrumbs a {
+  color: var(--ui-primary);
+  text-underline-offset: 0.2em;
+}
+.ui-breadcrumbs a:focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+.ui-breadcrumbs [aria-current='page'] {
+  color: var(--ui-text);
+  font-weight: 600;
+}
+
+/* Menu: a list of actions that opens from a button. */
+.ui-menu {
+  display: grid;
+  min-inline-size: 12rem;
+  margin-block: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  box-shadow: var(--ui-shadow);
+}
+.ui-menu:focus {
+  outline: none;
+}
+.ui-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  inline-size: 100%;
+  min-block-size: var(--ui-control-height);
+  padding-inline: 0.75rem;
+  border: 0;
+  border-radius: calc(var(--ui-radius) - 0.125rem);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+}
+.ui-menu__item--danger {
+  color: var(--ui-danger);
+}
+.ui-menu__item:hover,
+.ui-menu__item:focus {
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+}
+.ui-menu__item:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: -2px;
+}
+.ui-menu__item:disabled,
+.ui-menu__item[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ui-menu__separator {
+  block-size: 1px;
+  margin: 0.25rem;
+  background: var(--ui-divider);
+}
+
+/*
+ * Navigation: the app's main links, in a side bar. The current page gets a bar on its
+ * inline start and bold text, not only a fill. On a phone, put it in a drawer.
+ */
+.ui-nav,
+.ui-nav ul {
+  display: grid;
+  gap: var(--ui-space-1);
+}
+.ui-nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-nav__title {
+  margin: var(--ui-space-4) 0 var(--ui-space-1);
+  padding-inline: var(--ui-space-3);
+  color: var(--ui-text-muted);
+}
+.ui-nav__title:first-child {
+  margin-block-start: 0;
+}
+.ui-nav a {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  min-block-size: var(--ui-control-height);
+  padding-inline: var(--ui-space-3);
+  border-inline-start: 3px solid transparent;
+  border-radius: var(--ui-radius);
+  color: var(--ui-text);
+  text-decoration: none;
+}
+.ui-nav a:hover {
+  background: var(--ui-secondary);
+  color: var(--ui-on-secondary);
+}
+.ui-nav a:focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: -3px;
+}
+.ui-nav a[aria-current='page'] {
+  border-inline-start-color: var(--ui-primary);
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+  font-weight: 600;
+}
+@media (forced-colors: active) {
+  .ui-nav a {
+    border-inline-start-color: Canvas;
+  }
+  .ui-nav a[aria-current='page'] {
+    border-inline-start-color: Highlight;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ui-toast,
   .ui-skeleton__shape,

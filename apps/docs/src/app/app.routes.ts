@@ -183,5 +183,27 @@ export const appRoutes: Route[] = [
         (m) => m.SkeletonPageComponent,
       ),
   },
+  {
+    path: 'components/tabs',
+    loadComponent: () =>
+      import('./pages/tabs-page.component').then((m) => m.TabsPageComponent),
+  },
+  {
+    path: 'components/breadcrumbs',
+    loadComponent: () =>
+      import('./pages/breadcrumbs-page.component').then(
+        (m) => m.BreadcrumbsPageComponent,
+      ),
+  },
+  {
+    path: 'components/menu',
+    loadComponent: () =>
+      import('./pages/menu-page.component').then((m) => m.MenuPageComponent),
+  },
+  {
+    path: 'components/nav',
+    loadComponent: () =>
+      import('./pages/nav-page.component').then((m) => m.NavPageComponent),
+  },
   { path: '**', redirectTo: '' },
 ];
