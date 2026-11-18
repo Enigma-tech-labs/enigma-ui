@@ -105,12 +105,15 @@ for (const theme of ['light', 'dark']) {
   const states = [
     ['angular', 'components/dialog', 'Edit address', 'dialog'],
     ['angular', 'components/dialog', 'Read the terms', 'dialog'],
+    ['angular', 'components/dialog', 'Write a note', 'dialog'],
     ['angular', 'components/alert-dialog', 'Delete file', 'alertdialog'],
     ['angular', 'components/alert-dialog', 'Leave the page', 'alertdialog'],
     ['angular', 'components/drawer', 'Add building', 'dialog'],
     ['angular', 'components/drawer', 'Add building in Arabic', 'dialog'],
     ['html', 'components/dialog', 'Edit address', 'dialog'],
     ['html', 'components/drawer', 'Add building', 'dialog'],
+    ['angular', 'components/bottom-sheet', 'Order 1042', 'dialog'],
+    ['html', 'components/bottom-sheet', 'Order 1042', 'dialog'],
     ['html', 'components/alert-dialog', 'Delete file', 'alertdialog'],
   ];
   for (const [framework, path, button, role] of states) {

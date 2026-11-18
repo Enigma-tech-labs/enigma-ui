@@ -12,7 +12,7 @@ import { cx } from './class-names.js';
 import { useOverflow } from './use-overflow.js';
 
 export type DialogSize = 'sm' | 'md' | 'lg';
-export type DialogVariant = 'default' | 'alert' | 'drawer';
+export type DialogVariant = 'default' | 'alert' | 'drawer' | 'sheet';
 
 export interface DialogProps {
   /** The heading; it names the dialog. */
@@ -24,6 +24,7 @@ export interface DialogProps {
    * `alert`: centred heading and actions, as in an alert dialog.
    * `drawer`: a full-height side panel on the inline end (left in Arabic), for forms
    * and details next to a list.
+   * `sheet`: a bottom sheet, for a short choice or details on a phone.
    */
   variant?: DialogVariant;
   open: boolean;
@@ -34,6 +35,11 @@ export interface DialogProps {
    * button is hidden. The content must then offer its own way out.
    */
   dismissable?: boolean;
+  /**
+   * `false`: a click on the backdrop no longer closes it; Escape and the close button
+   * still do. For a form that must not be lost to a stray click.
+   */
+  closeOnBackdrop?: boolean;
   /**
    * `'alertdialog'` for a message that needs an answer: a backdrop click is ignored,
    * the close button is hidden, and Escape still calls `onOpenChange(false)`.
@@ -71,6 +77,7 @@ export function Dialog({
   open,
   onOpenChange,
   dismissable = true,
+  closeOnBackdrop = true,
   role = 'dialog',
   closeLabel = 'Close',
   icon,
@@ -88,7 +95,7 @@ export function Dialog({
       className="ui-dialog-backdrop"
       isOpen={open}
       onOpenChange={onOpenChange}
-      isDismissable={closable}
+      isDismissable={closable && closeOnBackdrop}
       // An alert ignores the backdrop, but Escape still means "no answer".
       isKeyboardDismissDisabled={!closable && !alert}
     >

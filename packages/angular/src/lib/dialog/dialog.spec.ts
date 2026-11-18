@@ -8,7 +8,12 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ButtonComponent } from '../button/button.component';
-import { DialogCloseDirective, DialogComponent, UiDialog } from './dialog';
+import {
+  DialogCloseDirective,
+  DialogComponent,
+  UiDialog,
+  type DialogVariant,
+} from './dialog';
 
 @Component({
   imports: [DialogComponent, ButtonComponent, DialogCloseDirective],
@@ -138,6 +143,21 @@ describe('UiDialog', () => {
     expect(document.querySelector('[role="dialog"]')).not.toBeNull();
   });
 
+  it('ignores the backdrop when closeOnBackdrop is false, but not Escape', async () => {
+    const { dialog, results } = await open({ closeOnBackdrop: false });
+    expect(
+      dialog.querySelector('[data-testid="ui-dialog-close"]'),
+    ).not.toBeNull();
+
+    document.querySelector<HTMLElement>('.cdk-overlay-backdrop')!.click();
+    await stable();
+    expect(results).toEqual([]);
+
+    escape();
+    await stable();
+    expect(results).toEqual([undefined]);
+  });
+
   it('opens a template, passing the data to it', async () => {
     const host = TestBed.createComponent(TemplateHost);
     await host.whenStable();
@@ -151,19 +171,27 @@ describe('UiDialog', () => {
     expect(dialog.textContent).toContain('From a template');
   });
 
-  it('opens as a drawer with the drawer variant', async () => {
-    const host = TestBed.createComponent(DrawerHost);
-    await host.whenStable();
-    TestBed.inject(UiDialog).open(host.componentInstance.tpl());
-    await stable();
+  it.each<DialogVariant>(['drawer', 'sheet'])(
+    'docks to the edge as a %s, with the container covering the screen',
+    async (variant) => {
+      const host = TestBed.createComponent(DockedHost);
+      host.componentInstance.variant = variant;
+      await host.whenStable();
+      TestBed.inject(UiDialog).open(host.componentInstance.tpl());
+      await stable();
 
-    const dialog = document.querySelector('[role="dialog"]')!;
-    const { classList } = dialog.querySelector('ui-dialog')!;
-    expect([...classList].sort()).toEqual([
-      'ui-dialog',
-      'ui-dialog--drawer',
-      'ui-dialog--lg',
-    ]);
+      const dialog = document.querySelector('[role="dialog"]')!;
+      const { classList } = dialog.querySelector('ui-dialog')!;
+      expect([...classList].sort()).toEqual(
+        ['ui-dialog', `ui-dialog--${variant}`, 'ui-dialog--lg'].sort(),
+      );
+      expect(dialog.classList).toContain('ui-dialog-frame');
+    },
+  );
+
+  it('leaves the container of a centred dialog alone', async () => {
+    const { dialog } = await open();
+    expect(dialog.classList).not.toContain('ui-dialog-frame');
   });
 });
 
@@ -171,12 +199,13 @@ describe('UiDialog', () => {
   imports: [DialogComponent],
   template: `
     <ng-template #tpl>
-      <ui-dialog title="Add building" size="lg" variant="drawer">
+      <ui-dialog title="Add building" size="lg" [variant]="variant">
         <p>Form</p>
       </ui-dialog>
     </ng-template>
   `,
 })
-class DrawerHost {
+class DockedHost {
+  variant: DialogVariant = 'drawer';
   readonly tpl = viewChild.required<TemplateRef<unknown>>('tpl');
 }

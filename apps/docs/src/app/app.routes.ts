@@ -52,6 +52,13 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/bottom-sheet',
+    loadComponent: () =>
+      import('./pages/bottom-sheet-page.component').then(
+        (m) => m.BottomSheetPageComponent,
+      ),
+  },
+  {
     path: 'components/drawer',
     loadComponent: () =>
       import('./pages/drawer-page.component').then(

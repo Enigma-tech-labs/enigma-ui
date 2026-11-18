@@ -4,8 +4,10 @@ import {
   ButtonComponent,
   DialogCloseDirective,
   DialogComponent,
+  TextareaComponent,
   TextFieldComponent,
   UiDialog,
+  type UiDialogConfig,
 } from '@enigma-tech-lab/angular';
 import { ApiTableComponent } from '../shared/api-table.component';
 import { DocsSettings } from '../shared/docs-settings';
@@ -31,6 +33,7 @@ const terms = [
     ButtonComponent,
     DialogComponent,
     DialogCloseDirective,
+    TextareaComponent,
     TextFieldComponent,
     RouterLink,
   ],
@@ -168,6 +171,66 @@ const terms = [
         }
       </app-example>
 
+      <app-example
+        title="Ignore clicks outside"
+        description="For a form that a stray click must not throw away: a click on the backdrop does nothing, while Escape and the close button still close it. Works the same on a drawer and a bottom sheet."
+        [code]="backdrop"
+      >
+        @if (html()) {
+          <button
+            class="ui-button ui-button--secondary ui-button--md"
+            type="button"
+            (click)="nativeLocked.showModal()"
+          >
+            Write a note
+          </button>
+          <dialog
+            #nativeLocked
+            class="ui-dialog"
+            aria-labelledby="doc-note-title"
+          >
+            <header class="ui-dialog__header">
+              <div class="ui-dialog__heading">
+                <h2 class="ui-dialog__title" id="doc-note-title">
+                  Note for the driver
+                </h2>
+              </div>
+            </header>
+            <form method="dialog">
+              <div class="ui-dialog__body">
+                <div class="ui-field">
+                  <label class="ui-field__label" for="doc-note">Note</label>
+                  <textarea class="ui-input" id="doc-note" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="ui-dialog__actions">
+                <button
+                  class="ui-button ui-button--secondary ui-button--md"
+                  value="cancel"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="ui-button ui-button--primary ui-button--md"
+                  value="save"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </dialog>
+        } @else {
+          <button
+            ui-button
+            variant="secondary"
+            type="button"
+            (click)="open(noteDialog, { closeOnBackdrop: false })"
+          >
+            Write a note
+          </button>
+        }
+      </app-example>
+
       <app-api-table [rows]="api" />
     </app-page>
 
@@ -178,6 +241,18 @@ const terms = [
       >
         <ui-text-field label="Street" />
         <ui-text-field label="Building" />
+        <div ui-dialog-actions>
+          <button ui-button variant="secondary" type="button" uiDialogClose>
+            Cancel
+          </button>
+          <button ui-button type="button" [uiDialogClose]="'save'">Save</button>
+        </div>
+      </ui-dialog>
+    </ng-template>
+
+    <ng-template #noteDialog>
+      <ui-dialog title="Note for the driver">
+        <ui-textarea label="Note" />
         <div ui-dialog-actions>
           <button ui-button variant="secondary" type="button" uiDialogClose>
             Cancel
@@ -207,9 +282,12 @@ export class DialogPageComponent {
   protected readonly answer = signal('');
   protected readonly html = () => this.settings.framework() === 'html';
 
-  protected open(content: TemplateRef<unknown>): void {
+  protected open(
+    content: TemplateRef<unknown>,
+    config: UiDialogConfig = {},
+  ): void {
     this.dialog
-      .open<string>(content)
+      .open<string>(content, config)
       .closed.subscribe((result) => this.answer.set(result ?? 'cancel'));
   }
 
@@ -292,6 +370,16 @@ edit(content: TemplateRef<unknown>) {
 <!-- after it closes, dialog.returnValue is "save", "cancel", or "" (Escape) -->`,
   };
 
+  protected readonly backdrop = {
+    angular: `this.dialog.open(content, { closeOnBackdrop: false });
+// a drawer or sheet too: the variant lives on <ui-dialog>, the option on open()`,
+    react: `<Dialog closeOnBackdrop={false} title="Note for the driver" open={open} onOpenChange={setOpen}>
+  ...
+</Dialog>`,
+    html: `<!-- Leave out closedby="any": a native dialog then ignores clicks outside, and Escape still closes it -->
+<dialog class="ui-dialog" aria-labelledby="note-title">...</dialog>`,
+  };
+
   protected readonly long = {
     angular: `<ui-dialog title="Terms of ordering" size="lg">
   <p>...</p>
@@ -344,6 +432,13 @@ edit(content: TemplateRef<unknown>) {
         default: 'true',
         description:
           'false: Escape and the backdrop no longer close it, and the close button is hidden.',
+      },
+      {
+        name: 'config.closeOnBackdrop',
+        type: 'boolean',
+        default: 'true',
+        description:
+          'false: a click on the backdrop does nothing; Escape and the close button still close it.',
       },
       {
         name: 'config.initialFocus',
@@ -422,6 +517,13 @@ edit(content: TemplateRef<unknown>) {
           'false: Escape and the backdrop no longer close it, and the close button is hidden.',
       },
       {
+        name: 'closeOnBackdrop',
+        type: 'boolean',
+        default: 'true',
+        description:
+          'false: a click on the backdrop does nothing; Escape and the close button still close it.',
+      },
+      {
         name: 'closeLabel',
         type: 'string',
         default: "'Close'",
@@ -445,7 +547,7 @@ edit(content: TemplateRef<unknown>) {
         name: 'closedby="any"',
         type: 'attribute',
         description:
-          'A click outside closes it too, in browsers that support it; Escape always does.',
+          'A click outside closes it too, in browsers that support it; Escape always does. Leave it out to ignore clicks outside.',
       },
       {
         name: 'aria-labelledby / aria-describedby',

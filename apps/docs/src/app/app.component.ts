@@ -104,6 +104,7 @@ export class AppComponent {
       links: [
         { path: '/components/alert-dialog', label: 'Alert dialog' },
         { path: '/components/badge', label: 'Badge' },
+        { path: '/components/bottom-sheet', label: 'Bottom sheet' },
         { path: '/components/button', label: 'Button' },
         { path: '/components/card', label: 'Card' },
         { path: '/components/data-table', label: 'Data table' },

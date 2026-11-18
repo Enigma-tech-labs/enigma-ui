@@ -9,6 +9,7 @@ import {
   ElementRef,
   inject,
   Injectable,
+  InjectionToken,
   input,
   signal,
   TemplateRef,
@@ -18,7 +19,7 @@ import { filter, take } from 'rxjs';
 import { ButtonComponent } from '../button/button.component';
 
 export type DialogSize = 'sm' | 'md' | 'lg';
-export type DialogVariant = 'default' | 'alert' | 'drawer';
+export type DialogVariant = 'default' | 'alert' | 'drawer' | 'sheet';
 
 export interface UiDialogConfig<D = unknown> {
   /** Passed to the content: `inject(DIALOG_DATA)` in a component, `let-data` in a template. */
@@ -28,6 +29,11 @@ export interface UiDialogConfig<D = unknown> {
    * button is hidden. The content must then offer its own way out.
    */
   dismissable?: boolean;
+  /**
+   * `false`: a click on the backdrop no longer closes it; Escape and the close button
+   * still do. For a form that must not be lost to a stray click.
+   */
+  closeOnBackdrop?: boolean;
   /**
    * `'alertdialog'` for a message that needs an answer: a backdrop click is ignored,
    * the close button is hidden, and Escape closes it with no result.
@@ -56,16 +62,21 @@ export class UiDialog {
     config: UiDialogConfig<D> = {},
   ): DialogRef<R, C> {
     const alert = config.role === 'alertdialog';
+    const dismissable = config.dismissable !== false;
+    // The CDK only turns Escape and the backdrop off together, so Escape is put back below.
+    const escapeOnly =
+      dismissable && (alert || config.closeOnBackdrop === false);
     const ref = this.dialog.open<R, D, C>(content, {
       data: config.data,
       role: config.role ?? 'dialog',
-      disableClose: alert || config.dismissable === false,
+      disableClose: !dismissable || escapeOnly,
       backdropClass: 'ui-dialog-backdrop',
+      providers: [{ provide: CLOSE_BUTTON, useValue: dismissable && !alert }],
       autoFocus: config.initialFocus ?? 'first-heading',
       restoreFocus: true,
     });
-    if (alert) {
-      // An alert ignores the backdrop, but Escape still means "no answer".
+    if (escapeOnly) {
+      // The backdrop is ignored, but Escape still closes it (for an alert: "no answer").
       ref.keydownEvents
         .pipe(
           filter((event) => event.key === 'Escape'),
@@ -76,6 +87,9 @@ export class UiDialog {
     return ref;
   }
 }
+
+/** Whether <ui-dialog> shows its close button; set by UiDialog.open(). */
+const CLOSE_BUTTON = new InjectionToken<boolean>('ui-dialog close button');
 
 let nextId = 0;
 
@@ -108,7 +122,7 @@ let nextId = 0;
           </p>
         }
       </div>
-      @if (!ref.disableClose) {
+      @if (closable) {
         <button
           ui-button
           variant="ghost"
@@ -145,12 +159,16 @@ export class DialogComponent {
    * `alert`: centred heading and actions, as in an alert dialog.
    * `drawer`: a full-height side panel on the inline end (left in Arabic), for forms
    * and details next to a list.
+   * `sheet`: a bottom sheet, for a short choice or details on a phone.
    */
   readonly variant = input<DialogVariant>('default');
   /** Accessible name of the close button; pass the translated text. */
   readonly closeLabel = input('Close');
 
   protected readonly ref = inject(DialogRef);
+  /** Opened without UiDialog (the CDK directly): shown unless closing is off. */
+  protected readonly closable =
+    inject(CLOSE_BUTTON, { optional: true }) ?? !this.ref.disableClose;
   /** While the body scrolls it takes focus, so the keyboard can scroll it too. */
   protected readonly scrolls = signal(false);
   private readonly body = viewChild.required<ElementRef<HTMLElement>>('body');
@@ -176,8 +194,8 @@ export class DialogComponent {
       if (this.description()) {
         container?.setAttribute('aria-describedby', this.descriptionId);
       }
-      // A drawer places itself, which would leave the container with no size.
-      if (this.variant() === 'drawer')
+      // A drawer or sheet places itself, which would leave the container with no size.
+      if (this.variant() === 'drawer' || this.variant() === 'sheet')
         container?.classList.add('ui-dialog-frame');
       const body = this.body().nativeElement;
       const check = () =>

@@ -730,53 +730,74 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
- * Drawer: the same dialog, docked full height to the inline end (right in English,
- * left in Arabic). It places itself, so the CDK pane, React Aria's modal and a native
- * <dialog> all put it in the same spot.
+ * Drawer and bottom sheet: the same dialog, docked to an edge. They place themselves,
+ * so the CDK pane, React Aria's modal and a native <dialog> all put them in the same spot.
+ * Drawer: full height on the inline end (right in English, left in Arabic).
+ * Sheet: from the bottom, as tall as its content up to 85% of the screen.
  */
-.ui-dialog--drawer {
-  --ui-drawer-from: 100%;
+.ui-dialog--drawer,
+.ui-dialog--sheet {
   box-sizing: border-box;
   position: fixed;
+  max-inline-size: none;
+  margin: 0;
+  pointer-events: auto;
+}
+.ui-dialog--drawer {
+  --ui-drawer-from: 100%;
   inset-block: 0;
   inset-inline: auto 0;
   inline-size: min(var(--ui-dialog-size), 100vw);
   block-size: 100dvh;
-  max-inline-size: none;
   max-block-size: none;
-  margin: 0;
   border-radius: 0;
-  pointer-events: auto;
   animation: ui-drawer-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ui-dialog--drawer:dir(rtl) {
+  --ui-drawer-from: -100%;
+}
+/* Full width on a phone; centred at the dialog size on a wider screen. */
+.ui-dialog--sheet {
+  inset-block: auto 0;
+  inset-inline: 0;
+  inline-size: min(var(--ui-dialog-size), 100vw);
+  max-block-size: 85dvh;
+  margin-inline: auto;
+  padding-block-end: env(safe-area-inset-bottom);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  animation: ui-sheet-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 /*
  * When the dialog role sits on a wrapper (the Angular CDK container), the wrapper
- * covers the screen so it keeps the drawer's area; clicks pass through to the backdrop.
+ * covers the screen so it keeps the panel's area; clicks pass through to the backdrop.
  */
 .ui-dialog-frame {
   position: fixed;
   inset: 0;
   pointer-events: none;
 }
-.ui-dialog--drawer:dir(rtl) {
-  --ui-drawer-from: -100%;
-}
-.ui-dialog--drawer .ui-dialog__header {
+:is(.ui-dialog--drawer, .ui-dialog--sheet) .ui-dialog__header {
   padding-block-end: var(--ui-space-4);
   border-block-end: 1px solid var(--ui-divider);
 }
-.ui-dialog--drawer .ui-dialog__body {
+:is(.ui-dialog--drawer, .ui-dialog--sheet) .ui-dialog__body {
   flex: 1;
   align-content: start;
   padding-block: var(--ui-space-6);
 }
-.ui-dialog--drawer .ui-dialog__actions {
+:is(.ui-dialog--drawer, .ui-dialog--sheet) .ui-dialog__actions {
   padding-block-start: var(--ui-space-4);
   border-block-start: 1px solid var(--ui-divider);
 }
 @keyframes ui-drawer-in {
   from {
     transform: translateX(var(--ui-drawer-from));
+  }
+}
+@keyframes ui-sheet-in {
+  from {
+    transform: translateY(100%);
   }
 }
 @keyframes ui-fade-in {

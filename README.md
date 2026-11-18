@@ -4,12 +4,12 @@ The design system of Enigma Technology Lab: accessible, Arabic and English from 
 
 **[Read the docs](https://enigma-tech-labs.github.io/enigma-ui/)**: every component live, with the code for your framework.
 
-| Package                                        | What it is                                                                                          | Status                                                                                                         |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`@enigma-tech-lab/css`](packages/css)         | Fonts, design tokens and every component style, in plain CSS. Works in any stack, framework or not. | Ready                                                                                                          |
-| [`@enigma-tech-lab/angular`](packages/angular) | Angular 22 components on the Angular CDK.                                                           | Ready: alert dialog, badge, button, card, data table, dialog, drawer, pagination, select, text field, textarea |
-| [`@enigma-tech-lab/react`](packages/react)     | React 19 components on React Aria.                                                                  | Ready: alert dialog, badge, button, card, data table, dialog, drawer, pagination, select, text field, textarea |
-| `@enigma-tech-lab/vue`                         | Vue components on Reka UI.                                                                          | Planned                                                                                                        |
+| Package                                        | What it is                                                                                          | Status                                                                                                                       |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| [`@enigma-tech-lab/css`](packages/css)         | Fonts, design tokens and every component style, in plain CSS. Works in any stack, framework or not. | Ready                                                                                                                        |
+| [`@enigma-tech-lab/angular`](packages/angular) | Angular 22 components on the Angular CDK.                                                           | Ready: alert dialog, badge, bottom sheet, button, card, data table, dialog, drawer, pagination, select, text field, textarea |
+| [`@enigma-tech-lab/react`](packages/react)     | React 19 components on React Aria.                                                                  | Ready: alert dialog, badge, bottom sheet, button, card, data table, dialog, drawer, pagination, select, text field, textarea |
+| `@enigma-tech-lab/vue`                         | Vue components on Reka UI.                                                                          | Planned                                                                                                                      |
 
 ## How it fits together
 

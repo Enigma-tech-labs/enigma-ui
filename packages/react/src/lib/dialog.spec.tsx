@@ -56,10 +56,15 @@ describe('Dialog', () => {
     );
   });
 
-  it('opens as a drawer with the drawer variant', async () => {
-    const { dialog } = await open({ variant: 'drawer' });
-    expect(dialog.className).toBe('ui-dialog ui-dialog--lg ui-dialog--drawer');
-  });
+  it.each(['drawer', 'sheet'] as const)(
+    'docks to the edge as a %s',
+    async (variant) => {
+      const { dialog } = await open({ variant });
+      expect(dialog.className).toBe(
+        `ui-dialog ui-dialog--lg ui-dialog--${variant}`,
+      );
+    },
+  );
 
   it('closes from the close button and returns focus to the opener', async () => {
     const { opener } = await open();
@@ -71,6 +76,25 @@ describe('Dialog', () => {
 
   it('closes on Escape', async () => {
     await open();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it.each([
+    [true, 'closes'],
+    [false, 'stays open'],
+  ])(
+    'with closeOnBackdrop %s, a click outside %s',
+    async (closeOnBackdrop, outcome) => {
+      await open({ closeOnBackdrop });
+      await userEvent.click(document.querySelector('.ui-dialog-backdrop')!);
+      expect(screen.queryByRole('dialog') === null).toBe(outcome === 'closes');
+    },
+  );
+
+  it('keeps Escape and the close button when closeOnBackdrop is false', async () => {
+    await open({ closeOnBackdrop: false });
+    expect(screen.getByTestId('ui-dialog-close')).not.toBeNull();
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).toBeNull();
   });
