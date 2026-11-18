@@ -8,7 +8,7 @@ import type { FrameworkCode } from './docs-settings';
   imports: [CodeBlockComponent],
   host: { class: 'doc-card' },
   template: `
-    <h3 class="doc-card__title" [id]="anchor()">{{ title() }}</h3>
+    <h2 class="doc-card__title" [id]="anchor()">{{ title() }}</h2>
     @if (description()) {
       <p class="doc-card__text">{{ description() }}</p>
     }

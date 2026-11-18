@@ -428,7 +428,7 @@ textarea.ui-input {
   margin: auto;
   padding: 0;
   overflow: hidden;
-  border: 0;
+  border: 1px solid transparent; /* the dialog's edge in forced-colours mode */
   border-radius: calc(var(--ui-radius) * 2);
   background: var(--ui-surface);
   color: var(--ui-text);

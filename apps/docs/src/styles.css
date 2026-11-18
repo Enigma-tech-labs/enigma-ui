@@ -103,6 +103,18 @@ code {
   }
 }
 
+/* High contrast mode ignores the theme: show the ink lockup on its own paper. */
+@media (forced-colors: active) {
+  :root .doc-brand .doc-logo-light {
+    display: block;
+    forced-color-adjust: none;
+    background: var(--ui-paper);
+  }
+  :root .doc-brand .doc-logo-dark {
+    display: none;
+  }
+}
+
 .doc-settings {
   display: flex;
   flex-wrap: wrap;
@@ -213,6 +225,7 @@ code {
 /* Page */
 .doc-page {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ui-space-8);
   max-inline-size: 60rem;
 }
@@ -226,7 +239,8 @@ code {
   max-inline-size: 44rem;
 }
 .doc-h1 {
-  font-size: var(--ui-text-3xl);
+  font-size: clamp(2rem, 9vw, var(--ui-text-3xl));
+  overflow-wrap: break-word;
 }
 .doc-h2 {
   font-size: var(--ui-text-xl);
