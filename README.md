@@ -57,13 +57,13 @@ Requires Node 22 and pnpm 10.
 
 ```shell
 pnpm install
-pnpm nx storybook angular    # Storybook on http://localhost:4400
+pnpm nx serve docs           # the docs site on http://localhost:4200
 pnpm nx run-many -t test     # Vitest, including the contrast check
 pnpm nx run-many -t lint     # ESLint, including the Angular template accessibility rules
 pnpm nx build angular        # package into dist/packages/angular
 ```
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org), checked by commitlint on every commit. CI runs lint, test and build on every push and pull request.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org), checked by commitlint on every commit. CI runs lint, test and build on every push and pull request, and publishes the docs site from `main`.
 
 ## Release
 

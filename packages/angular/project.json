@@ -33,67 +33,6 @@
       "options": {
         "packageRoot": "dist/{projectRoot}"
       }
-    },
-    "storybook": {
-      "executor": "@storybook/angular:start-storybook",
-      "continuous": true,
-      "readyWhen": {
-        "port": "{env.SBCONFIG_PORT ?? options.port ?? 9009}",
-        "host": "{env.SBCONFIG_HOSTNAME ?? options.host ?? localhost}"
-      },
-      "options": {
-        "port": 4400,
-        "configDir": "packages/angular/.storybook",
-        "browserTarget": "angular:build-storybook",
-        "compodoc": false,
-        "styles": [
-          "node_modules/@angular/cdk/overlay-prebuilt.css",
-          "packages/css/ui.css",
-          "packages/angular/.storybook/preview.css"
-        ]
-      },
-      "configurations": {
-        "ci": {
-          "quiet": true
-        }
-      }
-    },
-    "build-storybook": {
-      "executor": "@storybook/angular:build-storybook",
-      "outputs": ["{options.outputDir}"],
-      "options": {
-        "outputDir": "dist/storybook/angular",
-        "configDir": "packages/angular/.storybook",
-        "browserTarget": "angular:build-storybook",
-        "compodoc": false,
-        "styles": [
-          "node_modules/@angular/cdk/overlay-prebuilt.css",
-          "packages/css/ui.css",
-          "packages/angular/.storybook/preview.css"
-        ]
-      },
-      "configurations": {
-        "ci": {
-          "quiet": true
-        }
-      }
-    },
-    "static-storybook": {
-      "executor": "@nx/web:file-server",
-      "dependsOn": ["build-storybook"],
-      "readyWhen": {
-        "signal": true
-      },
-      "options": {
-        "buildTarget": "angular:build-storybook",
-        "staticFilePath": "dist/storybook/angular",
-        "spa": true
-      },
-      "configurations": {
-        "ci": {
-          "buildTarget": "angular:build-storybook:ci"
-        }
-      }
     }
   }
 }

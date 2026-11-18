@@ -342,9 +342,21 @@
 .ui-dialog-backdrop {
   background: var(--ui-backdrop);
 }
-.ui-dialog-panel {
+.ui-dialog-panel,
+dialog.ui-dialog {
   max-inline-size: min(32rem, calc(100vw - 2rem));
   inline-size: 100%;
+}
+/* The native <dialog> for pages without a framework: open it with showModal(). */
+dialog.ui-dialog {
+  border: 0;
+  box-shadow: var(--ui-shadow);
+}
+dialog.ui-dialog:not([open]) {
+  display: none;
+}
+dialog.ui-dialog::backdrop {
+  background: var(--ui-backdrop);
 }
 .ui-dialog {
   display: grid;
