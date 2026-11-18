@@ -2,47 +2,62 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { Button } from './button.js';
-import { Dialog, DialogActions } from './dialog.js';
+import { Dialog, type DialogProps } from './dialog.js';
 
-function Host() {
+function Host(props: Partial<DialogProps>) {
   const [open, setOpen] = useState(false);
   return (
     <>
       <Button type="button" onClick={() => setOpen(true)}>
-        Delete file
+        Edit address
       </Button>
-      <Dialog title="Delete report.pdf?" open={open} onOpenChange={setOpen}>
-        <p>This cannot be undone.</p>
-        <DialogActions>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setOpen(false)}
-          >
-            Cancel
+      <Dialog
+        title="Edit address"
+        description="Used for your next orders."
+        size="lg"
+        open={open}
+        onOpenChange={setOpen}
+        actions={
+          <Button type="button" onClick={() => setOpen(false)}>
+            Save
           </Button>
-        </DialogActions>
+        }
+        {...props}
+      >
+        <p>Body</p>
       </Dialog>
     </>
   );
 }
 
-describe('Dialog', () => {
-  it('opens a modal named by its heading, with focus inside', async () => {
-    render(<Host />);
-    await userEvent.click(screen.getByRole('button', { name: 'Delete file' }));
+async function open(props: Partial<DialogProps> = {}) {
+  render(<Host {...props} />);
+  const opener = screen.getByRole('button', { name: 'Edit address' });
+  await userEvent.click(opener);
+  return { opener, dialog: screen.getByRole('dialog') };
+}
 
-    const dialog = screen.getByRole('dialog', { name: 'Delete report.pdf?' });
-    expect(screen.getByRole('heading', { level: 2 }).className).toBe(
-      'ui-dialog__title',
-    );
+describe('Dialog', () => {
+  it('names and describes the dialog, with focus inside', async () => {
+    const { dialog } = await open();
+    const description = screen.getByText('Used for your next orders.');
+
+    expect(screen.getByRole('dialog', { name: 'Edit address' })).toBe(dialog);
+    expect(dialog.getAttribute('aria-describedby')).toBe(description.id);
     expect(dialog.contains(document.activeElement)).toBe(true);
   });
 
-  it('closes on the close button and returns focus to the opener', async () => {
-    render(<Host />);
-    const opener = screen.getByRole('button', { name: 'Delete file' });
-    await userEvent.click(opener);
+  it('applies the size and keeps actions out of the scrolling body', async () => {
+    const { dialog } = await open();
+    expect(dialog.className).toBe('ui-dialog ui-dialog--lg');
+    expect(dialog.querySelector('.ui-dialog__body p')).not.toBeNull();
+    expect(dialog.querySelector('.ui-dialog__actions')?.textContent).toBe(
+      'Save',
+    );
+  });
+
+  it('closes from the close button and returns focus to the opener', async () => {
+    const { opener } = await open();
     await userEvent.click(screen.getByTestId('ui-dialog-close'));
 
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -50,9 +65,16 @@ describe('Dialog', () => {
   });
 
   it('closes on Escape', async () => {
-    render(<Host />);
-    await userEvent.click(screen.getByRole('button', { name: 'Delete file' }));
+    await open();
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('stays open when not dismissable, without a close button', async () => {
+    await open({ dismissable: false });
+    expect(screen.queryByTestId('ui-dialog-close')).toBeNull();
+
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('dialog')).not.toBeNull();
   });
 });

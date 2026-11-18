@@ -1,6 +1,6 @@
 # @enigma-tech-lab/angular
 
-Accessible Angular 22 components in the Enigma Technology Lab design system, right to left ready: badge, button, card, dialog, select, text field and textarea. Built on signals and the Angular CDK; styles come from [`@enigma-tech-lab/css`](../css).
+Accessible Angular 22 components in the Enigma Technology Lab design system, right to left ready: alert dialog, badge, button, card, dialog, select, text field and textarea. Built on signals and the Angular CDK; styles come from [`@enigma-tech-lab/css`](../css).
 
 ```shell
 pnpm add @enigma-tech-lab/angular @angular/cdk
@@ -13,7 +13,7 @@ pnpm add @enigma-tech-lab/angular @angular/cdk
 ```
 
 ```ts
-import { BadgeComponent, ButtonComponent, CardComponent, SelectComponent, TextareaComponent, TextFieldComponent, UiDialog, DialogComponent } from '@enigma-tech-lab/angular';
+import { BadgeComponent, ButtonComponent, CardComponent, DialogComponent, SelectComponent, TextareaComponent, TextFieldComponent, UiAlertDialog, UiDialog } from '@enigma-tech-lab/angular';
 ```
 
 [Source and docs](https://github.com/Enigma-tech-labs/enigma-ui). MIT licence.

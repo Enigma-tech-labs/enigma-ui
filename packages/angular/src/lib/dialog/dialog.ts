@@ -3,20 +3,44 @@ import { ComponentType } from '@angular/cdk/portal';
 import {
   afterNextRender,
   Component,
+  computed,
+  Directive,
   ElementRef,
   inject,
   Injectable,
   input,
+  TemplateRef,
 } from '@angular/core';
+import { filter, take } from 'rxjs';
 import { ButtonComponent } from '../button/button.component';
 
+export type DialogSize = 'sm' | 'md' | 'lg';
+
+export interface UiDialogConfig<D = unknown> {
+  /** Passed to the content: `inject(DIALOG_DATA)` in a component, `let-data` in a template. */
+  data?: D;
+  /**
+   * `false`: Escape and a click on the backdrop no longer close it, and the close
+   * button is hidden. The content must then offer its own way out.
+   */
+  dismissable?: boolean;
+  /**
+   * `'alertdialog'` for a message that needs an answer: a backdrop click is ignored,
+   * the close button is hidden, and Escape closes it with no result.
+   */
+  role?: 'dialog' | 'alertdialog';
+  /** A CSS selector inside the dialog to focus first. Defaults to the heading. */
+  initialFocus?: string;
+}
+
 /**
- * Opens a component in a modal dialog. The CDK dialog traps focus while it is open,
- * moves focus to the dialog heading, closes on Escape, and returns focus on close.
+ * Opens a component or a template in a modal dialog, on the Angular CDK: focus is
+ * trapped inside, the page behind does not scroll, dialogs stack, and focus returns
+ * to the opener on close.
  *
  * ```ts
- * const ref = inject(UiDialog).open<boolean>(DeleteFileDialog, { name: 'report.pdf' });
- * ref.closed.subscribe(confirmed => ...);
+ * const ref = inject(UiDialog).open<boolean>(EditAddressDialog, { data: address });
+ * ref.closed.subscribe((saved) => ...);
  * ```
  */
 @Injectable({ providedIn: 'root' })
@@ -24,31 +48,43 @@ export class UiDialog {
   private readonly dialog = inject(Dialog);
 
   open<R = unknown, D = unknown, C = unknown>(
-    component: ComponentType<C>,
-    data?: D,
+    content: ComponentType<C> | TemplateRef<C>,
+    config: UiDialogConfig<D> = {},
   ): DialogRef<R, C> {
-    return this.dialog.open<R, D, C>(component, {
-      data,
-      panelClass: 'ui-dialog-panel',
+    const alert = config.role === 'alertdialog';
+    const ref = this.dialog.open<R, D, C>(content, {
+      data: config.data,
+      role: config.role ?? 'dialog',
+      disableClose: alert || config.dismissable === false,
       backdropClass: 'ui-dialog-backdrop',
-      autoFocus: 'first-heading',
+      autoFocus: config.initialFocus ?? 'first-heading',
       restoreFocus: true,
     });
+    if (alert) {
+      // An alert ignores the backdrop, but Escape still means "no answer".
+      ref.keydownEvents
+        .pipe(
+          filter((event) => event.key === 'Escape'),
+          take(1),
+        )
+        .subscribe(() => ref.close());
+    }
+    return ref;
   }
 }
 
 let nextId = 0;
 
 /**
- * The layout inside a dialog: a heading that names the dialog, a close button,
- * the body, and an optional row of actions.
+ * The layout inside a dialog: a heading that names it, an optional description,
+ * a close button, a body that scrolls when the content is long, and a row of actions.
  *
  * ```html
- * <ui-dialog title="Delete report.pdf?">
- *   <p>This cannot be undone.</p>
+ * <ui-dialog title="Edit address" description="Used for your next orders.">
+ *   <ui-text-field label="Street" formControlName="street" />
  *   <div ui-dialog-actions>
- *     <button ui-button variant="secondary" (click)="ref.close(false)">Cancel</button>
- *     <button ui-button variant="danger" (click)="ref.close(true)">Delete</button>
+ *     <button ui-button variant="secondary" uiDialogClose>Cancel</button>
+ *     <button ui-button (click)="save()">Save</button>
  *   </div>
  * </ui-dialog>
  * ```
@@ -56,24 +92,39 @@ let nextId = 0;
 @Component({
   selector: 'ui-dialog',
   imports: [ButtonComponent],
-  host: { class: 'ui-dialog' },
+  host: { '[class]': 'classes()' },
   template: `
     <header class="ui-dialog__header">
-      <h2 class="ui-dialog__title" [id]="titleId">{{ title() }}</h2>
-      <button
-        ui-button
-        variant="ghost"
-        type="button"
-        [attr.aria-label]="closeLabel()"
-        data-testid="ui-dialog-close"
-        (click)="ref.close()"
-      >
-        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" />
-        </svg>
-      </button>
+      <ng-content select="[ui-dialog-icon]" />
+      <div class="ui-dialog__heading">
+        <h2 class="ui-dialog__title" [id]="titleId">{{ title() }}</h2>
+        @if (description()) {
+          <p class="ui-dialog__description" [id]="descriptionId">
+            {{ description() }}
+          </p>
+        }
+      </div>
+      @if (!ref.disableClose) {
+        <button
+          ui-button
+          variant="ghost"
+          type="button"
+          class="ui-dialog__close"
+          [attr.aria-label]="closeLabel()"
+          data-testid="ui-dialog-close"
+          (click)="ref.close()"
+        >
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path
+              d="M4 4l8 8M12 4l-8 8"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+      }
     </header>
-    <ng-content />
+    <div class="ui-dialog__body"><ng-content /></div>
     <footer class="ui-dialog__actions">
       <ng-content select="[ui-dialog-actions]" />
     </footer>
@@ -81,19 +132,58 @@ let nextId = 0;
 })
 export class DialogComponent {
   readonly title = input.required<string>();
+  /** A sentence under the title; screen readers read it with the title. */
+  readonly description = input<string>();
+  readonly size = input<DialogSize>('md');
+  /** `alert`: centred heading and actions, as in an alert dialog. */
+  readonly variant = input<'default' | 'alert'>('default');
   /** Accessible name of the close button; pass the translated text. */
   readonly closeLabel = input('Close');
 
   protected readonly ref = inject(DialogRef);
-  protected readonly titleId = `ui-dialog-title-${nextId++}`;
+  protected readonly titleId = `ui-dialog-title-${nextId}`;
+  protected readonly descriptionId = `ui-dialog-description-${nextId++}`;
+  protected readonly classes = computed(() =>
+    [
+      'ui-dialog',
+      this.size() !== 'md' && `ui-dialog--${this.size()}`,
+      this.variant() === 'alert' && 'ui-dialog--alert',
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
 
   constructor() {
     const host: HTMLElement = inject(ElementRef).nativeElement;
-    // Name the CDK dialog container after this heading.
-    afterNextRender(() =>
-      host
-        .closest('[role="dialog"]')
-        ?.setAttribute('aria-labelledby', this.titleId),
-    );
+    // Name and describe the CDK dialog container after this heading and description.
+    afterNextRender(() => {
+      const container = host.closest('[role="dialog"], [role="alertdialog"]');
+      container?.setAttribute('aria-labelledby', this.titleId);
+      if (this.description()) {
+        container?.setAttribute('aria-describedby', this.descriptionId);
+      }
+    });
   }
+}
+
+/**
+ * Closes the dialog it is in when clicked, with an optional result.
+ *
+ * ```html
+ * <button ui-button variant="secondary" uiDialogClose>Cancel</button>
+ * <button ui-button [uiDialogClose]="true">Delete</button>
+ * ```
+ */
+@Directive({
+  selector: '[uiDialogClose]',
+  host: { '(click)': 'ref.close(result())' },
+})
+export class DialogCloseDirective<R = unknown> {
+  readonly result = input<R | undefined, R | ''>(undefined, {
+    alias: 'uiDialogClose',
+    // A bare `uiDialogClose` attribute closes with no result.
+    transform: (value) => (value === '' ? undefined : value),
+  });
+
+  protected readonly ref = inject<DialogRef<R>>(DialogRef);
 }

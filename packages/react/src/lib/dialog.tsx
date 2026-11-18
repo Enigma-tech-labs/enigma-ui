@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import {
   Dialog as AriaDialog,
   Heading,
@@ -8,80 +8,134 @@ import {
   ModalOverlay,
 } from 'react-aria-components';
 import { Button } from './button.js';
+import { cx } from './class-names.js';
+
+export type DialogSize = 'sm' | 'md' | 'lg';
 
 export interface DialogProps {
   /** The heading; it names the dialog. */
   title: string;
+  /** A sentence under the title; screen readers read it with the title. */
+  description?: string;
+  size?: DialogSize;
+  /** `alert`: centred heading and actions, as in an alert dialog. */
+  variant?: 'default' | 'alert';
   open: boolean;
+  /** Called with `false` on Escape, a backdrop click or the close button. */
   onOpenChange: (open: boolean) => void;
+  /**
+   * `false`: Escape and a click on the backdrop no longer close it, and the close
+   * button is hidden. The content must then offer its own way out.
+   */
+  dismissable?: boolean;
+  /**
+   * `'alertdialog'` for a message that needs an answer: a backdrop click is ignored,
+   * the close button is hidden, and Escape still calls `onOpenChange(false)`.
+   */
+  role?: 'dialog' | 'alertdialog';
   /** Accessible name of the close button; pass the translated text. */
   closeLabel?: string;
-  children: ReactNode;
+  /** Shown before the heading, as the tone icon of an alert. */
+  icon?: ReactNode;
+  /** The buttons at the end; they stay visible while the body scrolls. */
+  actions?: ReactNode;
+  children?: ReactNode;
 }
 
 /**
- * A modal on React Aria. Focus moves into it and stays there; Escape or a click on
- * the backdrop closes it, and focus goes back to the element that opened it.
+ * A modal dialog on React Aria: focus moves into it and stays there, the page behind
+ * does not scroll, and focus returns to the opener on close.
  *
  * ```tsx
- * <Dialog title="Delete report.pdf?" open={open} onOpenChange={setOpen}>
- *   <p>This cannot be undone.</p>
- *   <DialogActions>
- *     <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
- *     <Button variant="danger" onClick={remove}>Delete</Button>
- *   </DialogActions>
+ * <Dialog
+ *   title="Edit address"
+ *   open={open}
+ *   onOpenChange={setOpen}
+ *   actions={<Button onClick={save}>Save</Button>}
+ * >
+ *   <TextField label="Street" />
  * </Dialog>
  * ```
  */
 export function Dialog({
   title,
+  description,
+  size = 'md',
+  variant = 'default',
   open,
   onOpenChange,
+  dismissable = true,
+  role = 'dialog',
   closeLabel = 'Close',
+  icon,
+  actions,
   children,
 }: DialogProps) {
+  const descriptionId = useId();
+  const alert = role === 'alertdialog';
+  const closable = dismissable && !alert;
+
   return (
     <ModalOverlay
       className="ui-dialog-backdrop"
       isOpen={open}
       onOpenChange={onOpenChange}
-      isDismissable
+      isDismissable={closable}
+      // An alert ignores the backdrop, but Escape still means "no answer".
+      isKeyboardDismissDisabled={!closable && !alert}
     >
-      <Modal className="ui-dialog-panel">
-        <AriaDialog className="ui-dialog">
+      <Modal>
+        <AriaDialog
+          role={role}
+          className={cx(
+            'ui-dialog',
+            size !== 'md' && `ui-dialog--${size}`,
+            variant === 'alert' && 'ui-dialog--alert',
+          )}
+          aria-describedby={description ? descriptionId : undefined}
+        >
           <header className="ui-dialog__header">
-            <Heading slot="title" level={2} className="ui-dialog__title">
-              {title}
-            </Heading>
-            <Button
-              type="button"
-              variant="ghost"
-              aria-label={closeLabel}
-              data-testid="ui-dialog-close"
-              onClick={() => onOpenChange(false)}
-            >
-              <svg
-                viewBox="0 0 16 16"
-                width="16"
-                height="16"
-                aria-hidden="true"
+            {icon}
+            <div className="ui-dialog__heading">
+              <Heading slot="title" level={2} className="ui-dialog__title">
+                {title}
+              </Heading>
+              {description && (
+                <p className="ui-dialog__description" id={descriptionId}>
+                  {description}
+                </p>
+              )}
+            </div>
+            {closable && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="ui-dialog__close"
+                aria-label={closeLabel}
+                data-testid="ui-dialog-close"
+                onClick={() => onOpenChange(false)}
               >
-                <path
-                  d="M4 4l8 8M12 4l-8 8"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-              </svg>
-            </Button>
+                <svg
+                  viewBox="0 0 16 16"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4 4l8 8M12 4l-8 8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                </svg>
+              </Button>
+            )}
           </header>
-          {children}
+          {children != null && children !== false && (
+            <div className="ui-dialog__body">{children}</div>
+          )}
+          {actions && <footer className="ui-dialog__actions">{actions}</footer>}
         </AriaDialog>
       </Modal>
     </ModalOverlay>
   );
-}
-
-/** The row of buttons at the end of a dialog. */
-export function DialogActions({ children }: { children: ReactNode }) {
-  return <footer className="ui-dialog__actions">{children}</footer>;
 }

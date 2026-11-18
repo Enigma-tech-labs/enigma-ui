@@ -1,7 +1,7 @@
 {
   "name": "@enigma-tech-lab/react",
   "version": "0.0.0",
-  "description": "Accessible React components in the Enigma Technology Lab design system, right to left ready: badge, button, card, dialog, select, text field and textarea. Built on React Aria.",
+  "description": "Accessible React components in the Enigma Technology Lab design system, right to left ready: alert dialog, badge, button, card, dialog, select, text field and textarea. Built on React Aria.",
   "license": "MIT",
   "repository": {
     "type": "git",

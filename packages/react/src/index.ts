@@ -4,8 +4,16 @@ export { Button } from './lib/button.js';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './lib/button.js';
 export { Card } from './lib/card.js';
 export type { CardProps } from './lib/card.js';
-export { Dialog, DialogActions } from './lib/dialog.js';
-export type { DialogProps } from './lib/dialog.js';
+export { AlertDialog, useAlertDialog } from './lib/alert-dialog.js';
+export type {
+  AlertAction,
+  AlertDialogProps,
+  AlertOptions,
+  AlertTone,
+  ConfirmOptions,
+} from './lib/alert-dialog.js';
+export { Dialog } from './lib/dialog.js';
+export type { DialogProps, DialogSize } from './lib/dialog.js';
 export { Select } from './lib/select.js';
 export type { SelectOption, SelectProps } from './lib/select.js';
 export { Textarea } from './lib/textarea.js';

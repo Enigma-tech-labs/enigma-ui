@@ -68,5 +68,12 @@ export const appRoutes: Route[] = [
         (m) => m.TextareaPageComponent,
       ),
   },
+  {
+    path: 'components/alert-dialog',
+    loadComponent: () =>
+      import('./pages/alert-dialog-page.component').then(
+        (m) => m.AlertDialogPageComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

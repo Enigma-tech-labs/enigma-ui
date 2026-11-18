@@ -1,6 +1,6 @@
 # @enigma-tech-lab/react
 
-Accessible React 19 components in the Enigma Technology Lab design system, right to left ready: badge, button, card, dialog, select, text field and textarea. Select and dialog are built on React Aria; styles come from [`@enigma-tech-lab/css`](../css).
+Accessible React 19 components in the Enigma Technology Lab design system, right to left ready: alert dialog, badge, button, card, dialog, select, text field and textarea. Select and dialog are built on React Aria; styles come from [`@enigma-tech-lab/css`](../css).
 
 ```shell
 pnpm add @enigma-tech-lab/react
@@ -12,7 +12,7 @@ import '@enigma-tech-lab/css/ui.css';
 ```
 
 ```tsx
-import { Button, Dialog, DialogActions, Select, TextField } from '@enigma-tech-lab/react';
+import { Button, Dialog, Select, TextField, useAlertDialog } from '@enigma-tech-lab/react';
 ```
 
 Works with React Server Components: the files that need the browser start with `'use client'`.
