@@ -10,6 +10,7 @@ pnpm add @enigma-tech-lab/angular @enigma-tech-lab/css @angular/cdk
 /* styles.css */
 @import '@enigma-tech-lab/css/ui.css';
 @import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/cdk/a11y-prebuilt.css';
 ```
 
 ```ts

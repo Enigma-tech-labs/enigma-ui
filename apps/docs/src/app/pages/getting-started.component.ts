@@ -127,6 +127,11 @@ import { PageComponent } from '../shared/page.component';
                 The CDK overlay stylesheet is required: select, combobox, menu,
                 popover and tooltip float on it.
               </li>
+              <li>
+                The CDK a11y stylesheet is required: it hides the text that
+                toasts and dialogs announce to screen readers. Without it that
+                text sits at the bottom of the page and adds a scrollbar.
+              </li>
             }
             @case ('react') {
               <li>
@@ -281,6 +286,18 @@ import { PageComponent } from '../shared/page.component';
               @if (settings.framework() === 'angular') {
                 <tr>
                   <th scope="row">
+                    Text at the bottom of the page, or a scrollbar, after a
+                    toast
+                  </th>
+                  <td>
+                    <code>&#64;angular/cdk/a11y-prebuilt.css</code> is missing
+                    from the global stylesheet (step 3).
+                  </td>
+                </tr>
+              }
+              @if (settings.framework() === 'angular') {
+                <tr>
+                  <th scope="row">
                     A select list shows at the bottom of the page
                   </th>
                   <td>
@@ -360,6 +377,7 @@ export class GettingStartedComponent {
     angular: `/* src/styles.css: the global stylesheet, first lines */
 @import '@enigma-tech-lab/css/ui.css';
 @import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/cdk/a11y-prebuilt.css';
 
 /* your own styles below */`,
     react: `// main.tsx: before every other CSS import

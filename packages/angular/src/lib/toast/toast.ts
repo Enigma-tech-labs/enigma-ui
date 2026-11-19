@@ -37,6 +37,8 @@ export interface Toast extends ToastOptions {
   selector: 'ui-toast-region',
   imports: [ToneIconComponent, ButtonComponent],
   host: {
+    // A block: inline, the empty host made a line box under the page (a scrollbar on a full-height page).
+    '[style.display]': "'block'",
     '[attr.role]': "toasts.toasts().length ? 'region' : null",
     '[attr.aria-label]':
       'toasts.toasts().length ? toasts.labels().region : null',

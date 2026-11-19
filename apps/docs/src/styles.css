@@ -4,6 +4,7 @@
  */
 @import '../../../packages/css/ui.css';
 @import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/cdk/a11y-prebuilt.css';
 
 /* The header is one row on wide screens; the side bar sticks just under it. */
 :root {
