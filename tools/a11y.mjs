@@ -121,7 +121,10 @@ for (const theme of ['light', 'dark']) {
   for (const [framework, path, button, role, name] of states) {
     const { page, close } = await open(theme, framework, path);
     await page.getByRole('button', { name: button, exact: true }).click();
-    await page.getByRole(role, name ? { name } : {}).waitFor();
+    // The toast region has no box of its own (its list is fixed), so wait for it to exist.
+    await page
+      .getByRole(role, name ? { name } : {})
+      .waitFor({ state: role === 'region' ? 'attached' : 'visible' });
     await audit(page, `${theme} ${framework} /${path}: "${button}" open`);
     audits++;
     await close();
@@ -155,6 +158,22 @@ for (const theme of ['light', 'dark']) {
           .getByRole('button', { name: 'Actions', exact: true })
           .click();
         await page.getByRole('menu').waitFor();
+      },
+    ],
+    [
+      'components/popover',
+      async (page) => {
+        await page
+          .getByRole('button', { name: 'Delivery fee', exact: true })
+          .click();
+        await page.getByRole('dialog').waitFor();
+      },
+    ],
+    [
+      'components/tooltip',
+      async (page) => {
+        await page.getByRole('button', { name: 'Copy link' }).first().focus();
+        await page.getByRole('tooltip').waitFor();
       },
     ],
   ];

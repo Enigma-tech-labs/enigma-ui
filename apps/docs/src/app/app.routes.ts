@@ -205,5 +205,26 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./pages/nav-page.component').then((m) => m.NavPageComponent),
   },
+  {
+    path: 'components/accordion',
+    loadComponent: () =>
+      import('./pages/accordion-page.component').then(
+        (m) => m.AccordionPageComponent,
+      ),
+  },
+  {
+    path: 'components/tooltip',
+    loadComponent: () =>
+      import('./pages/tooltip-page.component').then(
+        (m) => m.TooltipPageComponent,
+      ),
+  },
+  {
+    path: 'components/popover',
+    loadComponent: () =>
+      import('./pages/popover-page.component').then(
+        (m) => m.PopoverPageComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

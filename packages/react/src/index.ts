@@ -58,3 +58,10 @@ export { Breadcrumbs, Nav } from './lib/nav.js';
 export type { BreadcrumbsProps, NavProps } from './lib/nav.js';
 export { Tabs } from './lib/tabs.js';
 export type { TabItem, TabsProps } from './lib/tabs.js';
+export { Accordion, AccordionItem, Popover, Tooltip } from './lib/overlays.js';
+export type {
+  AccordionItemProps,
+  AccordionProps,
+  PopoverProps,
+  TooltipProps,
+} from './lib/overlays.js';

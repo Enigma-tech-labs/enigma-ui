@@ -55,3 +55,12 @@ export {
 } from './lib/menu/menu';
 export { BreadcrumbsComponent, NavComponent } from './lib/nav/nav.component';
 export { TabComponent, TabsComponent } from './lib/tabs/tabs.component';
+export {
+  AccordionComponent,
+  AccordionItemComponent,
+} from './lib/accordion/accordion.component';
+export {
+  PopoverPanelComponent,
+  PopoverTriggerDirective,
+} from './lib/popover/popover';
+export { TooltipDirective, TooltipPanelComponent } from './lib/tooltip/tooltip';
