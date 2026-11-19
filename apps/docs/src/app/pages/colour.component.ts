@@ -7,7 +7,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import type { FrameworkCode } from '../shared/docs-settings';
+import { css } from '../shared/docs-settings';
 import { DocsSettings } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
@@ -17,7 +17,17 @@ import {
   type TokenRow,
 } from '../shared/token-table.component';
 
+/** The Tailwind class that reads a colour token: text-* for text colours, border-* for edges, bg-* for grounds. */
+function twClass(token: string): string {
+  const name = token.replace('--ui-', '');
+  if (name === 'focus') return 'outline-focus';
+  if (name === 'border' || name === 'divider') return `border-${name}`;
+  if (name.startsWith('on-') || name.startsWith('text')) return `text-${name}`;
+  return `bg-${name}`;
+}
+
 const chip = (token: string): Partial<TokenRow> => ({
+  tw: twClass(token),
   previewClass: 'doc-token__chip',
   preview: { background: `var(${token})` },
 });
@@ -226,10 +236,11 @@ export class ColourComponent {
     '--ui-primary': this.primary(),
     '--ui-on-primary': '#ffffff',
   }));
-  protected readonly primaryCode = computed((): FrameworkCode => {
-    const css = `:root {\n  --ui-primary: ${this.primary()};\n  --ui-on-primary: #ffffff;\n}`;
-    return { angular: css, react: css, html: css };
-  });
+  protected readonly primaryCode = computed(() =>
+    css(
+      `:root {\n  --ui-primary: ${this.primary()};\n  --ui-on-primary: #ffffff;\n}\n/* bg-primary, text-primary and every kit component follow */`,
+    ),
+  );
   protected readonly primaryRatio = signal('…');
   private readonly primaryButton =
     viewChild.required<ElementRef<HTMLElement>>('primaryButton');

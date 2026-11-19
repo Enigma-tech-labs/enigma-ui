@@ -1,5 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import type { FrameworkCode } from '../shared/docs-settings';
+import { markup } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 import { StepComponent } from '../shared/step.component';
@@ -12,7 +12,14 @@ const durations = [
   ['--ui-duration-fast', '120ms', 'A change in place: the switch knob.'],
   ['--ui-duration', '160ms', 'Fades: dialog, backdrop, accordion arrow.'],
   ['--ui-duration-slow', '200ms', 'Panels that travel: drawer, sheet, toast.'],
-].map(([token, value, use]) => ({ token, value, use }));
+].map(([token, value, use]) => ({
+  token,
+  value,
+  use,
+  tw: token
+    .replace('--ui-duration', 'duration')
+    .replace(/^duration$/, 'duration-ui'),
+}));
 
 @Component({
   selector: 'app-motion',
@@ -97,6 +104,7 @@ export class MotionComponent {
       token: '--ui-ease',
       value: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
       use: 'Every transition. Loading loops run linear at their own speed.',
+      tw: 'ease-ui',
     },
   ];
 
@@ -104,15 +112,11 @@ export class MotionComponent {
   /** Starts at --ui-duration. */
   protected readonly index = signal(1);
   protected readonly duration = computed(() => durations[this.index()]);
-  protected readonly demoCode = computed((): FrameworkCode => {
-    const css = `.my-panel {
-  transition: translate var(${this.duration().token}) var(--ui-ease);
-}
-@media (prefers-reduced-motion: reduce) {
-  .my-panel {
-    transition: none;
-  }
-}`;
-    return { angular: css, react: css, html: css };
-  });
+  protected readonly demoCode = computed(() =>
+    markup(
+      `<div class="translate-x-0 transition-transform ${this.durations[this.index()].token.replace('--ui-duration', 'duration').replace(/^duration$/, 'duration-ui')} ease-ui motion-reduce:transition-none">
+  Panel
+</div>`,
+    ),
+  );
 }

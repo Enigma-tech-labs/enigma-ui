@@ -19,6 +19,20 @@ export type Theme = (typeof THEMES)[number]['id'];
 /** Code for each framework; a missing framework shows a "not yet" note. */
 export type FrameworkCode = Partial<Record<Framework, string>>;
 
+/** One markup snippet for every framework: React spells class as className. */
+export function markup(html: string): FrameworkCode {
+  return {
+    angular: html,
+    react: html.replace(/\bclass=/g, 'className='),
+    html,
+  };
+}
+
+/** One CSS snippet, the same in every framework. */
+export function css(text: string): FrameworkCode {
+  return { angular: text, react: text, html: text };
+}
+
 function read<T extends string>(
   key: string,
   allowed: readonly { id: T }[],

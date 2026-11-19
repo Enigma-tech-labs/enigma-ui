@@ -119,7 +119,10 @@ const langs = [
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
-          <li>Mirror a pointing icon with <code>:dir(rtl)</code>.</li>
+          <li>
+            Never <code>ml-</code>, <code>pr-</code>, <code>left-</code>: they
+            stay put in Arabic.
+          </li>
           <li>Give a word in the other language its own <code>lang</code>.</li>
           <li>
             One kind of digit per product: <code>ar-EG</code> writes ١٠٤٢,
@@ -139,22 +142,30 @@ export class DirectionComponent {
     [
       'margin-inline-start',
       'margin-left',
+      'ms-4',
       'Space before, on the reading side.',
     ],
-    ['padding-inline-end', 'padding-right', 'Space after.'],
-    ['inset-inline-start', 'left', 'Position from the start edge.'],
+    ['padding-inline-end', 'padding-right', 'pe-4', 'Space after.'],
+    ['inset-inline-start', 'left', 'start-0', 'Position from the start edge.'],
     [
       'border-inline-start',
       'border-left',
+      'border-s-4',
       'A start bar, like the side bar current link.',
     ],
-    ['text-align: start', 'text-align: left', 'Text follows the reading side.'],
     [
-      'ui-ps-4 · ui-me-2',
-      'pl-4 · mr-2',
-      'The spacing classes are logical already.',
+      'text-align: start',
+      'text-align: left',
+      'text-start',
+      'Text follows the reading side.',
     ],
-  ].map(([token, value, use]) => ({ token, value, use }));
+    [
+      'scale: -1 1 on :dir(rtl)',
+      'two icons',
+      'rtl:-scale-x-100',
+      'Mirror an arrow that points a way.',
+    ],
+  ].map(([token, value, tw, use]) => ({ token, value, tw, use }));
 
   protected readonly turns: TokenRow[] = [
     [

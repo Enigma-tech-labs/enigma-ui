@@ -9,7 +9,7 @@ import {
   UiToast,
 } from '@enigma-tech-lab/angular';
 import { CodeBlockComponent } from '../shared/code-block.component';
-import type { FrameworkCode } from '../shared/docs-settings';
+import { markup } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 import { StepComponent } from '../shared/step.component';
@@ -40,8 +40,8 @@ import { TokenTableComponent } from '../shared/token-table.component';
           Under 100 stays in one component, 100–999 is page bars, 1000 and up is
           overlays.
         </p>
-        <app-token-table label="Layer tokens" [rows]="layers" />
-        <app-code-block [text]="usage" caption="CSS" />
+        <app-token-table label="Layer tokens" [rows]="layerRows" />
+        <app-code-block [code]="usage" />
       </section>
 
       <section class="doc-section">
@@ -61,10 +61,10 @@ import { TokenTableComponent } from '../shared/token-table.component';
           [description]="layer().use"
           [code]="layerCode()"
         >
-          <div class="doc-stack" aria-hidden="true">
+          <div class="doc-layers" aria-hidden="true">
             @for (l of fan; track l.token; let i = $index) {
               <div
-                class="doc-stack__card"
+                class="doc-layers__card"
                 [style.z-index]="'var(' + l.token + ')'"
                 [style.inset-inline-start.%]="i * 14"
                 [style.inset-block-start.rem]="i * 0.75"
@@ -74,7 +74,7 @@ import { TokenTableComponent } from '../shared/token-table.component';
               </div>
             }
             <div
-              class="doc-stack__card doc-stack__card--you"
+              class="doc-layers__card doc-layers__card--you"
               [style.z-index]="'var(' + layer().token + ')'"
             >
               Your element · {{ layer().value }}
@@ -218,18 +218,22 @@ export class ZIndexComponent {
       l.token.endsWith(n),
     ),
   );
-  protected readonly layerCode = computed((): FrameworkCode => {
-    const css = `.my-element {
-  position: relative;
-  z-index: var(${this.layer().token});
-}`;
-    return { angular: css, react: css, html: css };
-  });
+  /** Tailwind's z-* takes numbers, so each layer is a named class: z-dialog. */
+  protected readonly layerRows = this.layers.map((l) => ({
+    ...l,
+    tw: l.token.replace('--ui-layer-', 'z-'),
+  }));
 
-  protected readonly usage = `.my-banner {
-  position: fixed;
-  z-index: var(--ui-layer-popover);
-  border: 1px solid transparent; /* the edge in high contrast */
-  box-shadow: var(--ui-shadow);
-}`;
+  protected readonly layerCode = computed(() =>
+    markup(
+      `<div class="relative ${this.layer().token.replace('--ui-layer-', 'z-')}">…</div>`,
+    ),
+  );
+
+  /** A transparent border keeps the edge in Windows high contrast, which drops shadows. */
+  protected readonly usage = markup(
+    `<div class="fixed z-popover rounded-ui border border-transparent bg-surface p-4 shadow-ui">
+  Saved
+</div>`,
+  );
 }

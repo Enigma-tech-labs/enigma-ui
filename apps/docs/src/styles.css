@@ -2,9 +2,14 @@
  * The docs site: built on the kit's own stylesheet and tokens, no colour of its own.
  * One file for the whole site (no per-component styles).
  */
-@import '../../../packages/css/ui.css';
+@import 'tailwindcss';
+@import '../../../packages/css/tailwind.css';
 @import '@angular/cdk/overlay-prebuilt.css';
 @import '@angular/cdk/a11y-prebuilt.css';
+
+/* Classes the live demos build at run time, which Tailwind's scan cannot see in the source. */
+@source inline('{p,mb,gap,ps}-{0,0.5,1,1.5,2,2.5,3,4,5,6,7,8,10,12,16,20,24,32}');
+@source inline('{head-{3xl,2xl,xl,lg,md,sm,xs,2xs},body-{lg,md,sm}}');
 
 /* The header is one row on wide screens; the side bar sticks just under it. */
 :root {
@@ -12,29 +17,33 @@
   /* Keyboard focus and anchor jumps land below the sticky header, not under it. */
   scroll-padding-block-start: var(--doc-header-height);
 }
-body {
-  margin: 0;
-  background: var(--ui-bg);
-  color: var(--ui-text);
-  line-height: 1.6;
-}
+/* Element defaults in the base layer, so a kit class (a ui-button on a link) always wins. */
+@layer base {
+  body {
+    margin: 0;
+    background: var(--ui-bg);
+    color: var(--ui-text);
+    line-height: 1.6;
+  }
 
-a {
-  color: var(--ui-primary);
-  text-underline-offset: 0.2em;
-}
+  a {
+    color: var(--ui-primary);
+    text-decoration-line: underline;
+    text-underline-offset: 0.2em;
+  }
 
-a:focus-visible,
-pre:focus-visible,
-.doc-table-wrap:focus-visible,
-input[type='radio']:focus-visible {
-  outline: var(--ui-focus-width) solid var(--ui-focus);
-  outline-offset: var(--ui-focus-offset);
-}
+  a:focus-visible,
+  pre:focus-visible,
+  .doc-table-wrap:focus-visible,
+  input[type='radio']:focus-visible {
+    outline: var(--ui-focus-width) solid var(--ui-focus);
+    outline-offset: var(--ui-focus-offset);
+  }
 
-code {
-  font-family: var(--ui-font-mono);
-  font-size: 0.95em;
+  code {
+    font-family: var(--ui-font-mono);
+    font-size: 0.95em;
+  }
 }
 
 .doc-skip {
@@ -410,6 +419,10 @@ code {
   margin: 0;
   padding-inline-start: var(--ui-space-6);
   max-inline-size: 44rem;
+  list-style: disc; /* Tailwind's reset removes markers */
+}
+ol.doc-list {
+  list-style: decimal;
 }
 
 /* Example card */
@@ -424,6 +437,7 @@ code {
 .doc-card__title {
   margin: 0;
   font-size: var(--ui-text-lg);
+  font-weight: 700;
 }
 .doc-card__text {
   margin: 0;
@@ -968,13 +982,13 @@ code {
 }
 
 /* Z-index demo: a fan of real layers and your element across them. */
-.doc-stack {
+.doc-layers {
   position: relative;
   isolation: isolate;
   inline-size: 100%;
   block-size: 8rem;
 }
-.doc-stack__card {
+.doc-layers__card {
   position: absolute;
   inline-size: 28%;
   padding: var(--ui-space-2) var(--ui-space-3);
@@ -986,7 +1000,7 @@ code {
   box-shadow: var(--ui-shadow);
   font-size: var(--ui-text-sm);
 }
-.doc-stack__card--you {
+.doc-layers__card--you {
   inset-block-start: 2.5rem;
   inset-inline: 10%;
   inline-size: auto;
@@ -1012,9 +1026,9 @@ code {
 
 /* Token tables keep names on one line; on a phone the table scrolls in its own frame. */
 .doc-token-table {
-  min-inline-size: 36rem;
+  min-inline-size: 44rem;
 }
-.doc-token-table td:first-child code {
+.doc-token-table td code {
   white-space: nowrap;
 }
 /* Two sliders for one demo: only the last one sticks, so they never cover each other. */

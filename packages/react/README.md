@@ -4,11 +4,13 @@ Accessible React 19 components in the Enigma Technology Lab design system, right
 
 ```shell
 pnpm add @enigma-tech-lab/react @enigma-tech-lab/css
+pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
-```ts
-// main.tsx, once, before your own styles
-import '@enigma-tech-lab/css/ui.css';
+```css
+/* src/index.css, imported once in main.tsx; add tailwindcss() from @tailwindcss/vite to the Vite plugins */
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
 ```
 
 ```tsx

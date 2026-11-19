@@ -2,6 +2,15 @@
 
 The Enigma Technology Lab design system in plain CSS: the brand fonts, light and dark design tokens measured to 7:1, and the styles of every component. Works in any stack.
 
+With Tailwind CSS 4 (recommended): one import after Tailwind loads the kit and makes its tokens the Tailwind theme, so `p-4` is `--ui-space-4`, `bg-primary` is `--ui-primary`, `rounded-xl` is `--ui-radius-xl`, and `head-md`, `z-dialog`, `duration-fast`, `ease-ui`, `shadow-ui` and `focus-visible:focus-ring` read the kit too. The kit sits in the `components` layer, so a Tailwind class always wins over a kit class. Extend it in your own `@theme`.
+
+```css
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
+```
+
+Without Tailwind:
+
 ```css
 @import '@enigma-tech-lab/css/ui.css';
 ```

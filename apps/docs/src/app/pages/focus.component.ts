@@ -1,5 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import type { FrameworkCode } from '../shared/docs-settings';
+import { markup } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 import { StepComponent } from '../shared/step.component';
@@ -90,6 +90,7 @@ export class FocusComponent {
       token: '--ui-focus',
       value: '#0047cc · #8fb4ff',
       use: 'Ring colour, light and dark. 3:1 on the page.',
+      tw: 'outline-focus',
       previewClass: 'doc-token__chip',
       preview: { background: 'var(--ui-focus)' },
     },
@@ -97,12 +98,14 @@ export class FocusComponent {
       token: '--ui-focus-width',
       value: '3px',
       use: 'Ring thickness.',
+      tw: 'focus-visible:focus-ring',
       previewClass: 'doc-token__box doc-ring',
     },
     {
       token: '--ui-focus-offset',
       value: '2px',
       use: 'Gap from the edge. Inset rings use minus the width.',
+      tw: 'focus-visible:focus-ring-inset',
       previewClass: 'doc-token__box doc-ring doc-ring--inset',
     },
   ];
@@ -113,18 +116,12 @@ export class FocusComponent {
     '--ui-focus-width': `${this.width()}px`,
     '--ui-focus-offset': `${this.offset()}px`,
   }));
-  protected readonly code = computed((): FrameworkCode => {
-    const css = `:root {
-  --ui-focus-width: ${this.width()}px;
-  --ui-focus-offset: ${this.offset()}px;
-}
-.my-control:focus-visible {
-  outline: var(--ui-focus-width) solid var(--ui-focus);
-  outline-offset: var(--ui-focus-offset);
-}
-.my-item:focus-visible {
-  outline-offset: calc(-1 * var(--ui-focus-width));
-}`;
-    return { angular: css, react: css, html: css };
-  });
+  protected readonly code = computed(() =>
+    markup(
+      `<!-- The tokens: --ui-focus-width: ${this.width()}px; --ui-focus-offset: ${this.offset()}px -->
+<button class="ui-button ui-button--primary">Save</button>
+<a class="rounded-ui px-3 py-2 focus-visible:focus-ring" href="/orders">Orders</a>
+<li class="px-3 focus-visible:focus-ring-inset" tabindex="-1">Invoices</li>`,
+    ),
+  );
 }

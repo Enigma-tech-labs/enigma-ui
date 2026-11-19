@@ -30,21 +30,26 @@ Every value comes from the Enigma brand book:
 
 ## Use it
 
-Any stack:
+Any stack, on Tailwind CSS 4 (the kit's tokens become the Tailwind theme: `p-4`, `bg-primary`, `head-md`):
 
 ```css
-@import '@enigma-tech-lab/css/ui.css';
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
 ```
+
+Without Tailwind, `@import '@enigma-tech-lab/css/ui.css';` and the kit's own `ui-*` classes.
 
 Angular:
 
 ```shell
 pnpm add @enigma-tech-lab/angular @enigma-tech-lab/css @angular/cdk
+pnpm add -D tailwindcss @tailwindcss/postcss
 ```
 
 ```css
-/* styles.css */
-@import '@enigma-tech-lab/css/ui.css';
+/* styles.css; .postcssrc.json: { "plugins": { "@tailwindcss/postcss": {} } } */
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
 @import '@angular/cdk/overlay-prebuilt.css';
 @import '@angular/cdk/a11y-prebuilt.css';
 ```
@@ -57,14 +62,21 @@ React:
 
 ```shell
 pnpm add @enigma-tech-lab/react @enigma-tech-lab/css
+pnpm add -D tailwindcss @tailwindcss/vite
+```
+
+```css
+/* src/index.css; add tailwindcss() from @tailwindcss/vite to the Vite plugins */
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
 ```
 
 ```tsx
-import '@enigma-tech-lab/css/ui.css';
+import './index.css';
 import { Button, Select, TextField } from '@enigma-tech-lab/react';
 ```
 
-A client re-brands by overriding `--ui-primary`, `--ui-focus`, `--ui-highlight` and their `--ui-on-*` pairs after `ui.css`.
+A client re-brands by overriding `--ui-primary`, `--ui-focus`, `--ui-highlight` and their `--ui-on-*` pairs on `:root`; Tailwind classes and kit components follow.
 
 ## Work on it
 

@@ -1,6 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { CodeBlockComponent } from '../shared/code-block.component';
-import type { FrameworkCode } from '../shared/docs-settings';
+import { css, markup, type FrameworkCode } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 import { StepComponent } from '../shared/step.component';
@@ -26,24 +26,26 @@ import {
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Spacing</h2>
         <p>
-          The number is quarters of a rem: <code>--ui-space-4</code> is 1rem.
+          Quarters of a rem, the same step as Tailwind: <code>p-4</code> is
+          <code>--ui-space-4</code>, 1rem.
         </p>
         <app-token-table label="Spacing tokens" [rows]="spaceRows" />
-        <app-code-block [text]="usage" caption="CSS" />
+        <app-code-block [code]="usage" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Padding, margin and gap classes</h2>
         <p>
-          Letter, side, step: <code>ui-p-4</code>, <code>ui-mt-0-5</code>,
-          <code>ui-ms-auto</code>. Sides flip in Arabic.
+          Tailwind's classes read the kit's scale. Without Tailwind, the kit's
+          own <code>ui-</code> classes do the same.
         </p>
         <app-token-table
           label="Padding, margin and gap classes"
-          tokenHeading="Class"
+          tokenHeading="Tailwind"
+          valueHeading="Without Tailwind"
+          useHeading="Sets"
           [rows]="utilities"
         />
-        <app-code-block [text]="utilityUsage" caption="HTML" />
       </section>
 
       <section class="doc-section">
@@ -55,17 +57,17 @@ import {
           [valuetext]="step().n + ', ' + step().rem"
           [(value)]="index"
         >
-          <code>{{ step().n }}</code> · {{ step().rem }} · {{ step().px }}px
+          <code>{{ step().tw }}</code> · {{ step().rem }} · {{ step().px }}px
         </app-step>
 
         <app-example
           title="Padding"
           [description]="
-            'ui-p-' + step().n + ': space inside the box, on all four sides.'
+            'p-' + step().tw + ': space inside the box, on all four sides.'
           "
           [code]="demoCode('padding')"
         >
-          <div class="doc-tint" [class]="'ui-p-' + step().n">
+          <div class="doc-tint" [class]="'p-' + step().tw">
             <div class="doc-block">Content</div>
           </div>
         </app-example>
@@ -73,14 +75,14 @@ import {
         <app-example
           title="Margin"
           [description]="
-            'ui-mb-' +
-            step().n +
+            'mb-' +
+            step().tw +
             ' on the first box: space outside it, before the next one.'
           "
           [code]="demoCode('margin')"
         >
           <div class="doc-tint doc-tint--flow">
-            <div class="doc-block" [class]="'ui-mb-' + step().n">First</div>
+            <div class="doc-block" [class]="'mb-' + step().tw">First</div>
             <div class="doc-block">Second</div>
           </div>
         </app-example>
@@ -88,13 +90,13 @@ import {
         <app-example
           title="Gap"
           [description]="
-            'ui-gap-' +
-            step().n +
+            'gap-' +
+            step().tw +
             ' on a flex or grid parent: the same space between every child, none at the edges.'
           "
           [code]="demoCode('gap')"
         >
-          <div class="doc-tint doc-tint--row" [class]="'ui-gap-' + step().n">
+          <div class="doc-tint flex flex-wrap" [class]="'gap-' + step().tw">
             @for (item of ['One', 'Two', 'Three', 'Four', 'Five']; track item) {
               <div class="doc-block">{{ item }}</div>
             }
@@ -104,14 +106,14 @@ import {
         <app-example
           title="Start flips in Arabic"
           [description]="
-            'ui-ps-' +
-            step().n +
+            'ps-' +
+            step().tw +
             ' is padding on the start side: the left in English, the right in Arabic.'
           "
           [code]="demoCode('start')"
           [rtl]="true"
         >
-          <div class="doc-tint" [class]="'ui-ps-' + step().n">
+          <div class="doc-tint" [class]="'ps-' + step().tw">
             <div class="doc-block">المحتوى</div>
           </div>
         </app-example>
@@ -153,7 +155,7 @@ import {
                   value="ENIGMA10"
                 />
               </div>
-              <div class="doc-tint--row ui-gap-2 ui-mt-4">
+              <div class="mt-4 flex flex-wrap gap-2">
                 <button class="ui-button ui-button--primary" type="button">
                   Apply
                 </button>
@@ -232,6 +234,8 @@ export class SpaceComponent {
     return {
       n,
       use,
+      /** Tailwind writes a half step with a dot: 0.5, not 0-5. */
+      tw: n.replace('-', '.'),
       rem: quarters ? `${quarters / 4}rem` : '0',
       px: quarters * 4,
     };
@@ -241,6 +245,7 @@ export class SpaceComponent {
     token: `--ui-space-${s.n}`,
     value: `${s.rem} · ${s.px}px`,
     use: s.use,
+    tw: `p-${s.tw} · gap-${s.tw}`,
     previewClass: 'doc-space__bar',
     preview: { 'inline-size': `var(--ui-space-${s.n})` },
   }));
@@ -293,6 +298,9 @@ export class SpaceComponent {
     token: r.token,
     value: r.value,
     use: r.use,
+    tw:
+      'rounded-' +
+      (r.token === '--ui-radius' ? 'ui' : r.token.replace('--ui-radius-', '')),
     previewClass: 'doc-token__box',
     preview: { 'border-radius': `var(${r.token})` },
   }));
@@ -302,6 +310,7 @@ export class SpaceComponent {
       token: '--ui-control-height',
       value: '2.75rem · 44px',
       use: 'Smallest touch target: buttons, fields, list items, tabs. Large buttons take 3.25rem.',
+      tw: 'min-h-11',
       previewClass: 'doc-token__box',
       preview: { 'block-size': 'var(--ui-control-height)' },
     },
@@ -309,6 +318,7 @@ export class SpaceComponent {
       token: '--ui-gap',
       value: 'var(--ui-space-2)',
       use: 'Between buttons in a row and items in a group.',
+      tw: 'gap-2',
       previewClass: 'doc-space__bar',
       preview: { 'inline-size': 'var(--ui-gap)' },
     },
@@ -319,6 +329,7 @@ export class SpaceComponent {
       token: '--ui-shadow',
       value: '0 8px 24px var(--ui-shadow-color)',
       use: 'Every floating layer, with a transparent border so high contrast keeps its edge.',
+      tw: 'shadow-ui',
       previewClass: 'doc-token__box',
       preview: { 'box-shadow': 'var(--ui-shadow)' },
     },
@@ -333,6 +344,7 @@ export class SpaceComponent {
       token: '--ui-backdrop',
       value: 'rgb(11 16 32 / 0.6)',
       use: 'Behind a dialog, drawer or bottom sheet.',
+      tw: 'bg-backdrop',
       previewClass: 'doc-token__chip',
       preview: { background: 'var(--ui-backdrop)' },
     },
@@ -361,10 +373,9 @@ export class SpaceComponent {
       '--ui-radius-2xl': `calc(${r} * 3)`,
     };
   });
-  protected readonly radiusCode = computed((): FrameworkCode => {
-    const css = `:root {\n  --ui-radius: ${this.radius()};\n}`;
-    return { angular: css, react: css, html: css };
-  });
+  protected readonly radiusCode = computed(() =>
+    css(`:root {\n  --ui-radius: ${this.radius()};\n}`),
+  );
 
   /** Shadow depth: offset n px, blur 3n px; 8 is the default 0 8px 24px. */
   protected readonly depth = signal(8);
@@ -374,10 +385,9 @@ export class SpaceComponent {
   protected readonly shadowValue = computed(
     () => `${this.shadow()} var(--ui-shadow-color)`,
   );
-  protected readonly shadowCode = computed((): FrameworkCode => {
-    const css = `:root {\n  --ui-shadow: ${this.shadowValue()};\n}`;
-    return { angular: css, react: css, html: css };
-  });
+  protected readonly shadowCode = computed(() =>
+    css(`:root {\n  --ui-shadow: ${this.shadowValue()};\n}`),
+  );
 
   /** The step every demo uses; starts at --ui-space-4. */
   protected readonly index = signal(7);
@@ -386,51 +396,40 @@ export class SpaceComponent {
   protected demoCode(
     demo: 'padding' | 'margin' | 'gap' | 'start',
   ): FrameworkCode {
-    const n = this.step().n;
-    const html = {
-      padding: `<div class="ui-p-${n}">Content</div>`,
-      margin: `<div class="ui-mb-${n}">First</div>\n<div>Second</div>`,
-      gap: `<div class="ui-gap-${n}" style="display: flex; flex-wrap: wrap">\n  <div>One</div>\n  <div>Two</div>\n  <div>Three</div>\n</div>`,
-      start: `<div dir="rtl" lang="ar">\n  <div class="ui-ps-${n}">المحتوى</div>\n</div>`,
-    }[demo];
-    const react = html
-      .replace(/class=/g, 'className=')
-      .replace(
-        'style="display: flex; flex-wrap: wrap"',
-        "style={{ display: 'flex', flexWrap: 'wrap' }}",
-      );
-    return { angular: html, react, html };
+    const n = this.step().tw;
+    return markup(
+      {
+        padding: `<div class="p-${n}">Content</div>`,
+        margin: `<div class="mb-${n}">First</div>\n<div>Second</div>`,
+        gap: `<div class="flex flex-wrap gap-${n}">\n  <div>One</div>\n  <div>Two</div>\n  <div>Three</div>\n</div>`,
+        start: `<div dir="rtl" lang="ar">\n  <div class="ps-${n}">المحتوى</div>\n</div>`,
+      }[demo],
+    );
   }
 
   protected readonly utilities: TokenRow[] = [
-    ['p-', 'm-', 'all sides', 'Padding or margin on all four sides.'],
-    ['px-', 'mx-', 'inline', 'Start and end.'],
-    ['py-', 'my-', 'block', 'Top and bottom.'],
-    ['pt-', 'mt-', 'block-start', 'Top.'],
-    ['pb-', 'mb-', 'block-end', 'Bottom.'],
-    ['ps-', 'ms-', 'inline-start', 'Left in English, right in Arabic.'],
-    ['pe-', 'me-', 'inline-end', 'Right in English, left in Arabic.'],
-    ['gap-', '', 'gap', 'Between children of a flex or grid, both ways.'],
-    ['gap-x-', '', 'column-gap', 'Between columns.'],
-    ['gap-y-', '', 'row-gap', 'Between rows.'],
-  ].map(([a, b, value, use]) => ({
-    token: `ui-${a}step` + (b ? ` · ui-${b}step` : ''),
-    value,
+    ['p', 'm', 'Padding or margin on all four sides.'],
+    ['px', 'mx', 'Start and end.'],
+    ['py', 'my', 'Top and bottom.'],
+    ['pt', 'mt', 'Top.'],
+    ['pb', 'mb', 'Bottom.'],
+    ['ps', 'ms', 'Start: left in English, right in Arabic.'],
+    ['pe', 'me', 'End: right in English, left in Arabic.'],
+    ['gap', '', 'Between children of a flex or grid, both ways.'],
+    ['gap-x', '', 'Between columns.'],
+    ['gap-y', '', 'Between rows.'],
+  ].map(([a, b, use]) => ({
+    token: `${a}-4` + (b ? ` · ${b}-4` : ''),
+    value: `ui-${a}-4` + (b ? ` · ui-${b}-4` : ''),
     use,
   }));
 
-  protected readonly utilityUsage = `<section class="ui-card ui-p-8 ui-mb-12">
-  <h2 class="ui-heading ui-mb-4">Order summary</h2>
-  <div class="ui-py-2" style="display: flex">
+  protected readonly usage =
+    markup(`<section class="ui-card mb-12 grid gap-4 p-6">
+  <h2 class="head-sm">Order summary</h2>
+  <div class="flex py-2">
     <span>Delivery</span>
-    <span class="ui-ms-auto">EGP 45</span>
+    <span class="ms-auto">EGP 45</span>
   </div>
-</section>`;
-
-  protected readonly usage = `.order-summary {
-  display: grid;
-  gap: var(--ui-space-4);
-  padding: var(--ui-space-6);
-  margin-block-end: var(--ui-space-12);
-}`;
+</section>`);
 }

@@ -77,8 +77,12 @@ import { PageComponent } from '../shared/page.component';
                 }
               }
               <tr>
+                <th scope="row">Tailwind CSS</th>
+                <td>4.1</td>
+              </tr>
+              <tr>
                 <th scope="row">Browsers</th>
-                <td>Chrome and Edge 123, Firefox 125, Safari 17.5</td>
+                <td>Chrome and Edge 123, Firefox 128, Safari 17.5</td>
               </tr>
             </tbody>
           </table>
@@ -89,6 +93,11 @@ import { PageComponent } from '../shared/page.component';
         <h2 class="ui-heading doc-h2">Step 2. Install the packages</h2>
         <app-code-block [code]="install" caption="Terminal" />
         <ul class="doc-list">
+          <li>
+            Tailwind runs under the kit: its classes read the kit's tokens, so
+            <code>p-4</code>, <code>bg-primary</code> and
+            <code>rounded-xl</code> are the kit's own space, colour and radius.
+          </li>
           <li>
             Install <code>&#64;enigma-tech-lab/css</code> yourself, even though
             the framework package depends on it. With pnpm, a package you did
@@ -110,10 +119,12 @@ import { PageComponent } from '../shared/page.component';
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Step 3. Load the stylesheet once</h2>
         <p>
-          <code>ui.css</code> holds the fonts, the colours and every component
-          style. Load it exactly once, globally, before any of your own styles.
+          Tailwind first, then the kit's <code>tailwind.css</code>: it loads the
+          fonts and every component style, and makes the kit's tokens Tailwind's
+          theme. Load them once, globally.
         </p>
         <app-code-block [code]="styles" />
+        <app-code-block [code]="build" />
         <ul class="doc-list">
           @switch (settings.framework()) {
             @case ('angular') {
@@ -142,16 +153,25 @@ import { PageComponent } from '../shared/page.component';
             }
             @case ('html') {
               <li>
-                The fonts load from <code>./fonts/</code> next to
-                <code>ui.css</code>. If you copy the file, copy the
-                <code>fonts</code> folder beside it, or the text falls back to
-                the system font.
+                The fonts load from <code>./fonts/</code> next to the kit's CSS
+                files. If you copy them, copy the <code>fonts</code> folder
+                beside it, or the text falls back to the system font.
               </li>
             }
           }
           <li>
-            Load any CSS reset before <code>ui.css</code>, never after it: a
-            reset after it undoes the component styles.
+            Extend the theme in your own <code>&#64;theme</code> block after the
+            import; override a token on <code>:root</code> to re-brand.
+          </li>
+          <li>
+            Write your own CSS inside <code>&#64;layer base</code> or
+            <code>&#64;layer components</code>, or a plain rule on an element
+            (<code>a</code>, <code>button</code>) beats the kit's classes.
+          </li>
+          <li>
+            Without Tailwind, load <code>ui.css</code> on its own and use the
+            kit's <code>ui-</code> classes: <code>ui-p-4</code>,
+            <code>ui-head-md</code>.
           </li>
         </ul>
       </section>
@@ -263,8 +283,19 @@ import { PageComponent } from '../shared/page.component';
               <tr>
                 <th scope="row">No styles at all</th>
                 <td>
-                  <code>ui.css</code> is not loaded. Redo step 3; with pnpm,
-                  check that step 2 added <code>&#64;enigma-tech-lab/css</code>.
+                  <code>tailwind.css</code> is not loaded. Redo step 3; with
+                  pnpm, check that step 2 added
+                  <code>&#64;enigma-tech-lab/css</code>.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  Kit components look right, Tailwind classes do nothing
+                </th>
+                <td>
+                  Tailwind is not running: the build file in step 3 is missing,
+                  or <code>&#64;import 'tailwindcss'</code> is not the first
+                  line.
                 </td>
               </tr>
               <tr>
@@ -278,9 +309,10 @@ import { PageComponent } from '../shared/page.component';
               <tr>
                 <th scope="row">Components look wrong in places</th>
                 <td>
-                  A reset or your own CSS loads after <code>ui.css</code>, or
-                  overrides a <code>.ui-*</code> class. Load it before, and
-                  restyle through tokens only.
+                  Your own CSS sits outside a layer, or overrides a
+                  <code>.ui-*</code> class. Put it in
+                  <code>&#64;layer components</code>, and restyle through tokens
+                  or Tailwind classes only.
                 </td>
               </tr>
               @if (settings.framework() === 'angular') {
@@ -331,13 +363,13 @@ import { PageComponent } from '../shared/page.component';
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
           <li>
-            Restyle only through the <code>--ui-*</code> tokens, set after
-            <code>ui.css</code>. Never override a <code>.ui-*</code> class or
-            the classes of the libraries underneath (<code>cdk-*</code>,
-            <code>data-*</code>): they change without notice.
+            Restyle only through the <code>--ui-*</code> tokens and Tailwind
+            classes. Never override a <code>.ui-*</code> class or the classes of
+            the libraries underneath (<code>cdk-*</code>, <code>data-*</code>):
+            they change without notice.
           </li>
           <li>
-            Never copy <code>ui.css</code> into your project. Update the package
+            Never copy the kit's CSS into your project. Update the package
             instead, so fixes reach you.
           </li>
           <li>Never let colour carry meaning alone: an error also has text.</li>
@@ -368,24 +400,48 @@ export class GettingStartedComponent {
 
   protected readonly install = {
     angular:
-      'pnpm add @enigma-tech-lab/angular @enigma-tech-lab/css @angular/cdk@^22.2.0',
-    react: 'pnpm add @enigma-tech-lab/react @enigma-tech-lab/css',
-    html: 'pnpm add @enigma-tech-lab/css',
+      'pnpm add @enigma-tech-lab/angular @enigma-tech-lab/css @angular/cdk@^22.2.0\npnpm add -D tailwindcss @tailwindcss/postcss',
+    react:
+      'pnpm add @enigma-tech-lab/react @enigma-tech-lab/css\npnpm add -D tailwindcss @tailwindcss/vite',
+    html: 'pnpm add @enigma-tech-lab/css\npnpm add -D tailwindcss @tailwindcss/cli',
   };
 
   protected readonly styles = {
     angular: `/* src/styles.css: the global stylesheet, first lines */
-@import '@enigma-tech-lab/css/ui.css';
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
 @import '@angular/cdk/overlay-prebuilt.css';
 @import '@angular/cdk/a11y-prebuilt.css';
 
-/* your own styles below */`,
-    react: `// main.tsx: before every other CSS import
-import '@enigma-tech-lab/css/ui.css';
-import './app.css';`,
-    html: `<!-- with a bundler, in your main CSS file: @import '@enigma-tech-lab/css/ui.css'; -->
-<link rel="stylesheet" href="/node_modules/@enigma-tech-lab/css/ui.css" />
-<link rel="stylesheet" href="/app.css" />`,
+/* your own theme and styles below */`,
+    react: `/* src/index.css, imported once in main.tsx */
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
+
+/* your own theme and styles below */`,
+    html: `/* src/app.css */
+@import 'tailwindcss';
+@import '@enigma-tech-lab/css/tailwind.css';
+
+/* your own theme and styles below */`,
+  };
+
+  /** Where Tailwind runs: PostCSS for the Angular CLI, the Vite plugin for React, the CLI for plain HTML. */
+  protected readonly build = {
+    angular: `// .postcssrc.json, next to angular.json
+{
+  "plugins": {
+    "@tailwindcss/postcss": {}
+  }
+}`,
+    react: `// vite.config.ts
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});`,
+    html: `# builds dist/app.css; link it in every page
+npx @tailwindcss/cli -i src/app.css -o dist/app.css --watch`,
   };
 
   protected readonly htmlTag = `<!-- English -->

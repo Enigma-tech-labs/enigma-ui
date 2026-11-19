@@ -9,7 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { CodeBlockComponent } from '../shared/code-block.component';
-import type { FrameworkCode } from '../shared/docs-settings';
+import { markup, type FrameworkCode } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 import { StepComponent } from '../shared/step.component';
@@ -195,10 +195,11 @@ import {
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Your own components</h2>
         <p>
-          <code>ui-container</code> on the box, then <code>&#64;container</code>
-          with a breakpoint's value: the card fits a side bar and a full page.
+          <code>&#64;container</code> on the box, then a
+          <code>&#64;min-[40rem]:</code> variant: the card reads its box, so it
+          fits a side bar and a full page.
         </p>
-        <app-code-block [text]="usage" caption="CSS" />
+        <app-code-block [code]="usage" />
       </section>
 
       <section class="doc-section">
@@ -353,16 +354,12 @@ export class LayoutComponent {
     { token: '.ui-tooltip', value: '18rem at most', use: 'Tooltip.' },
   ];
 
-  protected readonly usage = `/* <div class="ui-container"><article class="product">…</article></div> */
-.product {
-  display: grid;
-  gap: var(--ui-space-4);
-}
-@container (width >= 40rem) {
-  .product {
-    grid-template-columns: 12rem 1fr;
-  }
-}`;
+  protected readonly usage = markup(`<div class="@container">
+  <article class="grid gap-4 @min-[40rem]:grid-cols-[12rem_1fr]">
+    <img src="/kettle.jpg" alt="Steel kettle" />
+    <p class="body-md">Steel kettle, 1.7 litres.</p>
+  </article>
+</div>`);
 
   private readonly demoHtml = `<div class="ui-page">
   <header>Header</header>

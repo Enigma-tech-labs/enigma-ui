@@ -4,6 +4,8 @@ export interface TokenRow {
   token: string;
   value: string;
   use: string;
+  /** The Tailwind class that reads this token, from @enigma-tech-lab/css/tailwind.css. */
+  tw?: string;
   /** Styles for a small live sample of the token, e.g. `{ background: 'var(--ui-primary)' }`. */
   preview?: Record<string, string>;
   /** A class for the sample instead of, or as well as, the styles. */
@@ -27,6 +29,9 @@ export interface TokenRow {
           <tr>
             <th scope="col">{{ tokenHeading() }}</th>
             <th scope="col">{{ valueHeading() }}</th>
+            @if (hasTw()) {
+              <th scope="col">Tailwind</th>
+            }
             <th scope="col">{{ useHeading() }}</th>
             @if (hasPreview()) {
               <th scope="col">
@@ -44,6 +49,15 @@ export interface TokenRow {
               <td>
                 <code>{{ row.value }}</code>
               </td>
+              @if (hasTw()) {
+                <td>
+                  @if (row.tw) {
+                    <code>{{ row.tw }}</code>
+                  } @else {
+                    —
+                  }
+                </td>
+              }
               <td>{{ row.use }}</td>
               @if (hasPreview()) {
                 <td class="doc-token__cell">
@@ -71,6 +85,9 @@ export class TokenTableComponent {
   readonly tokenHeading = input('Token');
   readonly valueHeading = input('Value');
   readonly useHeading = input('For');
+  protected hasTw(): boolean {
+    return this.rows().some((r) => r.tw);
+  }
   protected hasPreview(): boolean {
     return this.rows().some((r) => r.preview || r.previewClass);
   }
