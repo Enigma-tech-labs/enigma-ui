@@ -1,319 +1,194 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CodeBlockComponent } from '../shared/code-block.component';
+import type { FrameworkCode } from '../shared/docs-settings';
+import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+import { StepComponent } from '../shared/step.component';
+import {
+  TokenTableComponent,
+  type TokenRow,
+} from '../shared/token-table.component';
+
+const styles = [
+  ['head-3xl', '2.25–3.5rem / 1.1', 'Landing hero.'],
+  ['head-2xl', '2–2.75rem / 1.15', 'Page title.'],
+  ['head-xl', '1.625–2rem / 1.2', 'Big section.'],
+  ['head-lg', '1.75rem / 1.25', 'Section.'],
+  ['head-md', '1.5rem / 1.3', 'Sub-section.'],
+  ['head-sm', '1.25rem / 1.3', 'Card or dialog title.'],
+  ['head-xs', '1.125rem / 1.4', 'Group or list header.'],
+  ['head-2xs', '1rem / 1.4', 'Smallest headline.'],
+  ['body-lg', '1.25rem / 1.5', 'Lead paragraph.'],
+  ['body-md', '1rem / 1.5', 'Body text and controls.'],
+  ['body-sm', '0.875rem / 1.5', 'Hints and captions only.'],
+].map(([name, size, use]) => ({ name, size, use }));
 
 @Component({
   selector: 'app-typography',
-  imports: [PageComponent, CodeBlockComponent],
+  imports: [
+    PageComponent,
+    CodeBlockComponent,
+    ExampleComponent,
+    StepComponent,
+    TokenTableComponent,
+  ],
   template: `
     <app-page
       title="Typography"
-      lead="Five faces from the brand book, all free under the SIL Open Font License, shipped inside the package. Each stack lists a Latin face then an Arabic one, so mixed text picks the right face for every letter."
+      lead="Five free faces from the brand book, shipped in the package. Every stack is Latin then Arabic."
     >
-      @for (lang of samples; track lang.code) {
-        <section
-          class="doc-section doc-card"
-          [attr.lang]="lang.code"
-          [attr.dir]="lang.dir"
-        >
-          <p class="ui-label doc-muted">{{ lang.label }}</p>
-          <p class="ui-head-2xl">{{ lang.headline }}</p>
-          <p class="ui-head-md">{{ lang.sub }}</p>
-          <p class="ui-body-lg">{{ lang.lead }}</p>
-          <p class="ui-body-md">{{ lang.body }}</p>
-          <p class="ui-body-sm doc-muted">{{ lang.small }}</p>
-        </section>
-      }
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Families</h2>
+        <p>Headlines, body and labels each have one stack.</p>
+        <app-token-table label="Font families" [rows]="families" />
+      </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Type styles</h2>
         <p>
-          One class sets the face, weight, size and line height together, so a
-          headline is <code>class="ui-head-md"</code> instead of four
-          declarations. Each class has a token of the same name for the
-          <code>font</code> property in your own CSS. Head classes also remove
-          the heading's default margin.
+          One class sets face, weight, size and line height; the token of the
+          same name is for <code>font</code> in your CSS.
         </p>
-        <div class="doc-type-list">
-          @for (s of styles; track s.name) {
-            <div class="doc-type-row">
-              <p [class]="'ui-' + s.name">{{ s.sample }}</p>
-              <p class="ui-body-sm doc-muted">
-                <code>ui-{{ s.name }}</code> · {{ s.size }} · {{ s.use }}
-              </p>
-            </div>
-          }
-        </div>
+        <app-token-table
+          label="Type styles"
+          tokenHeading="Class and token"
+          [rows]="styleRows"
+        />
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try the scale</h2>
+        <p>The same line in English and Arabic, at every step.</p>
+        <app-step
+          label="Style"
+          [max]="styles.length - 1"
+          [valuetext]="style().name + ', ' + style().size"
+          [(value)]="index"
+        >
+          <code>ui-{{ style().name }}</code> · {{ style().size }}
+        </app-step>
+
+        <app-example
+          [title]="'ui-' + style().name"
+          [description]="style().use"
+          [code]="demoCode()"
+        >
+          <div class="doc-type-demo">
+            <p [class]="'ui-' + style().name" lang="en" dir="ltr">
+              Code nobody dares to touch
+            </p>
+            <p [class]="'ui-' + style().name" lang="ar" dir="rtl">
+              الكود اللي محدش بيجرؤ يلمسه
+            </p>
+          </div>
+        </app-example>
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Body weights</h2>
-        <p>
-          Body classes take a weight suffix. Heads stay ExtraBold: that is the
-          brand.
-        </p>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="Body weights"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">Suffix</th>
-                <th scope="col">Weight</th>
-                <th scope="col">Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (w of weights; track w.suffix) {
-                <tr>
-                  <td>
-                    <code>{{ w.suffix || 'none' }}</code>
-                  </td>
-                  <td>{{ w.weight }}</td>
-                  <td>
-                    <span [class]="'ui-body-md' + w.suffix"
-                      >ui-body-md{{ w.suffix }}</span
-                    >
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="doc-section">
-        <h2 class="ui-heading doc-h2">In code</h2>
-        <app-code-block [text]="usage" caption="HTML" />
-        <app-code-block [text]="css" caption="CSS" />
-        <ul class="doc-list">
-          <li>
-            Body text never goes under 1rem; <code>ui-body-sm</code> is for
-            hints and captions only.
-          </li>
-          <li>
-            Pick the head by its place in the page and the element by the
-            outline: an <code>h2</code> can be <code>ui-head-sm</code>.
-          </li>
-          <li>
-            Arabic is never letter-spaced: spacing breaks the joins between
-            letters. <code>.ui-label</code> drops its spacing in Arabic by
-            itself.
-          </li>
-        </ul>
-      </section>
-
-      <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Roles</h2>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="Type roles"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">Role</th>
-                <th scope="col">Use</th>
-                <th scope="col">Faces</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (r of roles; track r.role) {
-                <tr>
-                  <td>{{ r.role }}</td>
-                  <td>
-                    <code>{{ r.use }}</code>
-                  </td>
-                  <td>{{ r.faces }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        <p>Body classes take a weight suffix; heads stay ExtraBold.</p>
+        <app-token-table
+          label="Body weights"
+          tokenHeading="Class"
+          [rows]="weights"
+        />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Size tokens</h2>
-        <p>
-          The sizes alone, for the rare case a type style does not fit, such as
-          inside a control.
-        </p>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="Size tokens"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">Token</th>
-                <th scope="col">Size</th>
-                <th scope="col">For</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (s of sizes; track s.token) {
-                <tr>
-                  <td>
-                    <code>{{ s.token }}</code>
-                  </td>
-                  <td>{{ s.size }}</td>
-                  <td>{{ s.use }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        <p>Sizes alone, for inside a control where a style does not fit.</p>
+        <app-token-table label="Size tokens" [rows]="sizes" />
+        <app-code-block [text]="css" caption="CSS" />
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Rules</h2>
+        <ul class="doc-list">
+          <li>
+            Body text never under 1rem; <code>ui-body-sm</code> is hints only.
+          </li>
+          <li>Pick the class by look, the h1–h6 by the outline.</li>
+          <li>Arabic is never letter-spaced or set in italics.</li>
+        </ul>
       </section>
     </app-page>
   `,
 })
 export class TypographyComponent {
-  protected readonly samples = [
-    {
-      code: 'en',
-      dir: 'ltr',
-      label: 'English · Archivo Expanded, IBM Plex Sans',
-      headline: 'Code nobody dares to touch',
-      sub: 'We fix it while you keep using it',
-      lead: 'Plain and exact, like a lab report.',
-      body: 'Body text is IBM Plex Sans at 1rem. Muted text is slate, darkened until it reaches 7:1 on white.',
-      small: 'Small text, 0.875rem, for hints and captions only.',
-    },
-    {
-      code: 'ar',
-      dir: 'rtl',
-      label: 'العربية · Alexandria، IBM Plex Sans Arabic',
-      headline: 'الكود اللي محدش بيجرؤ يلمسه',
-      sub: 'ما بنهدّش البيت. بنجدّده وانت ساكن فيه',
-      lead: 'واضح ودقيق، زي تقرير معمل.',
-      body: 'النص الأساسي بخط IBM Plex Sans Arabic بحجم 1rem، والنص العربي لا تُضاف له مسافات بين الحروف.',
-      small: 'نص صغير للتلميحات والتعليقات فقط.',
-    },
-  ];
+  protected readonly styles = styles;
 
-  protected readonly styles = [
+  protected readonly families: TokenRow[] = [
     {
-      name: 'head-3xl',
-      sample: 'Hero',
-      size: '2.25–3.5rem / 1.1',
-      use: 'Landing hero',
+      token: '--ui-font-display',
+      value: 'Archivo Expanded · Alexandria',
+      use: 'Headlines, ExtraBold. Class ui-head-*.',
     },
     {
-      name: 'head-2xl',
-      sample: 'Page title',
-      size: '2–2.75rem / 1.15',
-      use: 'Page title',
+      token: '--ui-font',
+      value: 'IBM Plex Sans · IBM Plex Sans Arabic',
+      use: 'Body and controls. Class ui-body-*.',
     },
     {
-      name: 'head-xl',
-      sample: 'Big section',
-      size: '1.625–2rem / 1.2',
-      use: 'Big section',
+      token: '--ui-font-mono',
+      value: 'IBM Plex Mono · IBM Plex Sans Arabic',
+      use: 'Labels, upper case. Class ui-label.',
     },
-    {
-      name: 'head-lg',
-      sample: 'Section',
-      size: '1.75rem / 1.25',
-      use: 'Section',
-    },
-    {
-      name: 'head-md',
-      sample: 'Sub-section',
-      size: '1.5rem / 1.3',
-      use: 'Sub-section',
-    },
-    {
-      name: 'head-sm',
-      sample: 'Card or dialog title',
-      size: '1.25rem / 1.3',
-      use: 'Card, dialog',
-    },
-    {
-      name: 'head-xs',
-      sample: 'Group title',
-      size: '1.125rem / 1.4',
-      use: 'Group, list header',
-    },
-    {
-      name: 'head-2xs',
-      sample: 'Small title',
-      size: '1rem / 1.4',
-      use: 'Smallest headline',
-    },
-    {
-      name: 'body-lg',
-      sample: 'Lead paragraph under a headline.',
-      size: '1.25rem / 1.5',
-      use: 'Lead',
-    },
-    {
-      name: 'body-md',
-      sample: 'Body text and controls.',
-      size: '1rem / 1.5',
-      use: 'Body',
-    },
-    {
-      name: 'body-sm',
-      sample: 'Hints and captions only.',
-      size: '0.875rem / 1.5',
-      use: 'Hint, caption',
-    },
-  ];
+  ].map((r) => ({
+    ...r,
+    previewText: 'Aa أب',
+    preview: { 'font-family': `var(${r.token})`, 'font-size': '1.25rem' },
+  }));
 
-  protected readonly weights = [
-    { suffix: '', weight: '400 Regular' },
-    { suffix: '-m', weight: '500 Medium' },
-    { suffix: '-s', weight: '600 SemiBold' },
-    { suffix: '-b', weight: '700 Bold' },
-  ];
+  protected readonly styleRows: TokenRow[] = styles.map((s) => ({
+    token: `ui-${s.name} · --ui-${s.name}`,
+    value: s.size,
+    use: s.use,
+    previewClass: `ui-${s.name}`,
+    previewText: 'Aa',
+  }));
 
-  protected readonly roles = [
-    {
-      role: 'Headlines',
-      use: 'class="ui-head-md"',
-      faces: 'Archivo Expanded ExtraBold · Alexandria ExtraBold',
-    },
-    {
-      role: 'Body',
-      use: 'class="ui-body-md"',
-      faces: 'IBM Plex Sans · IBM Plex Sans Arabic',
-    },
-    {
-      role: 'Labels',
-      use: 'class="ui-label"',
-      faces:
-        'IBM Plex Mono, upper case · Arabic falls back to IBM Plex Sans Arabic',
-    },
-  ];
+  protected readonly weights: TokenRow[] = [
+    ['', '400', 'Regular: body text.'],
+    ['-m', '500', 'Medium: labels in a form.'],
+    ['-s', '600', 'SemiBold: totals, a key figure.'],
+    ['-b', '700', 'Bold: a word that must stand out.'],
+  ].map(([suffix, value, use]) => ({
+    token: `ui-body-md${suffix}`,
+    value,
+    use,
+    previewClass: `ui-body-md${suffix}`,
+    previewText: 'Total 1,240 EGP',
+  }));
 
-  protected readonly sizes = [
-    { token: '--ui-text-3xl', size: '2.75rem', use: 'Page headline' },
-    { token: '--ui-text-2xl', size: '2rem', use: 'Section headline' },
-    { token: '--ui-text-xl', size: '1.5rem', use: 'Sub-section headline' },
-    {
-      token: '--ui-text-lg',
-      size: '1.25rem',
-      use: 'Lead paragraph, dialog title',
-    },
-    { token: '--ui-font-size', size: '1rem', use: 'Body text and controls' },
-    { token: '--ui-text-sm', size: '0.875rem', use: 'Hints, captions, labels' },
-  ];
+  protected readonly sizes: TokenRow[] = [
+    ['--ui-text-3xl', '2.75rem', 'Page headline.'],
+    ['--ui-text-2xl', '2rem', 'Section headline.'],
+    ['--ui-text-xl', '1.5rem', 'Sub-section headline.'],
+    ['--ui-text-lg', '1.25rem', 'Lead paragraph, dialog title.'],
+    ['--ui-font-size', '1rem', 'Body text and controls.'],
+    ['--ui-text-sm', '0.875rem', 'Hints, captions, labels.'],
+  ].map(([token, value, use]) => ({
+    token,
+    value,
+    use,
+    previewText: 'Aa',
+    preview: { 'font-size': `var(${token})`, 'line-height': '1' },
+  }));
 
-  protected readonly usage = `<h1 class="ui-head-2xl">Order history</h1>
-<p class="ui-body-lg">Every order from the last twelve months.</p>
-<h2 class="ui-head-sm">March</h2>
-<p class="ui-body-md-s">3 orders · 1,240 EGP</p>
-<p class="ui-body-sm">Refunds show after 5 working days.</p>`;
+  /** Starts at body-md. */
+  protected readonly index = signal(9);
+  protected readonly style = computed(() => styles[this.index()]);
+  protected readonly demoCode = computed((): FrameworkCode => {
+    const n = this.style().name;
+    const html = `<h2 class="ui-${n}">Code nobody dares to touch</h2>`;
+    return {
+      angular: html,
+      react: html.replace(/class=/g, 'className='),
+      html: `${html}\n\n<style>\n  .my-title {\n    font: var(--ui-${n});\n  }\n</style>`,
+    };
+  });
 
-  protected readonly css = `/* Your own component: the token, plus a weight if needed */
-.order-card__title {
+  protected readonly css = `.order-card__title {
   font: var(--ui-head-sm);
 }
 .order-card__total {

@@ -1,35 +1,65 @@
 import {
   afterRenderEffect,
   Component,
+  computed,
   ElementRef,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
+import type { FrameworkCode } from '../shared/docs-settings';
 import { DocsSettings } from '../shared/docs-settings';
+import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+import { StepComponent } from '../shared/step.component';
+import {
+  TokenTableComponent,
+  type TokenRow,
+} from '../shared/token-table.component';
 
-const brand = [
-  {
-    name: 'Red',
-    token: 'brand-red',
-    value: '#DC4B4B',
-    use: 'Logo and large fills. Carries danger in product UI.',
-  },
-  {
-    name: 'Blue',
-    token: 'brand-blue',
-    value: '#0059FF',
-    use: 'Logo and large fills. The primary colour in product UI.',
-  },
-  { name: 'Ink', token: 'ink', value: '#0B1020', use: 'Dark ground and text.' },
-  { name: 'Paper', token: 'paper', value: '#F6F7FB', use: 'Light ground.' },
-  {
-    name: 'Slate',
-    token: 'slate',
-    value: '#586087',
-    use: 'Labels, secondary text, borders.',
-  },
-];
+const chip = (token: string): Partial<TokenRow> => ({
+  previewClass: 'doc-token__chip',
+  preview: { background: `var(${token})` },
+});
+
+const brand: TokenRow[] = [
+  [
+    '--ui-brand-blue',
+    '#0059FF',
+    'Logo and large fills. Primary in product UI.',
+  ],
+  ['--ui-brand-red', '#DC4B4B', 'Logo and large fills. Danger in product UI.'],
+  ['--ui-ink', '#0B1020', 'Dark ground and text.'],
+  ['--ui-paper', '#F6F7FB', 'Light ground.'],
+  ['--ui-slate', '#586087', 'Labels, secondary text, borders.'],
+].map(([token, value, use]) => ({ token, value, use, ...chip(token) }));
+
+/** Light value, dark value, what for. Copied from packages/css/ui.css. */
+const product: TokenRow[] = [
+  ['--ui-bg', '#f6f7fb · #0b1020', 'The page.'],
+  ['--ui-surface', '#ffffff · #151b30', 'Cards, fields, floating layers.'],
+  ['--ui-text', '#0b1020 · #f6f7fb', 'Body text.'],
+  ['--ui-text-muted', '#454c6e · #c9cee3', 'Hints and secondary text, 7:1.'],
+  ['--ui-border', '#586087 · #9fa5c0', 'Field and control edges, 3:1.'],
+  ['--ui-divider', '#e4e7f2 · #262d48', 'Lines between rows. Not an edge.'],
+  ['--ui-primary', '#0047cc · #8fb4ff', 'The main action, links, selection.'],
+  ['--ui-on-primary', '#ffffff · #0b1020', 'Text on primary.'],
+  ['--ui-secondary', '#e4e7f2 · #232a45', 'Quiet buttons, tracks.'],
+  ['--ui-on-secondary', '#0b1020 · #f6f7fb', 'Text on secondary.'],
+  ['--ui-highlight', '#dbe6ff · #1d3a8a', 'Selected row, info badge.'],
+  ['--ui-on-highlight', '#0b1020 · #f6f7fb', 'Text on highlight.'],
+  ['--ui-focus', '#0047cc · #8fb4ff', 'The keyboard ring.'],
+  ['--ui-danger', '#9a1d1d · #f2a3a3', 'Errors, destructive actions.'],
+  ['--ui-on-danger', '#ffffff · #0b1020', 'Text on danger.'],
+  ['--ui-danger-soft', '#fdeeee · #3a1418', 'Error alert and badge ground.'],
+  ['--ui-success', '#14532d · #86efac', 'Done, saved, paid.'],
+  ['--ui-on-success', '#ffffff · #0b1020', 'Text on success.'],
+  ['--ui-success-soft', '#e3f5e9 · #0f2e1c', 'Success alert and badge ground.'],
+  ['--ui-warning', '#7a3a0a · #fcd34d', 'Needs a look, not broken.'],
+  ['--ui-on-warning', '#ffffff · #0b1020', 'Text on warning.'],
+  ['--ui-warning-soft', '#fdf1dc · #33260a', 'Warning alert and badge ground.'],
+  ['--ui-backdrop', 'rgb(11 16 32 / 0.6)', 'Behind a dialog, both themes.'],
+].map(([token, value, use]) => ({ token, value, use, ...chip(token) }));
 
 const pairs = [
   { name: 'Text on background', fg: 'text', bg: 'bg', min: 7 },
@@ -63,41 +93,32 @@ function contrast(a: string, b: string): number {
 
 @Component({
   selector: 'app-colour',
-  imports: [PageComponent],
+  imports: [
+    PageComponent,
+    ExampleComponent,
+    StepComponent,
+    TokenTableComponent,
+  ],
   template: `
     <app-page
       title="Colour"
-      lead="Two brand colours, three neutrals, and the product shades made from them. Every shade is a brand colour darkened or lightened along its own hue until small text reaches 7:1."
+      lead="Two brand colours, three neutrals, and product shades tuned until small text reaches 7:1."
     >
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Brand</h2>
-        <p>
-          From the brand book, used as is. Red and blue never meet as large
-          areas: one carries the screen, the other is the accent.
-        </p>
-        <div class="doc-swatches">
-          @for (c of brand; track c.token) {
-            <div class="doc-swatch">
-              <div
-                class="doc-swatch__chip"
-                [style.background]="'var(--ui-' + c.token + ')'"
-              ></div>
-              <strong>{{ c.name }}</strong>
-              <code>--ui-{{ c.token }}</code>
-              <code>{{ c.value }}</code>
-              <span class="doc-muted">{{ c.use }}</span>
-            </div>
-          }
-        </div>
+        <p>From the brand book, as is: fills, the logo and large text only.</p>
+        <app-token-table label="Brand colours" [rows]="brand" />
       </section>
 
       <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Product colours</h2>
-        <p>
-          Each row is a text colour on its ground, measured live in the theme on
-          screen. Switch the theme at the top to measure the other one. 7:1 is
-          the bar for text, 3:1 for borders and focus rings.
-        </p>
+        <h2 class="ui-heading doc-h2">Product tokens</h2>
+        <p>Use these in product code, never a hex: dark mode follows.</p>
+        <app-token-table label="Product colour tokens" [rows]="product" />
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Contrast, measured live</h2>
+        <p>Each pair measured in the theme on screen: 7:1 text, 3:1 edges.</p>
         <div class="doc-pairs">
           @for (p of pairs; track p.name; let i = $index) {
             <div
@@ -119,26 +140,71 @@ function contrast(a: string, b: string): number {
       </section>
 
       <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try a primary colour</h2>
+        <p>
+          Re-brand with one token; the ratio says if small text still reads.
+        </p>
+        <app-step
+          label="Hue"
+          [max]="359"
+          [valuetext]="hue() + ' degrees'"
+          [(value)]="hue"
+          >{{ hue() }}°</app-step
+        >
+        <app-step
+          label="Lightness"
+          [min]="10"
+          [max]="70"
+          [valuetext]="light() + ' percent'"
+          [(value)]="light"
+          >{{ light() }}%</app-step
+        >
+
+        <app-example
+          title="One token re-colours every action"
+          [description]="
+            'White on ' +
+            primary() +
+            ': ' +
+            primaryRatio() +
+            ':1, ' +
+            (+primaryRatio() >= 7 ? 'passes' : 'fails') +
+            ' 7:1.'
+          "
+          [code]="primaryCode()"
+        >
+          <div class="doc-tint--row ui-gap-3" [style]="primaryStyle()">
+            <button
+              #primaryButton
+              class="ui-button ui-button--primary"
+              type="button"
+            >
+              Pay EGP 450
+            </button>
+            <button class="ui-button ui-button--secondary" type="button">
+              Later
+            </button>
+            <label class="ui-switch">
+              <input
+                class="ui-switch__input"
+                type="checkbox"
+                role="switch"
+                checked
+              />
+              Email receipt
+            </label>
+          </div>
+        </app-example>
+      </section>
+
+      <section class="doc-section">
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
           <li>
-            Brand blue and brand red as they are: fills, borders, the logo and
-            large text only. White on blue is 5.4:1 and white on red 4.1:1,
-            under the 7:1 bar for small text.
+            Brand blue and red: fills and large text only, never small text.
           </li>
-          <li>
-            Blue is the primary action. Red is for errors, destructive actions
-            and alerts, nothing else, so it keeps its meaning.
-          </li>
-          <li>
-            Success and warning are not brand colours. They are chosen to pass
-            7:1 and to stay clear of brand red.
-          </li>
-          <li>
-            Never a hex value in product code: use the
-            <code>--ui-*</code> tokens, so dark mode and re-branding keep
-            working.
-          </li>
+          <li>Red means errors and destructive actions, nothing else.</li>
+          <li>No hex in product code: <code>--ui-*</code> tokens only.</li>
         </ul>
       </section>
     </app-page>
@@ -146,8 +212,27 @@ function contrast(a: string, b: string): number {
 })
 export class ColourComponent {
   protected readonly brand = brand;
+  protected readonly product = product;
   protected readonly pairs = pairs;
   protected readonly ratios = signal<string[]>([]);
+
+  /** Starts near the shipped light primary, #0047cc. */
+  protected readonly hue = signal(219);
+  protected readonly light = signal(40);
+  protected readonly primary = computed(
+    () => `hsl(${this.hue()} 100% ${this.light()}%)`,
+  );
+  protected readonly primaryStyle = computed(() => ({
+    '--ui-primary': this.primary(),
+    '--ui-on-primary': '#ffffff',
+  }));
+  protected readonly primaryCode = computed((): FrameworkCode => {
+    const css = `:root {\n  --ui-primary: ${this.primary()};\n  --ui-on-primary: #ffffff;\n}`;
+    return { angular: css, react: css, html: css };
+  });
+  protected readonly primaryRatio = signal('…');
+  private readonly primaryButton =
+    viewChild.required<ElementRef<HTMLElement>>('primaryButton');
 
   constructor() {
     const host: HTMLElement = inject(ElementRef).nativeElement;
@@ -160,6 +245,13 @@ export class ColourComponent {
           const style = getComputedStyle(row);
           return contrast(style.color, style.backgroundColor).toFixed(1);
         }),
+      );
+    });
+    afterRenderEffect(() => {
+      this.primary();
+      const style = getComputedStyle(this.primaryButton().nativeElement);
+      this.primaryRatio.set(
+        contrast(style.color, style.backgroundColor).toFixed(1),
       );
     });
   }
