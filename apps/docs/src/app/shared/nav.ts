@@ -31,6 +31,7 @@ export const NAV = [
       { path: '/components/file-field', label: 'File field' },
       { path: '/components/radio-group', label: 'Radio group' },
       { path: '/components/select', label: 'Select' },
+      { path: '/components/slider', label: 'Slider' },
       { path: '/components/switch', label: 'Switch' },
       { path: '/components/text-field', label: 'Text field' },
       { path: '/components/textarea', label: 'Textarea' },

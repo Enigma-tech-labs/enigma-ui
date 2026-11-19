@@ -127,6 +127,13 @@ export const appRoutes: Route[] = [
       import('./pages/tag-page.component').then((m) => m.TagPageComponent),
   },
   {
+    path: 'components/slider',
+    loadComponent: () =>
+      import('./pages/slider-page.component').then(
+        (m) => m.SliderPageComponent,
+      ),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),

@@ -2288,6 +2288,89 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
+ * Slider: a native range input, so arrow keys, Page Up/Down, Home and End all work and screen
+ * readers say the value. The value is also written beside the label. --ui-slider-fill paints the
+ * chosen part of the track in WebKit; Firefox paints it itself.
+ */
+.ui-slider__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+}
+.ui-slider__value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.ui-slider {
+  --ui-slider-fill: 0%;
+  --ui-slider-track: 0.375rem;
+  --ui-slider-thumb: 1.5rem;
+  appearance: none;
+  inline-size: 100%;
+  block-size: var(--ui-control-height);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.ui-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ui-slider:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+  border-radius: var(--ui-radius-sm);
+}
+.ui-slider::-webkit-slider-runnable-track {
+  block-size: var(--ui-slider-track);
+  border: 1px solid var(--ui-border); /* the empty part shows at 3:1 */
+  border-radius: var(--ui-radius-full);
+  background: linear-gradient(
+    to right,
+    var(--ui-primary) var(--ui-slider-fill),
+    var(--ui-secondary) var(--ui-slider-fill)
+  );
+}
+.ui-slider:dir(rtl)::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to left,
+    var(--ui-primary) var(--ui-slider-fill),
+    var(--ui-secondary) var(--ui-slider-fill)
+  );
+}
+.ui-slider::-webkit-slider-thumb {
+  appearance: none;
+  inline-size: var(--ui-slider-thumb);
+  block-size: var(--ui-slider-thumb);
+  margin-block-start: calc(
+    (var(--ui-slider-track) - var(--ui-slider-thumb)) / 2 - 1px
+  );
+  border: 2px solid var(--ui-primary);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+}
+.ui-slider::-moz-range-track {
+  block-size: var(--ui-slider-track);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-secondary);
+}
+.ui-slider::-moz-range-progress {
+  block-size: var(--ui-slider-track);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary);
+}
+.ui-slider::-moz-range-thumb {
+  box-sizing: border-box;
+  inline-size: var(--ui-slider-thumb);
+  block-size: var(--ui-slider-thumb);
+  border: 2px solid var(--ui-primary);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+}
+
+/*
  * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)

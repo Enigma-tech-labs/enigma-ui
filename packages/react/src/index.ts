@@ -88,3 +88,5 @@ export type {
   StatTrend,
   TagProps,
 } from './lib/content.js';
+export { Slider } from './lib/slider.js';
+export type { SliderProps } from './lib/slider.js';
