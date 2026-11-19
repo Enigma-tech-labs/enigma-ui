@@ -93,7 +93,7 @@ export type { SliderProps } from './lib/slider.js';
 export { Rating } from './lib/rating.js';
 export type { RatingProps } from './lib/rating.js';
 export { Stepper } from './lib/stepper.js';
-export type { StepperProps } from './lib/stepper.js';
+export type { StepItem, StepperProps } from './lib/stepper.js';
 export { ChipInput } from './lib/chip-input.js';
 export type { ChipInputProps } from './lib/chip-input.js';
 export { CommandPalette } from './lib/command-palette.js';

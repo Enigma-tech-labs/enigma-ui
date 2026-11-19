@@ -2455,11 +2455,30 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
- * Stepper: where you are in a flow of steps (checkout, sign up). An ordered list; the current
- * step has aria-current="step" and done steps say "Done" to screen readers. Done steps show a
- * tick, so the state is in the shape, not only the colour. Under 30rem wide only the current
- * step's name shows; the others stay readable by screen readers.
+ * Stepper: a flow split into steps (checkout, sign up). The steps are an ordered list of
+ * buttons; the current one has aria-current="step" and done steps say "Done" to screen
+ * readers. Done steps show a tick, so the state is in the shape, not only the colour. A
+ * step that cannot be reached yet is a disabled button. Below the list, the current step's
+ * panel and the Back and Next buttons. Under 30rem wide only the current step's name
+ * shows; the others stay readable by screen readers.
  */
+.ui-stepper {
+  display: grid;
+  gap: var(--ui-space-6);
+  min-inline-size: 0;
+}
+.ui-stepper__panel:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+.ui-stepper__panel[hidden] {
+  display: none;
+}
+.ui-stepper__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
 .ui-steps {
   container-type: inline-size;
   display: flex;
@@ -2468,12 +2487,17 @@ dialog.ui-dialog::backdrop {
   list-style: none;
 }
 .ui-steps__item {
+  --ui-steps-line: var(--ui-space-4);
   display: flex;
   flex: 1;
   align-items: center;
   gap: var(--ui-space-2);
-  min-inline-size: 0;
+  /* Never narrower than its circle and line, so steps cannot overlap. */
+  min-inline-size: 2rem;
   color: var(--ui-text-muted);
+}
+.ui-steps__item:not(:last-child) {
+  min-inline-size: calc(2rem + var(--ui-space-2) + var(--ui-steps-line));
 }
 .ui-steps__item:last-child {
   flex: none;
@@ -2481,11 +2505,36 @@ dialog.ui-dialog::backdrop {
 .ui-steps__item:not(:last-child)::after {
   content: '';
   flex: 1;
-  min-inline-size: var(--ui-space-4);
+  min-inline-size: var(--ui-steps-line);
   border-block-start: 2px solid var(--ui-border);
 }
 .ui-steps__item--done:not(:last-child)::after {
   border-color: var(--ui-primary);
+}
+.ui-steps__step {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  min-inline-size: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-full);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.ui-steps__step:disabled {
+  cursor: default;
+}
+.ui-steps__step:not(:disabled):hover .ui-steps__label {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.ui-steps__step:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
 }
 .ui-steps__marker {
   display: inline-grid;
@@ -2524,9 +2573,12 @@ dialog.ui-dialog::backdrop {
   font-weight: 600;
 }
 @container (max-width: 30rem) {
+  .ui-steps__item {
+    --ui-steps-line: var(--ui-space-2);
+  }
   /* The current step takes the room its name needs; the others shrink to their circles. */
   .ui-steps__item--current {
-    flex: none;
+    flex: 0 1 auto;
     max-inline-size: 60%;
   }
   .ui-steps__item:not(.ui-steps__item--current) .ui-steps__label {

@@ -84,7 +84,10 @@ export type { StatTone, StatTrend } from './lib/stat/stat.component';
 export { TagComponent } from './lib/tag/tag.component';
 export { SliderComponent } from './lib/slider/slider.component';
 export { RatingComponent } from './lib/rating/rating.component';
-export { StepperComponent } from './lib/stepper/stepper.component';
+export {
+  StepComponent,
+  StepperComponent,
+} from './lib/stepper/stepper.component';
 export { ChipInputComponent } from './lib/chip-input/chip-input.component';
 export { CommandPaletteComponent } from './lib/command-palette/command-palette.component';
 export type { Command } from './lib/command-palette/command-palette.component';
