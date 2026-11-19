@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { DocsSettings } from '../shared/docs-settings';
 import { PageComponent } from '../shared/page.component';
 
 @Component({
@@ -33,8 +34,15 @@ import { PageComponent } from '../shared/page.component';
             <a href="https://www.w3.org/WAI/ARIA/apg/">
               WAI-ARIA Authoring Practices</a
             >
-            pattern, on the Angular CDK and React Aria, or uses the native HTML
-            element when one exists.
+            pattern, or uses the native HTML element when one exists.
+            @switch (settings.framework()) {
+              @case ('angular') {
+                Angular components are built on the Angular CDK.
+              }
+              @case ('react') {
+                React components are built on React Aria.
+              }
+            }
           </li>
         </ul>
       </section>
@@ -114,4 +122,6 @@ import { PageComponent } from '../shared/page.component';
     </app-page>
   `,
 })
-export class AccessibilityComponent {}
+export class AccessibilityComponent {
+  protected readonly settings = inject(DocsSettings);
+}

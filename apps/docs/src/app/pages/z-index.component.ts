@@ -9,7 +9,7 @@ import {
   UiToast,
 } from '@enigma-tech-lab/angular';
 import { CodeBlockComponent } from '../shared/code-block.component';
-import { markup } from '../shared/docs-settings';
+import { DocsSettings, markup } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 import { StepComponent } from '../shared/step.component';
@@ -106,8 +106,20 @@ import { TokenTableComponent } from '../shared/token-table.component';
         <ul class="doc-list">
           <li>Always a token; never a number between two of them.</li>
           <li>
-            Native <code>&lt;dialog&gt;</code>, <code>popover</code> and the
-            Angular CDK use the top layer; React overlays use the tokens.
+            @switch (settings.framework()) {
+              @case ('angular') {
+                Angular overlays open in the browser's top layer, so the newest
+                one is always on top and z-index does not apply to them.
+              }
+              @case ('react') {
+                React overlays are stacked with the
+                <code>--ui-layer-*</code> tokens.
+              }
+              @default {
+                Native <code>&lt;dialog&gt;</code> and <code>popover</code> open
+                in the browser's top layer, above every z-index.
+              }
+            }
           </li>
         </ul>
       </section>
@@ -144,6 +156,7 @@ import { TokenTableComponent } from '../shared/token-table.component';
   `,
 })
 export class ZIndexComponent {
+  protected readonly settings = inject(DocsSettings);
   protected readonly dialog = inject(UiDialog);
   private readonly toast = inject(UiToast);
 

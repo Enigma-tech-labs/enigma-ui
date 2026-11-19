@@ -364,9 +364,21 @@ import { PageComponent } from '../shared/page.component';
         <ul class="doc-list">
           <li>
             Restyle only through the <code>--ui-*</code> tokens and Tailwind
-            classes. Never override a <code>.ui-*</code> class or the classes of
-            the libraries underneath (<code>cdk-*</code>, <code>data-*</code>):
-            they change without notice.
+            classes.
+            @switch (settings.framework()) {
+              @case ('angular') {
+                Never override a <code>.ui-*</code> class or the Angular CDK's
+                <code>cdk-*</code> classes: they change without notice.
+              }
+              @case ('react') {
+                Never override a <code>.ui-*</code> class or style React Aria's
+                <code>data-*</code> attributes: they change without notice.
+              }
+              @default {
+                Never override a <code>.ui-*</code> class: it changes without
+                notice.
+              }
+            }
           </li>
           <li>
             Never copy the kit's CSS into your project. Update the package
