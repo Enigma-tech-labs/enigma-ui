@@ -24,6 +24,31 @@ export const appRoutes: Route[] = [
       import('./pages/space.component').then((m) => m.SpaceComponent),
   },
   {
+    path: 'foundations/depth',
+    loadComponent: () =>
+      import('./pages/depth.component').then((m) => m.DepthComponent),
+  },
+  {
+    path: 'foundations/motion',
+    loadComponent: () =>
+      import('./pages/motion.component').then((m) => m.MotionComponent),
+  },
+  {
+    path: 'foundations/focus',
+    loadComponent: () =>
+      import('./pages/focus.component').then((m) => m.FocusComponent),
+  },
+  {
+    path: 'foundations/layout',
+    loadComponent: () =>
+      import('./pages/layout.component').then((m) => m.LayoutComponent),
+  },
+  {
+    path: 'foundations/direction',
+    loadComponent: () =>
+      import('./pages/direction.component').then((m) => m.DirectionComponent),
+  },
+  {
     path: 'components/button',
     loadComponent: () =>
       import('./pages/button-page.component').then(

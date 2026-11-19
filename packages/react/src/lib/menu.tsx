@@ -58,7 +58,11 @@ export function Menu({
       >
         {label}
       </AriaButton>
-      <Popover placement="bottom start" offset={0}>
+      <Popover
+        placement="bottom start"
+        offset={0}
+        style={{ zIndex: 'var(--ui-layer-popover)' }}
+      >
         <AriaMenu
           className="ui-menu"
           onAction={(key) => onAction(String(key))}

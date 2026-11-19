@@ -46,7 +46,7 @@ export interface Toast extends ToastOptions {
     '(focusout)': 'toasts.resume()',
   },
   template: `
-    <ol class="ui-toast-region">
+    <ol class="ui-toast-region" popover="manual">
       @for (toast of toasts.toasts(); track toast.id) {
         <li
           class="ui-alert ui-toast ui-alert--{{ toast.tone ?? 'info' }}"
@@ -125,6 +125,7 @@ export class UiToast {
   private readonly document = inject(DOCUMENT);
   private readonly timers = new Map<number, ReturnType<typeof setTimeout>>();
   private region?: ComponentRef<ToastRegionComponent>;
+  private list?: HTMLElement;
   private paused = false;
   private nextId = 0;
 
@@ -138,6 +139,7 @@ export class UiToast {
       options.tone === 'danger' ? 'assertive' : 'polite',
     );
     if (!this.paused) this.start(toast);
+    this.raise();
     return toast.id;
   }
 
@@ -176,5 +178,28 @@ export class UiToast {
     });
     this.appRef.attachView(this.region.hostView);
     this.document.body.appendChild(this.region.location.nativeElement);
+    this.region.changeDetectorRef.detectChanges();
+    const list = (this.list =
+      this.region.location.nativeElement.firstElementChild);
+    // A drawer, menu or tooltip opened after a toast would cover it: raise it again.
+    // toggle does not bubble, so listen while it travels down (capture).
+    this.document.addEventListener(
+      'toggle',
+      (event) => {
+        if (event.target !== list && this.toasts().length) this.raise();
+      },
+      true,
+    );
+  }
+
+  /**
+   * The CDK opens every overlay in the browser's top layer, above any z-index, newest
+   * on top. The toasts live there too and go back on top after each new overlay.
+   */
+  private raise(): void {
+    const list = this.list;
+    if (!list || !('showPopover' in list)) return; // no top layer: z-index does it
+    if (list.matches(':popover-open')) list.hidePopover();
+    list.showPopover();
   }
 }

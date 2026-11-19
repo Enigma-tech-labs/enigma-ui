@@ -132,6 +132,26 @@
   --ui-control-height: 2.75rem;
   --ui-shadow: 0 8px 24px rgb(11 16 32 / 0.18);
 
+  /* Layers, lowest first, so any mix can be open at once: a popover or tooltip inside a
+     drawer sits on the drawer, and a toast is never hidden. Browsers that put overlays
+     in the top layer (Angular CDK, <dialog>, [popover]) stack them in opening order. */
+  --ui-layer-dialog: 1000;
+  --ui-layer-popover: 1100;
+  --ui-layer-tooltip: 1200;
+  --ui-layer-toast: 1300;
+
+  /* Focus: one ring for every control. Outside the control, or inset for items
+     inside a list or a bar, where an outside ring would be clipped. */
+  --ui-focus-width: 3px;
+  --ui-focus-offset: 2px;
+
+  /* Motion: short, and only to show where something came from. Fast for a state
+     change in place, base for fades, slow for panels that travel. */
+  --ui-duration-fast: 120ms;
+  --ui-duration: 160ms;
+  --ui-duration-slow: 200ms;
+  --ui-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
   font-family: var(--ui-font);
 }
 
@@ -180,8 +200,8 @@
 .ui-check input:focus-visible,
 .ui-switch__input:focus-visible,
 .ui-file:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: 2px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
 }
 
 /* Button */
@@ -314,6 +334,11 @@ textarea.ui-input {
   block-size: 1rem;
   flex: none;
 }
+.ui-listbox,
+.ui-listbox__empty {
+  /* The CDK overlay pane is a flex row as wide as the field; fill it instead of shrinking to the labels. */
+  flex: 1;
+}
 .ui-listbox {
   margin: 0.25rem 0 0;
   padding: 0.25rem;
@@ -339,8 +364,8 @@ textarea.ui-input {
 .ui-option--active {
   background: var(--ui-highlight);
   color: var(--ui-on-highlight);
-  outline: 2px solid var(--ui-focus);
-  outline-offset: -2px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(-1 * var(--ui-focus-width));
 }
 .ui-option[aria-selected='true'] {
   font-weight: 600;
@@ -408,8 +433,8 @@ textarea.ui-input {
   overflow-x: auto;
 }
 .ui-table-wrap:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: 2px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
 }
 .ui-table {
   inline-size: 100%;
@@ -469,8 +494,8 @@ textarea.ui-input {
   color: var(--ui-text);
 }
 .ui-table__sort:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: 2px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
 }
 .ui-table__sort-icon {
   inline-size: 1rem;
@@ -586,12 +611,12 @@ textarea.ui-input {
 .ui-dialog-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--ui-layer-dialog);
   display: grid;
   place-items: center;
   padding: 1rem;
   background: var(--ui-backdrop);
-  animation: ui-fade-in 160ms ease-out;
+  animation: ui-fade-in var(--ui-duration) var(--ui-ease);
 }
 .ui-dialog {
   --ui-dialog-size: 32rem;
@@ -607,7 +632,7 @@ textarea.ui-input {
   background: var(--ui-surface);
   color: var(--ui-text);
   box-shadow: var(--ui-shadow);
-  animation: ui-dialog-in 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: ui-dialog-in var(--ui-duration) var(--ui-ease);
 }
 .ui-dialog:focus {
   outline: none;
@@ -627,7 +652,7 @@ dialog.ui-dialog:not([open]) {
 }
 dialog.ui-dialog::backdrop {
   background: var(--ui-backdrop);
-  animation: ui-fade-in 160ms ease-out;
+  animation: ui-fade-in var(--ui-duration) var(--ui-ease);
 }
 .ui-dialog__header {
   display: flex;
@@ -702,8 +727,8 @@ dialog.ui-dialog::backdrop {
   overscroll-behavior: contain;
 }
 .ui-dialog__body:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: -3px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(-1 * var(--ui-focus-width));
 }
 .ui-dialog__body:empty {
   display: none;
@@ -754,7 +779,7 @@ dialog.ui-dialog::backdrop {
   block-size: 100dvh;
   max-block-size: none;
   border-radius: 0;
-  animation: ui-drawer-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: ui-drawer-in var(--ui-duration-slow) var(--ui-ease);
 }
 .ui-dialog--drawer:dir(rtl) {
   --ui-drawer-from: -100%;
@@ -769,7 +794,7 @@ dialog.ui-dialog::backdrop {
   padding-block-end: env(safe-area-inset-bottom);
   border-end-start-radius: 0;
   border-end-end-radius: 0;
-  animation: ui-sheet-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: ui-sheet-in var(--ui-duration-slow) var(--ui-ease);
 }
 /*
  * When the dialog role sits on a wrapper (the Angular CDK container), the wrapper
@@ -878,7 +903,7 @@ dialog.ui-dialog::backdrop {
   border-radius: 999px;
   background: var(--ui-surface);
   cursor: inherit;
-  transition: background-color 120ms;
+  transition: background-color var(--ui-duration-fast);
 }
 .ui-switch__input::before {
   content: '';
@@ -889,7 +914,7 @@ dialog.ui-dialog::backdrop {
   block-size: 1rem;
   border-radius: 50%;
   background: var(--ui-border);
-  transition: translate 120ms;
+  transition: translate var(--ui-duration-fast);
 }
 .ui-switch__input:checked {
   border-color: var(--ui-primary);
@@ -1088,9 +1113,15 @@ dialog.ui-dialog::backdrop {
  */
 .ui-toast-region {
   position: fixed;
+  /* Also a manual popover in the top layer: clear the browser's popover box. */
+  inset: auto;
+  overflow: visible;
+  border: 0;
+  background: none;
+  color: inherit;
   inset-block-end: var(--ui-space-4);
   inset-inline-end: var(--ui-space-4);
-  z-index: 1100;
+  z-index: var(--ui-layer-toast);
   display: grid;
   gap: var(--ui-space-2);
   inline-size: min(24rem, calc(100vw - 2rem));
@@ -1100,7 +1131,7 @@ dialog.ui-dialog::backdrop {
 }
 .ui-toast {
   box-shadow: var(--ui-shadow);
-  animation: ui-toast-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: ui-toast-in var(--ui-duration-slow) var(--ui-ease);
 }
 @keyframes ui-toast-in {
   from {
@@ -1265,8 +1296,8 @@ dialog.ui-dialog::backdrop {
 }
 .ui-tab:focus-visible,
 .ui-tabs__panel:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: -3px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(-1 * var(--ui-focus-width));
 }
 @media (forced-colors: active) {
   .ui-tab {
@@ -1303,8 +1334,8 @@ dialog.ui-dialog::backdrop {
   text-underline-offset: 0.2em;
 }
 .ui-breadcrumbs a:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: 2px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
 }
 .ui-breadcrumbs [aria-current='page'] {
   color: var(--ui-text);
@@ -1351,8 +1382,8 @@ dialog.ui-dialog::backdrop {
   color: var(--ui-on-highlight);
 }
 .ui-menu__item:focus-visible {
-  outline: 2px solid var(--ui-focus);
-  outline-offset: -2px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(-1 * var(--ui-focus-width));
 }
 .ui-menu__item:disabled,
 .ui-menu__item[aria-disabled='true'] {
@@ -1412,8 +1443,8 @@ dialog.ui-dialog::backdrop {
   color: var(--ui-on-secondary);
 }
 .ui-nav a:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: -3px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(-1 * var(--ui-focus-width));
 }
 .ui-nav a[aria-current='page'] {
   border-inline-start-color: var(--ui-primary);
@@ -1467,15 +1498,15 @@ dialog.ui-dialog::backdrop {
   border-inline-end: 2px solid currentColor;
   rotate: 45deg;
   translate: 0 -0.125rem;
-  transition: rotate 160ms;
+  transition: rotate var(--ui-duration);
 }
 .ui-accordion__item[open] > summary::after {
   rotate: 225deg;
   translate: 0 0.125rem;
 }
 .ui-accordion__item > summary:focus-visible {
-  outline: 3px solid var(--ui-focus);
-  outline-offset: 2px;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
 }
 .ui-accordion__content {
   padding-block-end: var(--ui-space-4);

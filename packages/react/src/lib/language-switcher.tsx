@@ -87,7 +87,11 @@ export function LanguageSwitcher({
         <span className="ui-visually-hidden">{label}: </span>
         <span lang={active?.code}>{active?.name}</span>
       </AriaButton>
-      <Popover placement="bottom start" offset={0}>
+      <Popover
+        placement="bottom start"
+        offset={0}
+        style={{ zIndex: 'var(--ui-layer-popover)' }}
+      >
         <Menu
           className="ui-menu"
           selectionMode="single"

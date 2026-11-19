@@ -98,7 +98,13 @@ export function Combobox<T extends Key>({
           {error}
         </Text>
       )}
-      <Popover offset={4} style={{ inlineSize: 'var(--trigger-width)' }}>
+      <Popover
+        offset={4}
+        style={{
+          inlineSize: 'var(--trigger-width)',
+          zIndex: 'var(--ui-layer-popover)',
+        }}
+      >
         <ListBox
           className="ui-listbox"
           renderEmptyState={() => (

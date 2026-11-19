@@ -6,7 +6,8 @@ import type { FrameworkCode } from './docs-settings';
 @Component({
   selector: 'app-example',
   imports: [CodeBlockComponent],
-  host: { class: 'doc-card' },
+  // Enter on a link fires click too, so this one listener covers the keyboard.
+  host: { class: 'doc-card', '(click)': 'stayOnPage($event)' },
   template: `
     <h2 class="doc-card__title" [id]="anchor()">{{ title() }}</h2>
     @if (description()) {
@@ -23,6 +24,12 @@ import type { FrameworkCode } from './docs-settings';
   `,
 })
 export class ExampleComponent {
+  /** Links in a demo show the look only: following one would leave the docs page. */
+  protected stayOnPage(event: MouseEvent): void {
+    if ((event.target as Element).closest('.doc-preview a[href]'))
+      event.preventDefault();
+  }
+
   readonly title = input.required<string>();
   readonly anchor = input<string>();
   readonly description = input<string>();

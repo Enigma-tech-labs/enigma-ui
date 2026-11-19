@@ -95,7 +95,12 @@ export function Tooltip({ text, children, placement = 'top' }: TooltipProps) {
   return (
     <TooltipTrigger delay={300}>
       <Focusable>{children as AriaChild}</Focusable>
-      <AriaTooltip className="ui-tooltip" placement={placement} offset={8}>
+      <AriaTooltip
+        className="ui-tooltip"
+        placement={placement}
+        offset={8}
+        style={{ zIndex: 'var(--ui-layer-tooltip)' }}
+      >
         {text}
       </AriaTooltip>
     </TooltipTrigger>
@@ -128,7 +133,11 @@ export function Popover({
   return (
     <DialogTrigger>
       <Pressable>{trigger as AriaChild}</Pressable>
-      <AriaPopover placement={placement} offset={8}>
+      <AriaPopover
+        placement={placement}
+        offset={8}
+        style={{ zIndex: 'var(--ui-layer-popover)' }}
+      >
         <Dialog className="ui-popover">{children}</Dialog>
       </AriaPopover>
     </DialogTrigger>

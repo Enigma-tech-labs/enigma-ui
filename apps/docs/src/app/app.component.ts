@@ -189,6 +189,11 @@ export class AppComponent {
         { path: '/foundations/colour', label: 'Colour' },
         { path: '/foundations/type', label: 'Type' },
         { path: '/foundations/space', label: 'Space and shape' },
+        { path: '/foundations/depth', label: 'Depth and z-index' },
+        { path: '/foundations/motion', label: 'Motion' },
+        { path: '/foundations/focus', label: 'Focus' },
+        { path: '/foundations/layout', label: 'Layout' },
+        { path: '/foundations/direction', label: 'Right to left' },
       ],
     },
     {
@@ -247,13 +252,8 @@ export class AppComponent {
       title: 'Content',
       links: [
         { path: '/components/accordion', label: 'Accordion' },
-        { path: '/components/avatar', label: 'Avatar' },
         { path: '/components/card', label: 'Card' },
         { path: '/components/data-table', label: 'Data table' },
-        { path: '/components/divider', label: 'Divider' },
-        { path: '/components/empty-state', label: 'Empty state' },
-        { path: '/components/stat', label: 'Stat' },
-        { path: '/components/tag', label: 'Tag' },
       ],
     },
   ];

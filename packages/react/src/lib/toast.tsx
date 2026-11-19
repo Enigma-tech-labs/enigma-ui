@@ -99,17 +99,28 @@ export function ToastProvider({
   return (
     <ToastContext.Provider value={api}>
       {children}
-      {/* Live regions that are always there, so screen readers hear what is put in them. */}
-      <div className="ui-visually-hidden" aria-live="polite">
+      {/* Live regions that are always there, so screen readers hear what is put in them.
+          Top layer: React Aria keeps them, and the toasts, reachable while a modal is open,
+          and a click on a toast does not close the popover or dialog under it. */}
+      <div
+        className="ui-visually-hidden"
+        aria-live="polite"
+        data-react-aria-top-layer
+      >
         {said.polite}
       </div>
-      <div className="ui-visually-hidden" aria-live="assertive">
+      <div
+        className="ui-visually-hidden"
+        aria-live="assertive"
+        data-react-aria-top-layer
+      >
         {said.assertive}
       </div>
       {toasts.length > 0 &&
         createPortal(
           <section
             aria-label={label}
+            data-react-aria-top-layer
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onFocus={() => setPaused(true)}
