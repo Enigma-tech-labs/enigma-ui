@@ -1756,11 +1756,12 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
- * Spacing utilities: one class per space token, for padding and margin.
+ * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)
  *   t top   b bottom        s start (left in English, right in Arabic)   e end
  * Margin also takes auto (ui-ms-auto pushes an item to the end of a row).
+ * Gap: ui-gap-4 both ways, ui-gap-x-4 between columns, ui-gap-y-4 between rows.
  * They come last in this file, so they win over a component class of the same weight.
  */
 .ui-p-0 {
@@ -2539,4 +2540,166 @@ dialog.ui-dialog::backdrop {
 }
 .ui-me-auto {
   margin-inline-end: auto;
+}
+.ui-gap-0 {
+  gap: var(--ui-space-0);
+}
+.ui-gap-0-5 {
+  gap: var(--ui-space-0-5);
+}
+.ui-gap-1 {
+  gap: var(--ui-space-1);
+}
+.ui-gap-1-5 {
+  gap: var(--ui-space-1-5);
+}
+.ui-gap-2 {
+  gap: var(--ui-space-2);
+}
+.ui-gap-2-5 {
+  gap: var(--ui-space-2-5);
+}
+.ui-gap-3 {
+  gap: var(--ui-space-3);
+}
+.ui-gap-4 {
+  gap: var(--ui-space-4);
+}
+.ui-gap-5 {
+  gap: var(--ui-space-5);
+}
+.ui-gap-6 {
+  gap: var(--ui-space-6);
+}
+.ui-gap-7 {
+  gap: var(--ui-space-7);
+}
+.ui-gap-8 {
+  gap: var(--ui-space-8);
+}
+.ui-gap-10 {
+  gap: var(--ui-space-10);
+}
+.ui-gap-12 {
+  gap: var(--ui-space-12);
+}
+.ui-gap-16 {
+  gap: var(--ui-space-16);
+}
+.ui-gap-20 {
+  gap: var(--ui-space-20);
+}
+.ui-gap-24 {
+  gap: var(--ui-space-24);
+}
+.ui-gap-32 {
+  gap: var(--ui-space-32);
+}
+.ui-gap-x-0 {
+  column-gap: var(--ui-space-0);
+}
+.ui-gap-x-0-5 {
+  column-gap: var(--ui-space-0-5);
+}
+.ui-gap-x-1 {
+  column-gap: var(--ui-space-1);
+}
+.ui-gap-x-1-5 {
+  column-gap: var(--ui-space-1-5);
+}
+.ui-gap-x-2 {
+  column-gap: var(--ui-space-2);
+}
+.ui-gap-x-2-5 {
+  column-gap: var(--ui-space-2-5);
+}
+.ui-gap-x-3 {
+  column-gap: var(--ui-space-3);
+}
+.ui-gap-x-4 {
+  column-gap: var(--ui-space-4);
+}
+.ui-gap-x-5 {
+  column-gap: var(--ui-space-5);
+}
+.ui-gap-x-6 {
+  column-gap: var(--ui-space-6);
+}
+.ui-gap-x-7 {
+  column-gap: var(--ui-space-7);
+}
+.ui-gap-x-8 {
+  column-gap: var(--ui-space-8);
+}
+.ui-gap-x-10 {
+  column-gap: var(--ui-space-10);
+}
+.ui-gap-x-12 {
+  column-gap: var(--ui-space-12);
+}
+.ui-gap-x-16 {
+  column-gap: var(--ui-space-16);
+}
+.ui-gap-x-20 {
+  column-gap: var(--ui-space-20);
+}
+.ui-gap-x-24 {
+  column-gap: var(--ui-space-24);
+}
+.ui-gap-x-32 {
+  column-gap: var(--ui-space-32);
+}
+.ui-gap-y-0 {
+  row-gap: var(--ui-space-0);
+}
+.ui-gap-y-0-5 {
+  row-gap: var(--ui-space-0-5);
+}
+.ui-gap-y-1 {
+  row-gap: var(--ui-space-1);
+}
+.ui-gap-y-1-5 {
+  row-gap: var(--ui-space-1-5);
+}
+.ui-gap-y-2 {
+  row-gap: var(--ui-space-2);
+}
+.ui-gap-y-2-5 {
+  row-gap: var(--ui-space-2-5);
+}
+.ui-gap-y-3 {
+  row-gap: var(--ui-space-3);
+}
+.ui-gap-y-4 {
+  row-gap: var(--ui-space-4);
+}
+.ui-gap-y-5 {
+  row-gap: var(--ui-space-5);
+}
+.ui-gap-y-6 {
+  row-gap: var(--ui-space-6);
+}
+.ui-gap-y-7 {
+  row-gap: var(--ui-space-7);
+}
+.ui-gap-y-8 {
+  row-gap: var(--ui-space-8);
+}
+.ui-gap-y-10 {
+  row-gap: var(--ui-space-10);
+}
+.ui-gap-y-12 {
+  row-gap: var(--ui-space-12);
+}
+.ui-gap-y-16 {
+  row-gap: var(--ui-space-16);
+}
+.ui-gap-y-20 {
+  row-gap: var(--ui-space-20);
+}
+.ui-gap-y-24 {
+  row-gap: var(--ui-space-24);
+}
+.ui-gap-y-32 {
+  row-gap: var(--ui-space-32);
 }

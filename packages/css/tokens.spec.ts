@@ -76,11 +76,19 @@ describe('spacing utilities', () => {
     ([, n]) => n,
   );
   const prefixes = ['p', 'px', 'py', 'pt', 'pb', 'ps', 'pe'];
-  const classes = prefixes.flatMap((p) => [p, p.replace('p', 'm')]);
+  const classes = [
+    ...prefixes.flatMap((p) => [p, p.replace('p', 'm')]),
+    'gap',
+    'gap-x',
+    'gap-y',
+  ];
 
-  it.each(steps)('every padding and margin class exists for step %s', (n) => {
-    for (const c of classes) {
-      expect(css).toContain(`.ui-${c}-${n} {`);
-    }
-  });
+  it.each(steps)(
+    'every padding, margin and gap class exists for step %s',
+    (n) => {
+      for (const c of classes) {
+        expect(css).toContain(`.ui-${c}-${n} {`);
+      }
+    },
+  );
 });

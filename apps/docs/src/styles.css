@@ -468,6 +468,7 @@ code {
 
 /* Tables */
 .doc-table-wrap {
+  position: relative; /* clips visually hidden headers too, which are absolutely placed */
   overflow-x: auto;
 }
 .doc-table {
@@ -513,6 +514,55 @@ code {
 /* Square, so a full radius reads as a circle. */
 .doc-swatch__chip--square {
   inline-size: 4.5rem;
+}
+/* Space demos: one step slider that stays in view, and tinted boxes that show the space. */
+.doc-step {
+  position: sticky;
+  inset-block-start: var(--doc-header-height);
+  z-index: var(--ui-layer-raised);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-2) var(--ui-space-4);
+  margin-block-end: var(--ui-space-6);
+  padding-block: var(--ui-space-3);
+  border-block-end: 1px solid var(--ui-divider);
+  background: var(--ui-bg);
+}
+.doc-step__range {
+  flex: 1 1 10rem;
+  min-block-size: var(--ui-control-height);
+  margin: 0;
+  accent-color: var(--ui-primary);
+}
+.doc-step__range:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+.doc-step__value {
+  min-inline-size: 10rem;
+  font-variant-numeric: tabular-nums;
+}
+.doc-tint {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+  border: 1px dashed var(--ui-primary);
+  border-radius: var(--ui-radius);
+  background: var(--ui-highlight);
+}
+.doc-tint--flow {
+  display: flow-root;
+}
+.doc-tint--row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.doc-block {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface);
+  color: var(--ui-text);
 }
 .doc-pairs {
   display: grid;

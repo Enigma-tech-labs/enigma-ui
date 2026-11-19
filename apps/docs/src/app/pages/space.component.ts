@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { CodeBlockComponent } from '../shared/code-block.component';
+import type { FrameworkCode } from '../shared/docs-settings';
+import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 
 @Component({
   selector: 'app-space',
-  imports: [PageComponent, CodeBlockComponent],
+  imports: [PageComponent, CodeBlockComponent, ExampleComponent],
   template: `
     <app-page
       title="Space and shadow"
@@ -61,14 +63,17 @@ import { PageComponent } from '../shared/page.component';
       </section>
 
       <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Padding and margin classes</h2>
+        <h2 class="ui-heading doc-h2">Padding, margin and gap classes</h2>
         <p>
           For one-off space in markup, every step has a class: the letter, the
           side, then the step. <code>ui-p-4</code> is
           <code>padding: var(--ui-space-4)</code>, <code>ui-mt-0-5</code> is a
           0.125rem top margin. Sides are logical, so start and end flip in
-          Arabic. Margin also takes <code>auto</code>. They work the same in
-          Angular, React and plain HTML.
+          Arabic. Margin also takes <code>auto</code>. Gap is
+          <code>ui-gap-</code><em>step</em> both ways, <code>ui-gap-x-</code
+          ><em>step</em> between columns and <code>ui-gap-y-</code
+          ><em>step</em> between rows. They work the same in Angular, React and
+          plain HTML.
         </p>
         <div
           class="doc-table-wrap"
@@ -100,6 +105,88 @@ import { PageComponent } from '../shared/page.component';
           </table>
         </div>
         <app-code-block [text]="utilityUsage" caption="HTML" />
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try the classes</h2>
+        <p>
+          Move the slider to pick a step; every demo below and its code follow
+          it. The tinted, dashed area is the space the class adds.
+        </p>
+        <div class="ui-field doc-step">
+          <label class="ui-field__label" for="space-step">Step</label>
+          <input
+            id="space-step"
+            class="doc-step__range"
+            type="range"
+            min="0"
+            [max]="space.length - 1"
+            [value]="index()"
+            [attr.aria-valuetext]="step().n + ', ' + step().rem"
+            (input)="index.set(+$any($event.target).value)"
+          />
+          <output for="space-step" class="doc-step__value">
+            <code>{{ step().n }}</code> · {{ step().rem }} · {{ step().px }}px
+          </output>
+        </div>
+
+        <app-example
+          title="Padding"
+          [description]="
+            'ui-p-' + step().n + ': space inside the box, on all four sides.'
+          "
+          [code]="demoCode('padding')"
+        >
+          <div class="doc-tint" [class]="'ui-p-' + step().n">
+            <div class="doc-block">Content</div>
+          </div>
+        </app-example>
+
+        <app-example
+          title="Margin"
+          [description]="
+            'ui-mb-' +
+            step().n +
+            ' on the first box: space outside it, before the next one.'
+          "
+          [code]="demoCode('margin')"
+        >
+          <div class="doc-tint doc-tint--flow">
+            <div class="doc-block" [class]="'ui-mb-' + step().n">First</div>
+            <div class="doc-block">Second</div>
+          </div>
+        </app-example>
+
+        <app-example
+          title="Gap"
+          [description]="
+            'ui-gap-' +
+            step().n +
+            ' on a flex or grid parent: the same space between every child, none at the edges.'
+          "
+          [code]="demoCode('gap')"
+        >
+          <div class="doc-tint doc-tint--row" [class]="'ui-gap-' + step().n">
+            @for (item of ['One', 'Two', 'Three', 'Four', 'Five']; track item) {
+              <div class="doc-block">{{ item }}</div>
+            }
+          </div>
+        </app-example>
+
+        <app-example
+          title="Start flips in Arabic"
+          [description]="
+            'ui-ps-' +
+            step().n +
+            ' is padding on the start side: the left in English, the right in Arabic.'
+          "
+          [code]="demoCode('start')"
+          [rtl]="true"
+        >
+          <div class="doc-tint" [class]="'ui-ps-' + step().n">
+            <div class="doc-block">المحتوى</div>
+          </div>
+        </app-example>
       </section>
 
       <section class="doc-section">
@@ -240,6 +327,29 @@ export class SpaceComponent {
       use: 'Pills and circles: badges, switches, spinners, progress bars, round icons.',
     },
   ];
+
+  /** The step every demo uses; starts at --ui-space-4. */
+  protected readonly index = signal(7);
+  protected readonly step = computed(() => this.space[this.index()]);
+
+  protected demoCode(
+    demo: 'padding' | 'margin' | 'gap' | 'start',
+  ): FrameworkCode {
+    const n = this.step().n;
+    const html = {
+      padding: `<div class="ui-p-${n}">Content</div>`,
+      margin: `<div class="ui-mb-${n}">First</div>\n<div>Second</div>`,
+      gap: `<div class="ui-gap-${n}" style="display: flex; flex-wrap: wrap">\n  <div>One</div>\n  <div>Two</div>\n  <div>Three</div>\n</div>`,
+      start: `<div dir="rtl" lang="ar">\n  <div class="ui-ps-${n}">المحتوى</div>\n</div>`,
+    }[demo];
+    const react = html
+      .replace(/class=/g, 'className=')
+      .replace(
+        'style="display: flex; flex-wrap: wrap"',
+        "style={{ display: 'flex', flexWrap: 'wrap' }}",
+      );
+    return { angular: html, react, html };
+  }
 
   protected readonly utilities = [
     { side: '', sets: 'All four sides.' },
