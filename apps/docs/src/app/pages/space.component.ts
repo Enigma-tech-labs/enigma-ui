@@ -212,6 +212,59 @@ import { PageComponent } from '../shared/page.component';
       </section>
 
       <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try the radius</h2>
+        <p>
+          Move the slider to set <code>--ui-radius</code>. The real components
+          below follow it, and so does every other radius token, because each
+          one is worked out from the base.
+        </p>
+        <div class="ui-field doc-step">
+          <label class="ui-field__label" for="radius-step">Base radius</label>
+          <input
+            id="radius-step"
+            class="doc-step__range"
+            type="range"
+            min="0"
+            [max]="radiusSteps.length - 1"
+            [value]="radiusIndex()"
+            [attr.aria-valuetext]="radius()"
+            (input)="radiusIndex.set(+$any($event.target).value)"
+          />
+          <output for="radius-step" class="doc-step__value">
+            <code>{{ radius() }}</code> · {{ radiusPx() }}px
+          </output>
+        </div>
+
+        <app-example
+          title="One token re-shapes the kit"
+          description="Button, field and badge take the base; the card takes double."
+          [code]="radiusCode()"
+        >
+          <div class="doc-swatches" [style]="radiusStyle()">
+            <div class="ui-card">
+              <p class="ui-card__title">Order</p>
+              <div class="ui-field">
+                <label class="ui-field__label" for="radius-demo-input"
+                  >Coupon</label
+                >
+                <input
+                  id="radius-demo-input"
+                  class="ui-input"
+                  value="ENIGMA10"
+                />
+              </div>
+              <div class="doc-tint--row ui-gap-2 ui-mt-4">
+                <button class="ui-button ui-button--primary" type="button">
+                  Apply
+                </button>
+                <span class="ui-badge ui-badge--success">Saved</span>
+              </div>
+            </div>
+          </div>
+        </app-example>
+      </section>
+
+      <section class="doc-section">
         <h2 class="ui-heading doc-h2">Control height</h2>
         <p>
           <code>--ui-control-height</code> is 2.75rem, 44 pixels: the smallest
@@ -250,6 +303,44 @@ import { PageComponent } from '../shared/page.component';
             has a border (transparent until then) to keep its edge.
           </li>
         </ul>
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try the shadow</h2>
+        <p>
+          Move the slider to set how far the layer floats: the offset and the
+          blur grow together. The colour stays
+          <code>--ui-shadow-color</code>, so it still works in dark mode.
+        </p>
+        <div class="ui-field doc-step">
+          <label class="ui-field__label" for="shadow-step">Depth</label>
+          <input
+            id="shadow-step"
+            class="doc-step__range"
+            type="range"
+            min="0"
+            max="16"
+            [value]="depth()"
+            [attr.aria-valuetext]="shadow()"
+            (input)="depth.set(+$any($event.target).value)"
+          />
+          <output for="shadow-step" class="doc-step__value">
+            <code>{{ shadow() }}</code>
+          </output>
+        </div>
+
+        <app-example
+          title="A floating layer"
+          description="Every menu, popover, dialog and toast reads --ui-shadow, so one override moves them all."
+          [code]="shadowCode()"
+        >
+          <div class="doc-depth" [style.--ui-shadow]="shadowValue()">
+            <div class="doc-depth__float">
+              <p class="ui-card__title">Floating</p>
+              <p>A menu, popover or dialog.</p>
+            </div>
+          </div>
+        </app-example>
       </section>
     </app-page>
   `,
@@ -327,6 +418,47 @@ export class SpaceComponent {
       use: 'Pills and circles: badges, switches, spinners, progress bars, round icons.',
     },
   ];
+
+  /** Base radius choices in rem, 0 to 1.5 in eighths; starts at the default 0.5rem. */
+  protected readonly radiusSteps = Array.from({ length: 13 }, (_, i) => i / 8);
+  protected readonly radiusIndex = signal(4);
+  protected readonly radius = computed(() => {
+    const rem = this.radiusSteps[this.radiusIndex()];
+    return rem ? `${rem}rem` : '0';
+  });
+  protected readonly radiusPx = computed(
+    () => this.radiusSteps[this.radiusIndex()] * 16,
+  );
+  /** The scale is worked out on :root, so a nested override has to repeat it. */
+  protected readonly radiusStyle = computed(() => {
+    const r = this.radius();
+    return {
+      '--ui-radius': r,
+      '--ui-radius-xs': `calc(${r} / 4)`,
+      '--ui-radius-sm': `calc(${r} / 2)`,
+      '--ui-radius-md': `calc(${r} * 0.75)`,
+      '--ui-radius-lg': `calc(${r} * 1.5)`,
+      '--ui-radius-xl': `calc(${r} * 2)`,
+      '--ui-radius-2xl': `calc(${r} * 3)`,
+    };
+  });
+  protected readonly radiusCode = computed((): FrameworkCode => {
+    const css = `:root {\n  --ui-radius: ${this.radius()};\n}`;
+    return { angular: css, react: css, html: css };
+  });
+
+  /** Shadow depth: offset n px, blur 3n px; 8 is the default 0 8px 24px. */
+  protected readonly depth = signal(8);
+  protected readonly shadow = computed(
+    () => `0 ${this.depth()}px ${this.depth() * 3}px`,
+  );
+  protected readonly shadowValue = computed(
+    () => `${this.shadow()} var(--ui-shadow-color)`,
+  );
+  protected readonly shadowCode = computed((): FrameworkCode => {
+    const css = `:root {\n  --ui-shadow: ${this.shadowValue()};\n}`;
+    return { angular: css, react: css, html: css };
+  });
 
   /** The step every demo uses; starts at --ui-space-4. */
   protected readonly index = signal(7);
