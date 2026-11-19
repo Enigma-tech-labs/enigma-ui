@@ -2631,6 +2631,79 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
+ * Tree: nested items that open and close, such as folders or categories. Arrow keys move,
+ * Right and Left open and close, typing jumps to a name, Enter or Space selects.
+ * --ui-tree-level indents each level; the selected item is bold as well as highlighted.
+ */
+.ui-tree {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-tree__item {
+  --ui-tree-level: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+  min-block-size: var(--ui-control-height);
+  padding-inline: calc(var(--ui-tree-level) * var(--ui-space-6))
+    var(--ui-space-3);
+  border-radius: var(--ui-radius-md);
+  color: var(--ui-text);
+  cursor: pointer;
+  user-select: none;
+}
+.ui-tree__item:hover {
+  background: var(--ui-secondary);
+  color: var(--ui-on-secondary);
+}
+.ui-tree__item:focus {
+  outline: none;
+}
+.ui-tree__item:focus-visible,
+.ui-tree__item--focus {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+}
+.ui-tree__item--selected,
+.ui-tree__item--selected:hover {
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+  font-weight: 600;
+}
+.ui-tree__chevron {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.ui-tree__chevron svg {
+  transition: rotate var(--ui-duration-fast) var(--ui-ease);
+}
+:dir(rtl) .ui-tree__chevron svg {
+  scale: -1 1;
+}
+.ui-tree__item--expanded .ui-tree__chevron svg {
+  rotate: 90deg;
+}
+:dir(rtl) .ui-tree__item--expanded .ui-tree__chevron svg {
+  rotate: -90deg;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-tree__chevron svg {
+    transition: none;
+  }
+}
+
+/*
  * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)

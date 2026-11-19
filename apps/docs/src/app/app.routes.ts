@@ -162,6 +162,11 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/tree',
+    loadComponent: () =>
+      import('./pages/tree-page.component').then((m) => m.TreePageComponent),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),

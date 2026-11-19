@@ -88,3 +88,5 @@ export { StepperComponent } from './lib/stepper/stepper.component';
 export { ChipInputComponent } from './lib/chip-input/chip-input.component';
 export { CommandPaletteComponent } from './lib/command-palette/command-palette.component';
 export type { Command } from './lib/command-palette/command-palette.component';
+export { TreeComponent } from './lib/tree/tree.component';
+export type { TreeNode } from './lib/tree/tree.component';

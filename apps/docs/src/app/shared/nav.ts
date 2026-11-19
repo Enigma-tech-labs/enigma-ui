@@ -87,6 +87,7 @@ export const NAV = [
       { path: '/components/data-table', label: 'Data table' },
       { path: '/components/divider', label: 'Divider' },
       { path: '/components/stat', label: 'Stat' },
+      { path: '/components/tree', label: 'Tree' },
       { path: '/components/tag', label: 'Tag' },
     ],
   },

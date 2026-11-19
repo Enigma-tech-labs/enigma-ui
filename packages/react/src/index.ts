@@ -98,3 +98,5 @@ export { ChipInput } from './lib/chip-input.js';
 export type { ChipInputProps } from './lib/chip-input.js';
 export { CommandPalette } from './lib/command-palette.js';
 export type { Command, CommandPaletteProps } from './lib/command-palette.js';
+export { Tree } from './lib/tree.js';
+export type { TreeNode, TreeProps } from './lib/tree.js';
