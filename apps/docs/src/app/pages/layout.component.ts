@@ -98,32 +98,67 @@ import { PageComponent } from '../shared/page.component';
       </section>
 
       <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Container queries</h2>
+        <h2 class="ui-heading doc-h2">Page and grid</h2>
         <p>
-          Put <code>ui-container</code> on the box, then let its children answer
-          to the box's width with <code>&#64;container</code>. The same card
-          list then works in a side bar, a dialog and the full page, on any
-          screen, with no screen query.
+          Start every page with <code>ui-page</code> on its wrapper. That one
+          class centres the page, caps its width, adds side padding and makes a
+          12-column grid with a gap. The padding and the gap grow with the
+          screen on their own, from 1rem on a phone to 3rem and 2rem on a wide
+          desktop. Each child fills the whole row until you give it a column
+          class.
         </p>
-        <app-code-block [text]="usage" caption="CSS" />
+        <div
+          class="doc-table-wrap"
+          tabindex="0"
+          role="region"
+          aria-label="Page and grid classes"
+        >
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th scope="col">Class or token</th>
+                <th scope="col">Does</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of pageClasses; track c.name) {
+                <tr>
+                  <td>
+                    <code>{{ c.name }}</code>
+                  </td>
+                  <td>{{ c.does }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p>
+          A breakpoint class reads the width its grid's columns get, not the
+          screen's. On a full page that is the screen less the side padding, so
+          md starts on a screen of about 51rem rather than 48rem. In a nested
+          <code>ui-grid</code> inside a narrow column, the cards switch later
+          still, because their grid is narrower. You never write a query
+          yourself.
+        </p>
       </section>
 
       <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Try the breakpoints</h2>
+        <h2 class="ui-heading doc-h2">Try the page</h2>
         <p>
-          Move the slider to set the box's width. The breakpoints it has passed
-          fill in and the cards add a column at each one. A box wider than this
-          page is drawn smaller to fit, at its real width, so every breakpoint
-          can be reached on a phone too.
+          Move the slider to set the screen's width. The padding and gap grow,
+          the side bar moves beside the content at md, and the cards add a
+          column at sm and lg of their own grid. A screen wider than this page
+          is drawn smaller to fit, at its real width, so every breakpoint can be
+          reached on a phone too.
         </p>
         <div class="ui-field doc-step">
-          <label class="ui-field__label" for="layout-width">Box width</label>
+          <label class="ui-field__label" for="layout-width">Screen width</label>
           <input
             id="layout-width"
             class="doc-step__range"
             type="range"
             min="20"
-            max="100"
+            max="112"
             [value]="width()"
             [attr.aria-valuetext]="readout()"
             (input)="width.set(+$any($event.target).value)"
@@ -134,8 +169,8 @@ import { PageComponent } from '../shared/page.component';
         </div>
 
         <app-example
-          title="Cards that follow their box"
-          description="One column below sm, then one more at each breakpoint, up to six at 2xl."
+          title="A page from four classes"
+          description="ui-page, ui-col-md-4 and ui-col-lg-3 for the side bar, and a nested ui-grid for the cards. No CSS of your own."
           [code]="demoCode"
         >
           <div
@@ -150,24 +185,43 @@ import { PageComponent } from '../shared/page.component';
               [style.inline-size.rem]="width()"
               [style.scale]="scale()"
             >
-              <div class="doc-bp__chips">
-                @for (b of breakpoints; track b.name) {
-                  <span
-                    class="doc-bp__chip"
-                    [class]="'doc-bp__chip--' + b.name"
-                    >{{ b.name }}</span
-                  >
-                }
-              </div>
-              <div class="doc-bp__grid">
-                @for (n of cards; track n) {
-                  <div class="doc-block">Card {{ n }}</div>
-                }
+              <div #page class="ui-page">
+                <div class="doc-bp__chips">
+                  @for (b of breakpoints; track b.name) {
+                    <span
+                      class="doc-bp__chip"
+                      [class]="'doc-bp__chip--' + b.name"
+                      >{{ b.name }}</span
+                    >
+                  }
+                </div>
+                <div class="doc-block">Header</div>
+                <div class="doc-block ui-col-md-4 ui-col-lg-3">Side bar</div>
+                <div class="ui-grid ui-col-md-8 ui-col-lg-9">
+                  @for (n of cards; track n) {
+                    <div class="doc-block ui-col-sm-6 ui-col-lg-4">
+                      Card {{ n }}
+                    </div>
+                  }
+                </div>
+                <div class="doc-block">Footer</div>
               </div>
             </div>
           </div>
         </app-example>
-        <app-code-block [text]="demoCss" caption="CSS" />
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Your own components</h2>
+        <p>
+          Only for a component of your own that must change shape, such as a
+          card that puts its picture beside the text when there is room. Put
+          <code>ui-container</code> on the box and write
+          <code>&#64;container</code> with a breakpoint's value. It works the
+          way a screen query does, but reads the box, so the same card fits a
+          side bar, a dialog and the full page.
+        </p>
+        <app-code-block [text]="usage" caption="CSS" />
       </section>
 
       <section class="doc-section">
@@ -250,17 +304,49 @@ export class LayoutComponent {
 
   protected readonly cards = [1, 2, 3, 4, 5, 6];
 
-  /** The demo box's width in rem; 20rem is the 320px smallest screen. */
+  protected readonly pageClasses = [
+    {
+      name: 'ui-page',
+      does: 'The page wrapper: centred, 12 columns, side padding and gap that grow with the screen.',
+    },
+    {
+      name: 'ui-grid',
+      does: 'The same 12 columns and gap with no padding, to split a column again.',
+    },
+    {
+      name: 'ui-col-1 … ui-col-12',
+      does: 'Spans that many of the 12 columns.',
+    },
+    {
+      name: 'ui-col-sm-6, ui-col-md-4 …',
+      does: 'Spans that many from that breakpoint up: sm, md, lg, xl, 2xl. Below it, the child fills the row.',
+    },
+    {
+      name: '--ui-page-max',
+      does: 'Widest the columns get, 96rem (2xl). Set 64rem for a narrower site.',
+    },
+    { name: '--ui-page-gutter', does: 'Side padding, 1rem to 3rem.' },
+    {
+      name: '--ui-grid-gap',
+      does: 'Gap between columns and rows, 1rem to 2rem.',
+    },
+  ];
+
+  /** The demo screen's width in rem; 20rem is the 320px smallest screen. */
   protected readonly width = signal(48);
+  /** Width the page's columns get, in rem: the screen less the side padding, measured. */
+  protected readonly columnsWidth = signal(0);
   protected readonly readout = computed(() => {
     const w = this.width();
-    const passed = this.breakpoints.filter((b) => w >= b.rem);
+    const c = this.columnsWidth();
+    const passed = this.breakpoints.filter((b) => c >= b.rem);
     const at = passed.length ? passed[passed.length - 1].name : 'below sm';
-    return `${w}rem · ${w * 16}px · ${at}`;
+    return `Screen ${w}rem (${w * 16}px) · columns ${c}rem · ${at}`;
   });
 
   private readonly stage = viewChild.required<ElementRef<HTMLElement>>('stage');
   private readonly frame = viewChild.required<ElementRef<HTMLElement>>('frame');
+  private readonly page = viewChild.required<ElementRef<HTMLElement>>('page');
   /** A box wider than the page is scaled down to fit; its layout width, which the queries read, is unchanged. */
   protected readonly scale = signal(1);
   protected readonly height = signal<number | null>(null);
@@ -270,10 +356,20 @@ export class LayoutComponent {
     afterNextRender(() => {
       const stage = this.stage().nativeElement;
       const frame = this.frame().nativeElement;
+      const page = this.page().nativeElement;
       const fit = () => {
         const s = Math.min(1, stage.clientWidth / frame.offsetWidth);
         this.scale.set(s);
         this.height.set(frame.offsetHeight * s);
+        const style = getComputedStyle(page);
+        const rem = parseFloat(
+          getComputedStyle(document.documentElement).fontSize,
+        );
+        const content =
+          page.clientWidth -
+          parseFloat(style.paddingInlineStart) -
+          parseFloat(style.paddingInlineEnd);
+        this.columnsWidth.set(Math.round((content / rem) * 10) / 10);
       };
       fit();
       if (typeof ResizeObserver === 'undefined') return;
@@ -295,28 +391,26 @@ export class LayoutComponent {
     { what: 'Smallest screen', width: '320px' },
   ];
 
-  protected readonly usage = `/* <div class="ui-container"><ul class="products">…</ul></div> */
-.products {
+  protected readonly usage = `/* <div class="ui-container"><article class="product">…</article></div> */
+.product {
   display: grid;
   gap: var(--ui-space-4);
 }
 @container (width >= 40rem) {
-  .products {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@container (width >= 64rem) {
-  .products {
-    grid-template-columns: repeat(3, 1fr);
+  .product {
+    grid-template-columns: 12rem 1fr;
   }
 }`;
 
-  private readonly demoHtml = `<div class="ui-container">
-  <div class="cards">
-    <div>Card 1</div>
-    <div>Card 2</div>
-    <div>Card 3</div>
-  </div>
+  private readonly demoHtml = `<div class="ui-page">
+  <header>Header</header>
+  <nav class="ui-col-md-4 ui-col-lg-3">Side bar</nav>
+  <main class="ui-grid ui-col-md-8 ui-col-lg-9">
+    <article class="ui-col-sm-6 ui-col-lg-4">Card 1</article>
+    <article class="ui-col-sm-6 ui-col-lg-4">Card 2</article>
+    <article class="ui-col-sm-6 ui-col-lg-4">Card 3</article>
+  </main>
+  <footer>Footer</footer>
 </div>`;
 
   protected readonly demoCode: FrameworkCode = {
@@ -324,15 +418,4 @@ export class LayoutComponent {
     react: this.demoHtml.replace(/class=/g, 'className='),
     html: this.demoHtml,
   };
-
-  protected readonly demoCss = `.cards {
-  display: grid;
-  grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
-  gap: var(--ui-space-3);
-}
-@container (width >= 40rem) { .cards { --columns: 2; } } /* sm */
-@container (width >= 48rem) { .cards { --columns: 3; } } /* md */
-@container (width >= 64rem) { .cards { --columns: 4; } } /* lg */
-@container (width >= 80rem) { .cards { --columns: 5; } } /* xl */
-@container (width >= 96rem) { .cards { --columns: 6; } } /* 2xl */`;
 }

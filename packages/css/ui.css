@@ -181,6 +181,12 @@
   --ui-breakpoint-xl: 80rem;
   --ui-breakpoint-2xl: 96rem;
 
+  /* Page: cqi is the screen's width here, or a parent ui-container's, so the
+     padding and gap grow with the space the page has. */
+  --ui-page-max: var(--ui-breakpoint-2xl);
+  --ui-page-gutter: clamp(var(--ui-space-4), 4cqi, var(--ui-space-12));
+  --ui-grid-gap: clamp(var(--ui-space-4), 2cqi, var(--ui-space-8));
+
   /* Shadow. A dark shadow vanishes on a dark page, so in dark mode the
      shadow is a light slate glow: still a shade, never white. */
   --ui-shadow-color: light-dark(rgb(11 16 32 / 0.18), rgb(159 165 192 / 0.4));
@@ -1848,6 +1854,260 @@ dialog.ui-dialog::backdrop {
     animation: none;
     border-inline-end-color: currentColor;
     opacity: 0.6;
+  }
+}
+
+/*
+ * Page and grid: put ui-page on the wrapper and every page starts the same way.
+ * Centred, at most --ui-page-max wide, side padding and a 12-column grid with
+ * a gap that both grow with the screen, no media query.
+ * A child fills the row; ui-col-6 takes half, ui-col-md-4 a third from md up.
+ * The breakpoints read the grid's own width, so a ui-grid nested in a narrow
+ * column switches by its own width, not the screen's.
+ */
+.ui-page,
+.ui-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--ui-grid-gap);
+  container-type: inline-size;
+}
+.ui-page {
+  /* Content box: --ui-page-max is the width the columns get, whatever box-sizing the app sets. */
+  box-sizing: content-box;
+  max-inline-size: var(--ui-page-max);
+  margin-inline: auto;
+  padding-inline: var(--ui-page-gutter);
+}
+.ui-page > *,
+.ui-grid > * {
+  grid-column: 1 / -1;
+  min-inline-size: 0;
+}
+.ui-col-1 {
+  grid-column: span 1;
+}
+.ui-col-2 {
+  grid-column: span 2;
+}
+.ui-col-3 {
+  grid-column: span 3;
+}
+.ui-col-4 {
+  grid-column: span 4;
+}
+.ui-col-5 {
+  grid-column: span 5;
+}
+.ui-col-6 {
+  grid-column: span 6;
+}
+.ui-col-7 {
+  grid-column: span 7;
+}
+.ui-col-8 {
+  grid-column: span 8;
+}
+.ui-col-9 {
+  grid-column: span 9;
+}
+.ui-col-10 {
+  grid-column: span 10;
+}
+.ui-col-11 {
+  grid-column: span 11;
+}
+.ui-col-12 {
+  grid-column: span 12;
+}
+@container (width >= 40rem) {
+  .ui-col-sm-1 {
+    grid-column: span 1;
+  }
+  .ui-col-sm-2 {
+    grid-column: span 2;
+  }
+  .ui-col-sm-3 {
+    grid-column: span 3;
+  }
+  .ui-col-sm-4 {
+    grid-column: span 4;
+  }
+  .ui-col-sm-5 {
+    grid-column: span 5;
+  }
+  .ui-col-sm-6 {
+    grid-column: span 6;
+  }
+  .ui-col-sm-7 {
+    grid-column: span 7;
+  }
+  .ui-col-sm-8 {
+    grid-column: span 8;
+  }
+  .ui-col-sm-9 {
+    grid-column: span 9;
+  }
+  .ui-col-sm-10 {
+    grid-column: span 10;
+  }
+  .ui-col-sm-11 {
+    grid-column: span 11;
+  }
+  .ui-col-sm-12 {
+    grid-column: span 12;
+  }
+}
+@container (width >= 48rem) {
+  .ui-col-md-1 {
+    grid-column: span 1;
+  }
+  .ui-col-md-2 {
+    grid-column: span 2;
+  }
+  .ui-col-md-3 {
+    grid-column: span 3;
+  }
+  .ui-col-md-4 {
+    grid-column: span 4;
+  }
+  .ui-col-md-5 {
+    grid-column: span 5;
+  }
+  .ui-col-md-6 {
+    grid-column: span 6;
+  }
+  .ui-col-md-7 {
+    grid-column: span 7;
+  }
+  .ui-col-md-8 {
+    grid-column: span 8;
+  }
+  .ui-col-md-9 {
+    grid-column: span 9;
+  }
+  .ui-col-md-10 {
+    grid-column: span 10;
+  }
+  .ui-col-md-11 {
+    grid-column: span 11;
+  }
+  .ui-col-md-12 {
+    grid-column: span 12;
+  }
+}
+@container (width >= 64rem) {
+  .ui-col-lg-1 {
+    grid-column: span 1;
+  }
+  .ui-col-lg-2 {
+    grid-column: span 2;
+  }
+  .ui-col-lg-3 {
+    grid-column: span 3;
+  }
+  .ui-col-lg-4 {
+    grid-column: span 4;
+  }
+  .ui-col-lg-5 {
+    grid-column: span 5;
+  }
+  .ui-col-lg-6 {
+    grid-column: span 6;
+  }
+  .ui-col-lg-7 {
+    grid-column: span 7;
+  }
+  .ui-col-lg-8 {
+    grid-column: span 8;
+  }
+  .ui-col-lg-9 {
+    grid-column: span 9;
+  }
+  .ui-col-lg-10 {
+    grid-column: span 10;
+  }
+  .ui-col-lg-11 {
+    grid-column: span 11;
+  }
+  .ui-col-lg-12 {
+    grid-column: span 12;
+  }
+}
+@container (width >= 80rem) {
+  .ui-col-xl-1 {
+    grid-column: span 1;
+  }
+  .ui-col-xl-2 {
+    grid-column: span 2;
+  }
+  .ui-col-xl-3 {
+    grid-column: span 3;
+  }
+  .ui-col-xl-4 {
+    grid-column: span 4;
+  }
+  .ui-col-xl-5 {
+    grid-column: span 5;
+  }
+  .ui-col-xl-6 {
+    grid-column: span 6;
+  }
+  .ui-col-xl-7 {
+    grid-column: span 7;
+  }
+  .ui-col-xl-8 {
+    grid-column: span 8;
+  }
+  .ui-col-xl-9 {
+    grid-column: span 9;
+  }
+  .ui-col-xl-10 {
+    grid-column: span 10;
+  }
+  .ui-col-xl-11 {
+    grid-column: span 11;
+  }
+  .ui-col-xl-12 {
+    grid-column: span 12;
+  }
+}
+@container (width >= 96rem) {
+  .ui-col-2xl-1 {
+    grid-column: span 1;
+  }
+  .ui-col-2xl-2 {
+    grid-column: span 2;
+  }
+  .ui-col-2xl-3 {
+    grid-column: span 3;
+  }
+  .ui-col-2xl-4 {
+    grid-column: span 4;
+  }
+  .ui-col-2xl-5 {
+    grid-column: span 5;
+  }
+  .ui-col-2xl-6 {
+    grid-column: span 6;
+  }
+  .ui-col-2xl-7 {
+    grid-column: span 7;
+  }
+  .ui-col-2xl-8 {
+    grid-column: span 8;
+  }
+  .ui-col-2xl-9 {
+    grid-column: span 9;
+  }
+  .ui-col-2xl-10 {
+    grid-column: span 10;
+  }
+  .ui-col-2xl-11 {
+    grid-column: span 11;
+  }
+  .ui-col-2xl-12 {
+    grid-column: span 12;
   }
 }
 

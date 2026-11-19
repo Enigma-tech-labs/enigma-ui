@@ -92,3 +92,14 @@ describe('spacing utilities', () => {
     },
   );
 });
+
+describe('grid columns', () => {
+  it.each(['', 'sm-', 'md-', 'lg-', 'xl-', '2xl-'])(
+    'ui-col-%s1 to 12 exist',
+    (bp) => {
+      for (let n = 1; n <= 12; n++) {
+        expect(css).toContain(`.ui-col-${bp}${n} {`);
+      }
+    },
+  );
+});

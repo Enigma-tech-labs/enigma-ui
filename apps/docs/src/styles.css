@@ -691,11 +691,9 @@ code {
   overflow: hidden;
 }
 .doc-bp__frame {
-  display: grid;
-  gap: var(--ui-space-4);
-  /* Queries read the content box, so the slider sets that; padding sits outside it. */
+  /* The slider sets the content box: the screen the page sits on. */
   box-sizing: content-box;
-  padding: var(--ui-space-4);
+  padding-block: var(--ui-space-4);
   border: 1px dashed var(--ui-primary);
   border-radius: var(--ui-radius);
   background: var(--ui-highlight);
@@ -715,20 +713,12 @@ code {
   color: var(--ui-text-muted);
   font-variant-numeric: tabular-nums;
 }
-.doc-bp__grid {
-  display: grid;
-  grid-template-columns: repeat(var(--doc-bp-columns, 1), minmax(0, 1fr));
-  gap: var(--ui-space-3);
-}
 @container (width >= 40rem) {
   .doc-bp__chip--sm {
     border-style: solid;
     border-color: var(--ui-primary);
     background: var(--ui-primary);
     color: var(--ui-on-primary);
-  }
-  .doc-bp__grid {
-    --doc-bp-columns: 2;
   }
 }
 @container (width >= 48rem) {
@@ -738,9 +728,6 @@ code {
     background: var(--ui-primary);
     color: var(--ui-on-primary);
   }
-  .doc-bp__grid {
-    --doc-bp-columns: 3;
-  }
 }
 @container (width >= 64rem) {
   .doc-bp__chip--lg {
@@ -748,9 +735,6 @@ code {
     border-color: var(--ui-primary);
     background: var(--ui-primary);
     color: var(--ui-on-primary);
-  }
-  .doc-bp__grid {
-    --doc-bp-columns: 4;
   }
 }
 @container (width >= 80rem) {
@@ -760,9 +744,6 @@ code {
     background: var(--ui-primary);
     color: var(--ui-on-primary);
   }
-  .doc-bp__grid {
-    --doc-bp-columns: 5;
-  }
 }
 @container (width >= 96rem) {
   .doc-bp__chip--2xl {
@@ -770,8 +751,5 @@ code {
     border-color: var(--ui-primary);
     background: var(--ui-primary);
     color: var(--ui-on-primary);
-  }
-  .doc-bp__grid {
-    --doc-bp-columns: 6;
   }
 }
