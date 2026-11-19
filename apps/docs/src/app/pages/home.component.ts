@@ -83,147 +83,271 @@ const foundationCount =
   ],
   host: { class: 'doc-home' },
   template: `
-    <div class="doc-home__intro">
-      <p class="ui-label doc-home__eyebrow">
-        Enigma Technology Lab · Design system
-      </p>
-      <h1 class="ui-head-3xl doc-home__title">
-        One look.<br /><span class="doc-home__accent">Every frontend.</span>
-      </h1>
-      <p class="ui-body-lg doc-home__lead">
-        Accessible components for Angular, React and plain HTML, drawn from one
-        stylesheet. Arabic and English, light and dark, from the first line.
-        Change anything on the card: it is the real kit.
-      </p>
-      <div class="doc-home__actions">
-        <a
-          class="ui-button ui-button--primary ui-button--lg"
-          routerLink="/getting-started"
-          >Get started</a
+    <section
+      class="doc-home__hero"
+      aria-labelledby="home-title"
+      (pointermove)="tilt($event)"
+      (pointerleave)="tilt(null)"
+      [style.--tx]="tx()"
+      [style.--ty]="ty()"
+    >
+      <div class="doc-home__intro">
+        <p class="ui-label doc-home__eyebrow">
+          Enigma Technology Lab · Design system
+        </p>
+        <h1 id="home-title" class="ui-head-3xl doc-home__title">
+          One look.<br /><span class="doc-home__accent"
+            >Every
+            <span class="doc-home__underlined"
+              >frontend.<svg
+                class="doc-home__scribble"
+                viewBox="0 0 300 20"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  class="doc-draw"
+                  pathLength="1"
+                  d="M4 14 C 60 4, 120 4, 170 10 S 260 18, 296 6"
+                /></svg></span
+          ></span>
+        </h1>
+        <p class="ui-body-lg doc-home__lead">
+          Accessible components for Angular, React and plain HTML, drawn from
+          one stylesheet. Arabic and English, light and dark, from the first
+          line.
+        </p>
+        <div class="doc-home__actions">
+          <a
+            class="ui-button ui-button--primary ui-button--lg"
+            routerLink="/getting-started"
+            >Get started</a
+          >
+          <a
+            class="ui-button ui-button--secondary ui-button--lg"
+            href="#play-title"
+            >Try it live</a
+          >
+        </div>
+        <dl class="doc-home__counts">
+          @for (c of counts; track c.label) {
+            <div class="doc-home__count">
+              <dt class="ui-label">{{ c.label }}</dt>
+              <dd class="ui-head-xl">{{ c.value }}</dd>
+            </div>
+          }
+        </dl>
+      </div>
+
+      <!-- Decorative: the Enigma mark extruded in 3D, orbited by pieces of the kit. -->
+      <div class="doc-scene" aria-hidden="true" inert>
+        <div class="doc-scene__world">
+          <svg class="doc-scene__floor" viewBox="0 0 400 400">
+            @for (i of grid; track i) {
+              <line
+                class="doc-draw"
+                pathLength="1"
+                [attr.x1]="i * 50"
+                y1="0"
+                [attr.x2]="i * 50"
+                y2="400"
+                [style.--d]="i"
+              />
+              <line
+                class="doc-draw"
+                pathLength="1"
+                x1="0"
+                [attr.y1]="i * 50"
+                x2="400"
+                [attr.y2]="i * 50"
+                [style.--d]="i"
+              />
+            }
+          </svg>
+
+          <div class="doc-scene__orbit doc-scene__orbit--a">
+            <svg viewBox="0 0 100 100">
+              <circle class="doc-draw" pathLength="1" cx="50" cy="50" r="48" />
+              <circle class="doc-scene__moon" cx="50" cy="2" r="2.2" />
+            </svg>
+          </div>
+          <div class="doc-scene__orbit doc-scene__orbit--b">
+            <svg viewBox="0 0 100 100">
+              <circle class="doc-draw" pathLength="1" cx="50" cy="50" r="48" />
+              <circle class="doc-scene__moon" cx="50" cy="98" r="1.8" />
+            </svg>
+          </div>
+
+          <div class="doc-scene__mark">
+            @for (part of parts; track part.id) {
+              <div class="doc-scene__part doc-scene__part--{{ part.id }}">
+                @for (i of layers; track i) {
+                  <svg viewBox="255 318 515 390" [style.--i]="i">
+                    <polygon
+                      [attr.points]="part.points"
+                      [attr.fill]="part.fill"
+                    />
+                  </svg>
+                }
+              </div>
+            }
+          </div>
+
+          <span
+            class="doc-chip doc-chip--button"
+            style="--x: 4cqi; --y: 14cqi; --z: 9cqi"
+            >Book the visit</span
+          >
+          <span
+            class="doc-chip doc-chip--switch"
+            style="--x: 60cqi; --y: 8cqi; --z: 5cqi"
+            ><span class="doc-chip__track"><span></span></span>Dark mode</span
+          >
+          <span
+            class="doc-chip"
+            lang="ar"
+            dir="rtl"
+            style="--x: 70cqi; --y: 62cqi; --z: 12cqi"
+            ><span class="doc-chip__dot"></span>جديد</span
+          >
+          <span
+            class="doc-chip doc-chip--contrast"
+            style="--x: 2cqi; --y: 70cqi; --z: 3cqi"
+            ><b>7:1</b> AAA text</span
+          >
+          <span
+            class="doc-chip doc-chip--slider"
+            style="--x: 34cqi; --y: 86cqi; --z: 7cqi"
+            ><span class="doc-chip__rail"><span></span></span
+          ></span>
+          <code
+            class="doc-chip doc-chip--code"
+            style="--x: 70cqi; --y: 30cqi; --z: 6cqi"
+            >&lt;ui-card&gt;</code
+          >
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-home__play" aria-labelledby="play-title">
+      <div class="doc-home__play-intro">
+        <p class="ui-label doc-home__eyebrow">Playground</p>
+        <h2 id="play-title" class="ui-head-xl">
+          Change anything. It is the real kit.
+        </h2>
+        <p class="ui-body-md doc-home__lead">
+          Flip the language, theme or brand and watch the same card, and its
+          code, follow in the framework you pick.
+        </p>
+      </div>
+      <div class="doc-home__stage">
+        <div class="doc-home__controls">
+          <fieldset class="doc-picker">
+            <legend class="ui-label doc-picker__legend">Code</legend>
+            <div class="doc-segmented">
+              @for (f of frameworks; track f.id) {
+                <label class="doc-segment">
+                  <input
+                    class="ui-visually-hidden"
+                    type="radio"
+                    name="home-framework"
+                    [checked]="settings.framework() === f.id"
+                    (change)="setFramework(f.id)"
+                  />{{ f.label }}
+                </label>
+              }
+            </div>
+          </fieldset>
+          <fieldset class="doc-picker">
+            <legend class="ui-label doc-picker__legend">Language</legend>
+            <div class="doc-segmented">
+              <label class="doc-segment">
+                <input
+                  class="ui-visually-hidden"
+                  type="radio"
+                  name="home-lang"
+                  [checked]="lang() === 'en'"
+                  (change)="lang.set('en')"
+                />English
+              </label>
+              <label class="doc-segment" lang="ar">
+                <input
+                  class="ui-visually-hidden"
+                  type="radio"
+                  name="home-lang"
+                  [checked]="lang() === 'ar'"
+                  (change)="lang.set('ar')"
+                />العربية
+              </label>
+            </div>
+          </fieldset>
+          <fieldset class="doc-picker">
+            <legend class="ui-label doc-picker__legend">Card theme</legend>
+            <div class="doc-segmented">
+              @for (t of stageThemes; track t.id) {
+                <label class="doc-segment">
+                  <input
+                    class="ui-visually-hidden"
+                    type="radio"
+                    name="home-theme"
+                    [checked]="stageTheme() === t.id"
+                    (change)="stageTheme.set(t.id)"
+                  />{{ t.label }}
+                </label>
+              }
+            </div>
+          </fieldset>
+          <fieldset class="doc-picker">
+            <legend class="ui-label doc-picker__legend">Brand</legend>
+            <div class="doc-segmented">
+              @for (b of brands; track b.id) {
+                <label class="doc-segment">
+                  <input
+                    class="ui-visually-hidden"
+                    type="radio"
+                    name="home-brand"
+                    [checked]="brand() === b.id"
+                    (change)="brand.set(b.id)"
+                  />
+                  <span
+                    class="doc-home__swatch"
+                    [class.doc-home__swatch--client]="b.id === 'client'"
+                    aria-hidden="true"
+                  ></span
+                  >{{ b.label }}
+                </label>
+              }
+            </div>
+          </fieldset>
+        </div>
+
+        <div
+          class="doc-home__preview"
+          [attr.dir]="lang() === 'ar' ? 'rtl' : 'ltr'"
+          [attr.lang]="lang()"
+          [attr.data-theme]="stageTheme()"
+          [style]="brand() === 'client' ? clientBrand : null"
         >
-        <a
-          class="ui-button ui-button--secondary ui-button--lg"
-          routerLink="/components/button"
-          >Browse components</a
-        >
-      </div>
-      <dl class="doc-home__counts">
-        @for (c of counts; track c.label) {
-          <div class="doc-home__count">
-            <dt class="ui-label">{{ c.label }}</dt>
-            <dd class="ui-head-xl">{{ c.value }}</dd>
-          </div>
-        }
-      </dl>
-    </div>
+          <ui-card [title]="t().title" [level]="3">
+            <div class="doc-home__card">
+              <ui-badge variant="info">{{ t().badge }}</ui-badge>
+              <ui-text-field [label]="t().name" autocomplete="name" />
+              <ui-select
+                [label]="t().city"
+                [placeholder]="t().pick"
+                [options]="cities()"
+              />
+              <ui-switch [label]="t().updates" />
+              <button ui-button type="button" (click)="book()">
+                {{ t().book }}
+              </button>
+            </div>
+          </ui-card>
+        </div>
 
-    <div class="doc-home__stage">
-      <div class="doc-home__controls">
-        <fieldset class="doc-picker">
-          <legend class="ui-label doc-picker__legend">Code</legend>
-          <div class="doc-segmented">
-            @for (f of frameworks; track f.id) {
-              <label class="doc-segment">
-                <input
-                  class="ui-visually-hidden"
-                  type="radio"
-                  name="home-framework"
-                  [checked]="settings.framework() === f.id"
-                  (change)="setFramework(f.id)"
-                />{{ f.label }}
-              </label>
-            }
-          </div>
-        </fieldset>
-        <fieldset class="doc-picker">
-          <legend class="ui-label doc-picker__legend">Language</legend>
-          <div class="doc-segmented">
-            <label class="doc-segment">
-              <input
-                class="ui-visually-hidden"
-                type="radio"
-                name="home-lang"
-                [checked]="lang() === 'en'"
-                (change)="lang.set('en')"
-              />English
-            </label>
-            <label class="doc-segment" lang="ar">
-              <input
-                class="ui-visually-hidden"
-                type="radio"
-                name="home-lang"
-                [checked]="lang() === 'ar'"
-                (change)="lang.set('ar')"
-              />العربية
-            </label>
-          </div>
-        </fieldset>
-        <fieldset class="doc-picker">
-          <legend class="ui-label doc-picker__legend">Card theme</legend>
-          <div class="doc-segmented">
-            @for (t of stageThemes; track t.id) {
-              <label class="doc-segment">
-                <input
-                  class="ui-visually-hidden"
-                  type="radio"
-                  name="home-theme"
-                  [checked]="stageTheme() === t.id"
-                  (change)="stageTheme.set(t.id)"
-                />{{ t.label }}
-              </label>
-            }
-          </div>
-        </fieldset>
-        <fieldset class="doc-picker">
-          <legend class="ui-label doc-picker__legend">Brand</legend>
-          <div class="doc-segmented">
-            @for (b of brands; track b.id) {
-              <label class="doc-segment">
-                <input
-                  class="ui-visually-hidden"
-                  type="radio"
-                  name="home-brand"
-                  [checked]="brand() === b.id"
-                  (change)="brand.set(b.id)"
-                />
-                <span
-                  class="doc-home__swatch"
-                  [class.doc-home__swatch--client]="b.id === 'client'"
-                  aria-hidden="true"
-                ></span
-                >{{ b.label }}
-              </label>
-            }
-          </div>
-        </fieldset>
+        <app-code-block [code]="code()" />
       </div>
-
-      <div
-        class="doc-home__preview"
-        [attr.dir]="lang() === 'ar' ? 'rtl' : 'ltr'"
-        [attr.lang]="lang()"
-        [attr.data-theme]="stageTheme()"
-        [style]="brand() === 'client' ? clientBrand : null"
-      >
-        <ui-card [title]="t().title" [level]="2">
-          <div class="doc-home__card">
-            <ui-badge variant="info">{{ t().badge }}</ui-badge>
-            <ui-text-field [label]="t().name" autocomplete="name" />
-            <ui-select
-              [label]="t().city"
-              [placeholder]="t().pick"
-              [options]="cities()"
-            />
-            <ui-switch [label]="t().updates" />
-            <button ui-button type="button" (click)="book()">
-              {{ t().book }}
-            </button>
-          </div>
-        </ui-card>
-      </div>
-
-      <app-code-block [code]="code()" />
-    </div>
+    </section>
   `,
 })
 export class HomeComponent {
@@ -245,6 +369,25 @@ export class HomeComponent {
     { label: 'Frameworks', value: FRAMEWORKS.length },
     { label: 'Text contrast', value: '7:1' },
   ];
+
+  protected readonly grid = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  protected readonly layers = Array.from({ length: 14 }, (_, i) => i);
+  protected readonly parts = [
+    {
+      id: 'red',
+      fill: '#DC4B4B',
+      points: '255,318 620,318 564,400 410,400 486,513 352,708 255,708 388,513',
+    },
+    {
+      id: 'blue',
+      fill: '#0059FF',
+      points: '770,708 405,708 461,626 615,626 539,513 673,318 770,318 637,513',
+    },
+  ];
+  /** Pointer tilt of the 3D scene, in degrees; stays 0 for reduced motion. */
+  protected readonly tx = signal(0);
+  protected readonly ty = signal(0);
+  private readonly still = matchMedia('(prefers-reduced-motion: reduce)');
 
   protected readonly lang = signal<Lang>('en');
   /** Starts as the page's theme and follows it when the header changes; the card switch overrides it. */
@@ -318,6 +461,17 @@ ${t.cities.map((c) => `      <option>${c}</option>`).join('\n')}
 
   constructor() {
     inject(Title).setTitle('Enigma UI · One look, every frontend');
+  }
+
+  protected tilt(e: PointerEvent | null): void {
+    if (!e || this.still.matches || e.pointerType !== 'mouse') {
+      this.tx.set(0);
+      this.ty.set(0);
+      return;
+    }
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    this.tx.set(Math.round(((e.clientX - r.left) / r.width - 0.5) * 30));
+    this.ty.set(Math.round(((e.clientY - r.top) / r.height - 0.5) * -20));
   }
 
   protected setFramework(id: Framework): void {
