@@ -95,11 +95,12 @@ export class AccordionComponent {
 }
 
 /**
- * Marks a section's content to be created only when the section first opens, such as a
- * list that loads from an API. It stays once created, so closing it again is smooth.
+ * Marks a section's content to be created only when the section opens, such as a list
+ * that loads from an API. It goes once the section has closed, and loads again on the
+ * next open, unless the section has `keep`.
  *
  * ```html
- * <details ui-accordion-item heading="Invoices">
+ * <details ui-accordion-item heading="Invoices" keep>
  *   <ng-template uiAccordionContent><app-invoices /></ng-template>
  * </details>
  * ```
@@ -136,7 +137,7 @@ export class AccordionContentDirective {
     </summary>
     <div class="ui-accordion__content">
       <ng-content />
-      @if (lazy() && visited()) {
+      @if (lazy() && rendered()) {
         <ng-container [ngTemplateOutlet]="lazy()!.template" />
       }
     </div>
@@ -153,6 +154,11 @@ export class AccordionItemComponent {
   readonly disabled = input(false, { transform: booleanAttribute });
   /** This section's chevron; by default the accordion's. */
   readonly icon = input<AccordionIcon>();
+  /**
+   * Keeps lazy content once it has been shown, so opening again finds it as it was.
+   * Off, it is created again, and loads again, each time the section opens.
+   */
+  readonly keep = input(false, { transform: booleanAttribute });
   readonly openChange = output<boolean>();
 
   private readonly group = inject(AccordionComponent, { optional: true });
@@ -161,8 +167,8 @@ export class AccordionItemComponent {
   protected readonly iconAt = computed(
     () => this.icon() ?? this.group?.icon() ?? 'end',
   );
-  /** Set once the section has been open, to create lazy content. */
-  protected readonly visited = signal(false);
+  /** Lazy content is in the page: from opening until closed, or for good with keep. */
+  protected readonly rendered = signal(false);
 
   constructor() {
     effect(() => {
@@ -185,9 +191,9 @@ export class AccordionItemComponent {
   protected toggled(): void {
     const open = this.host.open;
     if (open) {
-      this.visited.set(true);
+      this.rendered.set(true);
       this.group?.opened(this.host);
-    }
+    } else if (!this.keep()) this.rendered.set(false);
     this.openChange.emit(open);
   }
 

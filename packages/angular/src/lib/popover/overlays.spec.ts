@@ -34,6 +34,11 @@ import { PopoverTriggerDirective } from './popover';
       <details ui-accordion-item heading="Archived" disabled>
         <p>Old orders.</p>
       </details>
+      <details ui-accordion-item heading="History" keep>
+        <ng-template uiAccordionContent
+          ><p data-testid="kept">Kept</p></ng-template
+        >
+      </details>
     </ui-accordion>
     <button ui-button data-testid="copy" uiTooltip="Copy link">Copy</button>
     <button ui-button data-testid="fee" [uiPopoverTrigger]="info">Fee</button>
@@ -70,20 +75,32 @@ describe('accordion, tooltip and popover', () => {
     expect(items[0].hasAttribute('data-closing')).toBe(false);
   });
 
-  it('creates lazy content on first open and keeps it', async () => {
+  it('creates lazy content on open and removes it once closed, unless kept', async () => {
     const { fixture, root } = await setup();
-    const invoices = root.querySelectorAll('details')[2];
-    expect(invoices.querySelector('[data-testid="lazy"]')).toBeNull();
-    invoices.open = true;
-    invoices.dispatchEvent(new Event('toggle'));
-    await fixture.whenStable();
-    expect(invoices.querySelector('[data-testid="lazy"]')?.textContent).toBe(
-      'Loaded',
-    );
-    invoices.querySelector('summary')!.click();
-    await fixture.whenStable();
-    expect(invoices.open).toBe(false);
-    expect(invoices.querySelector('[data-testid="lazy"]')).not.toBeNull();
+    const items = root.querySelectorAll('details');
+    const toggle = async (details: HTMLDetailsElement) => {
+      if (details.open) details.querySelector('summary')!.click();
+      else details.open = true;
+      await Promise.resolve(); // the close waits for its motion first
+      details.dispatchEvent(new Event('toggle'));
+      await fixture.whenStable();
+    };
+    for (const [details, id, kept] of [
+      [items[2], 'lazy', false],
+      [items[4], 'kept', true],
+    ] as const) {
+      const content = () => details.querySelector(`[data-testid="${id}"]`);
+      expect(content()).toBeNull();
+      await toggle(details);
+      const first = content();
+      expect(first).not.toBeNull();
+      await toggle(details);
+      expect(details.open).toBe(false);
+      expect(content() !== null).toBe(kept);
+      await toggle(details);
+      // Kept: the same element. Reloaded: a new one.
+      expect(content() === first).toBe(kept);
+    }
   });
 
   it('does not open a disabled section, and arrows move between headings', async () => {
@@ -103,11 +120,11 @@ describe('accordion, tooltip and popover', () => {
     key('ArrowDown');
     expect(document.activeElement).toBe(summaries[1]);
     key('End');
-    expect(document.activeElement).toBe(summaries[3]);
+    expect(document.activeElement).toBe(summaries[4]);
     key('ArrowDown');
     expect(document.activeElement).toBe(summaries[0]);
     key('ArrowUp');
-    expect(document.activeElement).toBe(summaries[3]);
+    expect(document.activeElement).toBe(summaries[4]);
   });
 
   it('describes the control with the tooltip and shows it on focus until Escape', async () => {

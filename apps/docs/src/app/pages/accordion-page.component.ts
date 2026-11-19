@@ -8,6 +8,15 @@ import { ApiTableComponent } from '../shared/api-table.component';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
 
+/** Shows when it was created, to tell reloaded content from kept. */
+@Component({
+  selector: 'app-created-at',
+  template: `<p>Created at {{ time }}.</p>`,
+})
+class CreatedAtComponent {
+  protected readonly time = new Date().toLocaleTimeString();
+}
+
 @Component({
   selector: 'app-accordion-page',
   imports: [
@@ -17,6 +26,7 @@ import { PageComponent } from '../shared/page.component';
     AccordionComponent,
     AccordionContentDirective,
     AccordionItemComponent,
+    CreatedAtComponent,
   ],
   template: `
     <app-page
@@ -69,14 +79,19 @@ import { PageComponent } from '../shared/page.component';
       </app-example>
 
       <app-example
-        title="Lazy and disabled"
-        description="Lazy content is created only when its section first opens, such as a list that loads from an API, then kept. A disabled section stays focusable and announced."
+        title="Lazy, kept and disabled"
+        description="Lazy content is created when its section opens, such as a list that loads from an API, and goes once it has closed, so each open loads it again. keep holds on to it instead. A disabled section stays focusable and announced."
         [code]="lazy"
       >
         <ui-accordion class="doc-wide">
-          <details ui-accordion-item heading="Invoices">
+          <details ui-accordion-item heading="Invoices (loads on each open)">
             <ng-template uiAccordionContent>
-              <p>Created at {{ now() }}.</p>
+              <app-created-at />
+            </ng-template>
+          </details>
+          <details ui-accordion-item heading="History (kept)" keep>
+            <ng-template uiAccordionContent>
+              <app-created-at />
             </ng-template>
           </details>
           <details ui-accordion-item heading="Archived orders" disabled>
@@ -94,6 +109,14 @@ import { PageComponent } from '../shared/page.component';
             <p>رجّع المنتج خلال ١٤ يوم.</p>
           </details>
         </ui-accordion>
+      </app-example>
+
+      <app-example
+        title="In Arabic, chevron at the start"
+        description="It points left, where Arabic reads on, and turns down to open."
+        [rtl]="true"
+        [code]="arabicStart"
+      >
         <ui-accordion icon="start" class="doc-wide">
           <details
             ui-accordion-item
@@ -101,6 +124,13 @@ import { PageComponent } from '../shared/page.component';
             description="١٢ شارع التحرير، القاهرة"
           >
             <p>تقدر تغيّره لحد ما الطلب يتشحن.</p>
+          </details>
+          <details
+            ui-accordion-item
+            heading="الدفع"
+            description="فيزا آخرها ٤٢٤٢"
+          >
+            <p>بيتخصم لما الطلب يتشحن.</p>
           </details>
         </ui-accordion>
       </app-example>
@@ -110,8 +140,6 @@ import { PageComponent } from '../shared/page.component';
   `,
 })
 export class AccordionPageComponent {
-  protected readonly now = () => new Date().toLocaleTimeString();
-
   protected readonly usage = {
     angular: `import {
   AccordionComponent,
@@ -186,11 +214,17 @@ export class AccordionPageComponent {
   <details ui-accordion-item heading="Invoices">
     <ng-template uiAccordionContent><app-invoices /></ng-template>
   </details>
+  <details ui-accordion-item heading="History" keep>
+    <ng-template uiAccordionContent><app-history /></ng-template>
+  </details>
   <details ui-accordion-item heading="Archived orders" disabled>…</details>
 </ui-accordion>`,
     react: `<Accordion>
   <AccordionItem heading="Invoices" lazy>
     <Invoices />
+  </AccordionItem>
+  <AccordionItem heading="History" lazy keep>
+    <History />
   </AccordionItem>
   <AccordionItem heading="Archived orders" disabled>…</AccordionItem>
 </Accordion>`,
@@ -201,19 +235,27 @@ export class AccordionPageComponent {
 
   protected readonly arabic = {
     angular: `<ui-accordion single>
-  <details ui-accordion-item heading="أقدر أغيّر طلبي؟">…</details>
-</ui-accordion>
-<ui-accordion icon="start">
-  <details ui-accordion-item heading="عنوان الشحن" description="١٢ شارع التحرير، القاهرة">…</details>
+  <details ui-accordion-item heading="أقدر أغيّر طلبي؟" open>…</details>
+  <details ui-accordion-item heading="الاسترجاع بيتم إزاي؟">…</details>
 </ui-accordion>`,
     react: `<Accordion single>
-  <AccordionItem heading="أقدر أغيّر طلبي؟">…</AccordionItem>
-</Accordion>
-<Accordion icon="start">
-  <AccordionItem heading="عنوان الشحن" description="١٢ شارع التحرير، القاهرة">…</AccordionItem>
+  <AccordionItem heading="أقدر أغيّر طلبي؟" defaultOpen>…</AccordionItem>
+  <AccordionItem heading="الاسترجاع بيتم إزاي؟">…</AccordionItem>
 </Accordion>`,
-    html: `<!-- dir="rtl" on the page: the chevron moves to the left,
-     and at the start it points left until it opens -->
+    html: `<!-- dir="rtl" on the page: the chevron moves to the left -->
+<div class="ui-accordion">…</div>`,
+  };
+
+  protected readonly arabicStart = {
+    angular: `<ui-accordion icon="start">
+  <details ui-accordion-item heading="عنوان الشحن" description="١٢ شارع التحرير، القاهرة">…</details>
+  <details ui-accordion-item heading="الدفع" description="فيزا آخرها ٤٢٤٢">…</details>
+</ui-accordion>`,
+    react: `<Accordion icon="start">
+  <AccordionItem heading="عنوان الشحن" description="١٢ شارع التحرير، القاهرة">…</AccordionItem>
+  <AccordionItem heading="الدفع" description="فيزا آخرها ٤٢٤٢">…</AccordionItem>
+</Accordion>`,
+    html: `<!-- At the start, right to left, it points left until it opens -->
 <div class="ui-accordion ui-accordion--icon-start">…</div>`,
   };
 
@@ -259,8 +301,14 @@ export class AccordionPageComponent {
       {
         name: 'ng-template uiAccordionContent',
         type: 'directive',
+        description: 'Inside an item: content created when it opens.',
+      },
+      {
+        name: 'keep',
+        type: 'boolean',
+        default: 'false',
         description:
-          'Inside an item: content created when it first opens, then kept.',
+          'On each item: keeps lazy content once shown. Off, it goes once closed and loads again on the next open.',
       },
     ],
     react: [
@@ -304,8 +352,14 @@ export class AccordionPageComponent {
         name: 'lazy',
         type: 'boolean',
         default: 'false',
+        description: 'On AccordionItem: mounts the children when it opens.',
+      },
+      {
+        name: 'keep',
+        type: 'boolean',
+        default: 'false',
         description:
-          'On AccordionItem: mounts the children on first open, then keeps them.',
+          'On AccordionItem: keeps lazy children once mounted. Off, they unmount once closed.',
       },
       {
         name: '...props',

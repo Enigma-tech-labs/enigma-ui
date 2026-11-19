@@ -129,10 +129,12 @@ export interface AccordionItemProps
   /** Seen, focusable and announced, but it does not open or close. */
   disabled?: boolean;
   /**
-   * Mounts the children only when the section first opens, such as a list that loads
-   * from an API. They stay once mounted, so closing it again is smooth.
+   * Mounts the children only when the section opens, such as a list that loads from an
+   * API. They unmount once it has closed, and mount again on the next open, unless `keep`.
    */
   lazy?: boolean;
+  /** Keeps lazy children once mounted, so opening again finds them as they were. */
+  keep?: boolean;
   /** This section's chevron; by default the accordion's. */
   icon?: AccordionIcon;
 }
@@ -145,6 +147,7 @@ export function AccordionItem({
   defaultOpen,
   disabled,
   lazy,
+  keep,
   icon,
   className,
   children,
@@ -156,7 +159,7 @@ export function AccordionItem({
   const own = useRef<HTMLDetailsElement | null>(null);
   // Only the first value goes to the DOM; later changes close it with its motion.
   const [initial] = useState(open ?? defaultOpen ?? false);
-  const [visited, setVisited] = useState(initial);
+  const [rendered, setRendered] = useState(initial);
   const iconAt = icon ?? group.icon;
 
   useEffect(() => {
@@ -183,8 +186,10 @@ export function AccordionItem({
       )}
       onToggle={(event) => {
         const el = event.currentTarget;
-        if (el.open) {
-          setVisited(true);
+        if (!el.open) {
+          if (!keep) setRendered(false);
+        } else {
+          setRendered(true);
           if (group.single && el.parentElement)
             for (const other of sections(el.parentElement))
               if (other !== el) closeDetails(other);
@@ -214,7 +219,7 @@ export function AccordionItem({
         </span>
       </summary>
       <div className="ui-accordion__content">
-        {!lazy || visited ? children : null}
+        {!lazy || rendered ? children : null}
       </div>
     </details>
   );

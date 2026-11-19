@@ -7,9 +7,9 @@ import { Accordion, AccordionItem, Popover, Tooltip } from './overlays.js';
 describe('Accordion', () => {
   function renderFaq() {
     const mounted = vi.fn();
-    function Invoices() {
-      useEffect(() => mounted(), []);
-      return <p>Loaded</p>;
+    function Loader({ name }: { name: string }) {
+      useEffect(() => mounted(name), [name]);
+      return <p>{name}</p>;
     }
     const { container } = render(
       <Accordion single>
@@ -18,10 +18,13 @@ describe('Accordion', () => {
         </AccordionItem>
         <AccordionItem heading="How do refunds work?">Within 14 days.</AccordionItem>
         <AccordionItem heading="Invoices" lazy>
-          <Invoices />
+          <Loader name="Invoices list" />
         </AccordionItem>
         <AccordionItem heading="Archived" disabled>
           Old orders.
+        </AccordionItem>
+        <AccordionItem heading="History" lazy keep>
+          <Loader name="History list" />
         </AccordionItem>
       </Accordion>,
     );
@@ -42,18 +45,37 @@ describe('Accordion', () => {
     expect(items[1].open).toBe(true);
   });
 
-  it('mounts lazy children on first open and keeps them', async () => {
+  it('mounts lazy children on open and unmounts them once closed, unless kept', async () => {
     const { items, mounted } = renderFaq();
     expect(mounted).not.toHaveBeenCalled();
-    act(() => {
-      items[2].open = true;
-      items[2].dispatchEvent(new Event('toggle'));
-    });
-    expect(screen.getByText('Loaded')).toBeTruthy();
-    await userEvent.click(items[2].querySelector('summary')!);
-    await waitFor(() => expect(items[2].open).toBe(false));
-    expect(screen.getByText('Loaded')).toBeTruthy();
-    expect(mounted).toHaveBeenCalledTimes(1);
+    // The browser's own toggle for the section open from the start comes a task later.
+    await act(() => new Promise((done) => setTimeout(done)));
+    const toggle = async (details: HTMLDetailsElement) => {
+      const opening = !details.open;
+      if (opening) details.open = true;
+      else await userEvent.click(details.querySelector('summary')!);
+      await waitFor(() => expect(details.open).toBe(opening));
+      act(() => {
+        details.dispatchEvent(new Event('toggle'));
+      });
+    };
+    for (const [details, name, kept] of [
+      [items[2], 'Invoices list', false],
+      [items[4], 'History list', true],
+    ] as const) {
+      await toggle(details);
+      expect(screen.getByText(name)).toBeTruthy();
+      await toggle(details);
+      expect(screen.queryByText(name) !== null).toBe(kept);
+      await toggle(details);
+      expect(screen.getByText(name)).toBeTruthy();
+    }
+    // Reloaded: mounted on each open. Kept: once.
+    expect(mounted.mock.calls.map(([name]) => name)).toEqual([
+      'Invoices list',
+      'Invoices list',
+      'History list',
+    ]);
   });
 
   it('does not open a disabled section, and arrows move between headings', async () => {
@@ -68,7 +90,7 @@ describe('Accordion', () => {
     await userEvent.keyboard('{ArrowDown}');
     expect(document.activeElement).toBe(summaries[1]);
     await userEvent.keyboard('{End}');
-    expect(document.activeElement).toBe(summaries[3]);
+    expect(document.activeElement).toBe(summaries[4]);
     await userEvent.keyboard('{ArrowDown}');
     expect(document.activeElement).toBe(summaries[0]);
   });
