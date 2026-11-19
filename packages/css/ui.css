@@ -1291,6 +1291,48 @@ dialog.ui-dialog::backdrop {
   white-space: nowrap;
   cursor: pointer;
 }
+/* The list with an arrow at each end, shown only while the tabs are wider than it. */
+.ui-tabs__bar {
+  display: flex;
+  min-inline-size: 0;
+  border-block-end: 1px solid var(--ui-divider);
+}
+.ui-tabs__bar > .ui-tabs__list {
+  flex: 1;
+  min-inline-size: 0;
+  border-block-end: 0;
+}
+.ui-tabs__scroll {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-text-muted);
+  cursor: pointer;
+}
+.ui-tabs__scroll:hover:not(:disabled) {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+}
+.ui-tabs__scroll:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+.ui-tabs__scroll svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+.ui-tabs__scroll:dir(rtl) svg {
+  scale: -1 1;
+}
+/* A kept panel that is not chosen (React Aria leaves it in the page, inert). */
+.ui-tabs__panel[data-inert='true'] {
+  display: none;
+}
 .ui-tab:hover {
   color: var(--ui-text);
 }

@@ -130,3 +130,31 @@ describe('tab nav', () => {
     expect(links[1].getAttribute('href')).toBe('/billing');
   });
 });
+
+describe('tab scroll arrows', () => {
+  it('appear when the tabs overflow and scroll toward their end', async () => {
+    const fixture = TestBed.createComponent(TabsHostComponent);
+    await fixture.whenStable();
+    const root: HTMLElement = fixture.nativeElement;
+    expect(root.querySelector('.ui-tabs__scroll')).toBeNull();
+
+    // jsdom has no layout: give the list a size wider than its box.
+    const list = root.querySelector<HTMLElement>('[role="tablist"]')!;
+    Object.defineProperty(list, 'scrollWidth', { value: 500 });
+    Object.defineProperty(list, 'clientWidth', { value: 100 });
+    const scrollBy = vi.fn();
+    list.scrollBy = scrollBy;
+    list.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+
+    const [start, end] = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('.ui-tabs__scroll'),
+    );
+    expect(start.getAttribute('aria-hidden')).toBe('true');
+    expect(start.tabIndex).toBe(-1);
+    expect(start.disabled).toBe(true);
+    expect(end.disabled).toBe(false);
+    end.click();
+    expect(scrollBy).toHaveBeenCalledWith({ left: 80 });
+  });
+});

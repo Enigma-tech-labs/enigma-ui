@@ -56,8 +56,8 @@ export { Menu } from './lib/menu.js';
 export type { MenuAction, MenuProps } from './lib/menu.js';
 export { Breadcrumbs, Nav } from './lib/nav.js';
 export type { BreadcrumbsProps, NavProps } from './lib/nav.js';
-export { Tabs } from './lib/tabs.js';
-export type { TabItem, TabsProps } from './lib/tabs.js';
+export { TabNav, Tabs } from './lib/tabs.js';
+export type { TabItem, TabNavProps, TabsProps } from './lib/tabs.js';
 export { Accordion, AccordionItem, Popover, Tooltip } from './lib/overlays.js';
 export type {
   AccordionItemProps,

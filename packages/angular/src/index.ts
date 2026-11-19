@@ -60,6 +60,7 @@ export {
   TabNavComponent,
   TabsComponent,
 } from './lib/tabs/tabs.component';
+export { KeepRouteStrategy } from './lib/tabs/keep-route-strategy';
 export {
   AccordionComponent,
   AccordionItemComponent,
