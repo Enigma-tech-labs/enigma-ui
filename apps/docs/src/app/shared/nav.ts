@@ -41,6 +41,7 @@ export const NAV = [
     links: [
       { path: '/components/alert', label: 'Alert' },
       { path: '/components/badge', label: 'Badge' },
+      { path: '/components/empty-state', label: 'Empty state' },
       { path: '/components/progress', label: 'Progress' },
       { path: '/components/skeleton', label: 'Skeleton' },
       { path: '/components/spinner', label: 'Spinner' },
@@ -76,8 +77,12 @@ export const NAV = [
     title: 'Content',
     links: [
       { path: '/components/accordion', label: 'Accordion' },
+      { path: '/components/avatar', label: 'Avatar' },
       { path: '/components/card', label: 'Card' },
       { path: '/components/data-table', label: 'Data table' },
+      { path: '/components/divider', label: 'Divider' },
+      { path: '/components/stat', label: 'Stat' },
+      { path: '/components/tag', label: 'Tag' },
     ],
   },
 ];

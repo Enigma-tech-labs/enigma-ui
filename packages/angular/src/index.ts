@@ -76,3 +76,9 @@ export {
   LanguageSwitcherComponent,
   type Language,
 } from './lib/language-switcher/language-switcher';
+export { AvatarComponent, initials } from './lib/avatar/avatar.component';
+export { DividerComponent } from './lib/divider/divider.component';
+export { EmptyStateComponent } from './lib/empty-state/empty-state.component';
+export { StatComponent } from './lib/stat/stat.component';
+export type { StatTone, StatTrend } from './lib/stat/stat.component';
+export { TagComponent } from './lib/tag/tag.component';

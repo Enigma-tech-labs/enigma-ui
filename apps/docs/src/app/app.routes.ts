@@ -96,6 +96,37 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/avatar',
+    loadComponent: () =>
+      import('./pages/avatar-page.component').then(
+        (m) => m.AvatarPageComponent,
+      ),
+  },
+  {
+    path: 'components/divider',
+    loadComponent: () =>
+      import('./pages/divider-page.component').then(
+        (m) => m.DividerPageComponent,
+      ),
+  },
+  {
+    path: 'components/empty-state',
+    loadComponent: () =>
+      import('./pages/empty-state-page.component').then(
+        (m) => m.EmptyStatePageComponent,
+      ),
+  },
+  {
+    path: 'components/stat',
+    loadComponent: () =>
+      import('./pages/stat-page.component').then((m) => m.StatPageComponent),
+  },
+  {
+    path: 'components/tag',
+    loadComponent: () =>
+      import('./pages/tag-page.component').then((m) => m.TagPageComponent),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),

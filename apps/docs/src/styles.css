@@ -954,7 +954,7 @@ ol.doc-list {
   transition: translate var(--doc-duration) var(--ui-ease);
 }
 .doc-motion-demo__fade {
-  opacity: 0.15;
+  opacity: 0; /* faint text would fail contrast; hidden until it fades in */
   transition: opacity var(--doc-duration) var(--ui-ease);
 }
 .doc-motion-demo--on .doc-motion-demo__switch {

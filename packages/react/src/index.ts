@@ -71,3 +71,20 @@ export type {
   Language,
   LanguageSwitcherProps,
 } from './lib/language-switcher.js';
+export {
+  Avatar,
+  Divider,
+  EmptyState,
+  initials,
+  Stat,
+  Tag,
+} from './lib/content.js';
+export type {
+  AvatarProps,
+  DividerProps,
+  EmptyStateProps,
+  StatProps,
+  StatTone,
+  StatTrend,
+  TagProps,
+} from './lib/content.js';
