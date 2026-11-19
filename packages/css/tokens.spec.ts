@@ -103,3 +103,47 @@ describe('grid columns', () => {
     },
   );
 });
+
+describe('Tailwind theme', () => {
+  const bridge = readFileSync(
+    join(import.meta.dirname, 'tailwind.css'),
+    'utf8',
+  );
+
+  it('maps every colour token to a Tailwind colour', () => {
+    const colours = [
+      ...css.matchAll(/^ {2}--ui-([\w-]+):\s*(?:light-dark|#|rgb)/gm),
+    ]
+      .map(([, name]) => name)
+      .filter((n) => !n.startsWith('shadow'));
+    expect(colours.length).toBeGreaterThanOrEqual(25);
+    for (const n of colours) {
+      expect(bridge).toContain(`--color-${n}: var(--ui-${n});`);
+    }
+  });
+
+  it('turns Tailwind classes into the kit tokens', async () => {
+    const { default: postcss } = await import('postcss');
+    const { default: tailwind } = await import('@tailwindcss/postcss');
+    const from = join(import.meta.dirname, 'tailwind-check.css');
+    const input = `@import 'tailwindcss' source(none);
+@import './tailwind.css';
+@source inline('p-4 p-0.5 bg-primary text-on-primary rounded-xl rounded-ui head-md z-dialog duration-fast ease-ui shadow-ui font-display md:p-6');`;
+    const out = (await postcss([tailwind()]).process(input, { from })).css;
+    /** The declarations of one class's rule in the output. */
+    const rule = (cls: string) =>
+      out.match(new RegExp(String.raw`\.${cls}\s*\{([^}]*)\}`))?.[1] ?? '';
+    expect(rule('p-4')).toContain('calc(var(--ui-space-1) * 4)');
+    expect(rule('bg-primary')).toContain('var(--ui-primary)');
+    expect(rule('text-on-primary')).toContain('var(--ui-on-primary)');
+    expect(rule('rounded-xl')).toContain('var(--ui-radius-xl)');
+    expect(rule('rounded-ui')).toContain('var(--ui-radius)');
+    expect(rule('head-md')).toContain('var(--ui-head-md)');
+    expect(rule('z-dialog')).toContain('var(--ui-layer-dialog)');
+    expect(rule('duration-fast')).toContain('var(--ui-duration-fast)');
+    expect(rule('shadow-ui')).toContain('--ui-shadow');
+    expect(out).toContain('@media (width >= 48rem)');
+    // The kit itself is in the components layer, so a Tailwind utility wins over it.
+    expect(out).toMatch(/@layer components\s*\{[\s\S]*\.ui-button\s*\{/);
+  });
+});

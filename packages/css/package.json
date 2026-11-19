@@ -18,13 +18,23 @@
   ],
   "files": [
     "ui.css",
+    "tailwind.css",
     "fonts",
     "README.md"
   ],
   "style": "./ui.css",
   "exports": {
     "./ui.css": "./ui.css",
+    "./tailwind.css": "./tailwind.css",
     "./fonts/*": "./fonts/*"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.1.0"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
   },
   "sideEffects": [
     "*.css"

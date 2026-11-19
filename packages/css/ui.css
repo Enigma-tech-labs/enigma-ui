@@ -63,6 +63,14 @@
   font-display: swap;
 }
 
+/* Border-box everywhere, as Tailwind's reset sets it, so the kit measures the same with or
+   without Tailwind: a 2.75rem control is 2.75rem, border and padding included. */
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
 :root {
   color-scheme: light dark;
 
@@ -1521,6 +1529,7 @@ dialog.ui-dialog::backdrop {
 }
 .ui-breadcrumbs a {
   color: var(--ui-primary);
+  text-decoration-line: underline; /* a link is never colour alone, also under a reset */
   text-underline-offset: 0.2em;
 }
 .ui-breadcrumbs a:focus-visible {
@@ -1669,7 +1678,8 @@ dialog.ui-dialog::backdrop {
   display: flex;
   align-items: center;
   gap: var(--ui-space-3);
-  min-block-size: var(--ui-control-height);
+  /* A touch target plus room above and below: a list of questions reads airy, not packed. */
+  min-block-size: calc(var(--ui-control-height) + 2 * var(--ui-space-2));
   padding-block: var(--ui-space-2);
   font-weight: 600;
   list-style: none;
