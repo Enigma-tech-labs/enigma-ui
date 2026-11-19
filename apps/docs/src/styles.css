@@ -800,6 +800,8 @@ code {
 .doc-layout--home {
   grid-template-columns: minmax(0, 1fr);
   max-inline-size: none;
+  /* The dot grid runs edge to edge (100vw counts the scrollbar): never scroll sideways. */
+  overflow-x: clip;
 }
 .doc-layout--home .doc-main {
   padding: 0;

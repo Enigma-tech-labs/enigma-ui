@@ -1,4 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import {
@@ -19,7 +25,7 @@ import {
 import { NAV } from '../shared/nav';
 
 type Lang = 'en' | 'ar';
-type StageTheme = 'page' | 'light' | 'dark';
+type StageTheme = 'light' | 'dark';
 type Brand = 'enigma' | 'client';
 
 const TEXT = {
@@ -196,7 +202,7 @@ const foundationCount =
         class="doc-home__preview"
         [attr.dir]="lang() === 'ar' ? 'rtl' : 'ltr'"
         [attr.lang]="lang()"
-        [attr.data-theme]="stageTheme() === 'page' ? null : stageTheme()"
+        [attr.data-theme]="stageTheme()"
         [style]="brand() === 'client' ? clientBrand : null"
       >
         <ui-card [title]="t().title" [level]="2">
@@ -226,7 +232,6 @@ export class HomeComponent {
   protected readonly frameworks = FRAMEWORKS;
   protected readonly clientBrand = CLIENT_BRAND;
   protected readonly stageThemes = [
-    { id: 'page', label: 'Page' },
     { id: 'light', label: 'Light' },
     { id: 'dark', label: 'Dark' },
   ] as const;
@@ -242,7 +247,14 @@ export class HomeComponent {
   ];
 
   protected readonly lang = signal<Lang>('en');
-  protected readonly stageTheme = signal<StageTheme>('page');
+  /** Starts as the page's theme and follows it when the header changes; the card switch overrides it. */
+  protected readonly stageTheme = linkedSignal<StageTheme>(() => {
+    const page = this.settings.theme();
+    if (page !== 'system') return page;
+    return matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  });
   protected readonly brand = signal<Brand>('enigma');
   protected readonly t = computed(() => TEXT[this.lang()]);
   protected readonly cities = computed(() =>
