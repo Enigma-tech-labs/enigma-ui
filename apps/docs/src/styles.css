@@ -85,6 +85,25 @@ code {
   block-size: 1.75rem;
   inline-size: auto;
 }
+.doc-lockup {
+  display: flex;
+}
+/* The mark alone stands in for the lockup on a phone. */
+.doc-brand .doc-mark {
+  display: none;
+}
+@media (max-width: 30rem) {
+  .doc-lockup {
+    display: none;
+  }
+  .doc-brand .doc-mark {
+    display: block;
+  }
+}
+/* Menu and settings chip: small screens only. */
+.doc-header__button {
+  display: none;
+}
 .doc-brand__product {
   padding-inline-start: var(--ui-space-3);
   border-inline-start: 2px solid var(--ui-divider);
@@ -128,6 +147,12 @@ code {
   flex-wrap: wrap;
   gap: var(--ui-space-2) var(--ui-space-3);
   margin-inline-start: auto;
+}
+.doc-picker {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 /*
  * Header pickers: native radios under a segmented control. The chosen segment is raised
@@ -212,29 +237,50 @@ code {
     border: 2px solid Highlight;
   }
 }
-/* Narrow screens: the framework names stay (the logos go), the theme keeps its icons. */
-@media (max-width: 36rem) {
-  .doc-settings {
-    inline-size: 100%;
-  }
-  .doc-segmented--framework {
-    flex: 1;
-  }
-  .doc-segmented--framework .doc-segment {
-    flex: auto;
-    padding-inline: 0.5rem;
-  }
-  .doc-segmented--framework .doc-segment__icon {
-    display: none;
-  }
-  .doc-segmented--theme .doc-segment__label {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
+/*
+ * Small screens: the pickers live in a bottom sheet. The header keeps one chip that
+ * shows what is chosen (framework logo | theme icon), so the state stays in sight.
+ */
+.doc-settings-button {
+  gap: var(--ui-space-2);
+  margin-inline-start: auto;
+  padding-inline: var(--ui-space-3);
+}
+.doc-settings-button__icon {
+  display: inline-flex;
+}
+.doc-settings-button__divider {
+  inline-size: 1px;
+  block-size: 1.25rem;
+  background: currentColor;
+  opacity: 0.3;
+}
+/* In the sheet: visible legends, and wide segments with the icon over the label. */
+.doc-settings-sheet .ui-dialog__body {
+  gap: var(--ui-space-6);
+}
+.doc-settings-sheet .doc-picker__legend {
+  margin-block-end: var(--ui-space-2);
+  padding: 0;
+  color: var(--ui-text-muted);
+}
+.doc-settings-sheet .doc-segment {
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-3) var(--ui-space-2);
+  white-space: normal;
+  text-align: center;
+}
+/* The nav drawer opens from the inline start, where the side bar sits, and leaves a
+   strip of page in sight to tap away. */
+.doc-nav-drawer {
+  --ui-drawer-from: -100%;
+  inset-inline: 0 auto;
+  inline-size: min(20rem, 85vw);
+}
+.doc-nav-drawer:dir(rtl) {
+  --ui-drawer-from: 100%;
 }
 
 /* Layout */
@@ -244,7 +290,7 @@ code {
   max-inline-size: 84rem;
   margin-inline: auto;
 }
-.doc-nav {
+.doc-nav--side {
   position: sticky;
   inset-block-start: var(--doc-header-height);
   align-self: start;
@@ -292,29 +338,25 @@ code {
 .doc-main:focus {
   outline: none;
 }
+/* Small screens: one slim sticky bar (menu, mark, settings chip); the side bar is a drawer. */
 @media (max-width: 56rem) {
-  .doc-layout {
-    grid-template-columns: minmax(0, 1fr);
+  :root {
+    --doc-header-height: 3.75rem;
   }
   .doc-header {
-    position: static;
-    block-size: auto;
+    flex-wrap: nowrap;
+    gap: var(--ui-space-2);
+    padding-block: var(--ui-space-2);
   }
-  .doc-nav {
-    position: static;
-    max-block-size: none;
-    overflow: visible;
-    padding-block: var(--ui-space-4);
-    border-inline-end: 0;
-    border-block-end: 1px solid var(--ui-divider);
+  .doc-header__button {
+    display: inline-flex;
   }
-  .doc-nav__title {
-    margin-block: var(--ui-space-3) var(--ui-space-1);
+  .doc-settings,
+  .doc-nav--side {
+    display: none;
   }
-  .doc-nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--ui-space-1);
+  .doc-layout {
+    grid-template-columns: minmax(0, 1fr);
   }
   .doc-main {
     padding-inline: var(--ui-space-4);
