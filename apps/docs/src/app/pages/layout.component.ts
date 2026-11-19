@@ -12,10 +12,21 @@ import { CodeBlockComponent } from '../shared/code-block.component';
 import type { FrameworkCode } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+import { StepComponent } from '../shared/step.component';
+import {
+  TokenTableComponent,
+  type TokenRow,
+} from '../shared/token-table.component';
 
 @Component({
   selector: 'app-layout',
-  imports: [PageComponent, CodeBlockComponent, ExampleComponent],
+  imports: [
+    PageComponent,
+    CodeBlockComponent,
+    ExampleComponent,
+    StepComponent,
+    TokenTableComponent,
+  ],
   template: `
     <app-page
       title="Layout"
@@ -23,13 +34,7 @@ import { PageComponent } from '../shared/page.component';
     >
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Breakpoints</h2>
-        <p>
-          The kit's breakpoints are Tailwind's five, with the same names and
-          values. They are in rem, so they move with the reader's text size:
-          40rem is 640px only at the default size. Each one is a token for max
-          widths and scripts; CSS cannot read a custom property inside a query,
-          so <code>&#64;container</code> writes the value out.
-        </p>
+        <p>Tailwind's five, in rem so they follow the reader's text size.</p>
         <div
           class="doc-table-wrap"
           tabindex="0"
@@ -64,9 +69,8 @@ import { PageComponent } from '../shared/page.component';
           </table>
         </div>
         <p>
-          Tailwind's <code>&#64;container</code> variants have their own,
-          smaller scale, sized for cards and panels rather than pages. The names
-          overlap: Tailwind's <code>&#64;sm</code> is 24rem, not 40rem.
+          Tailwind's <code>&#64;container</code> scale is smaller:
+          <code>&#64;sm</code> is 24rem, not 40rem.
         </p>
         <div
           class="doc-table-wrap"
@@ -100,12 +104,8 @@ import { PageComponent } from '../shared/page.component';
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Page and grid</h2>
         <p>
-          Start every page with <code>ui-page</code> on its wrapper. That one
-          class centres the page, caps its width, adds side padding and makes a
-          12-column grid with a gap. The padding and the gap grow with the
-          screen on their own, from 1rem on a phone to 3rem and 2rem on a wide
-          desktop. Each child fills the whole row until you give it a column
-          class.
+          <code>ui-page</code> on the wrapper gives 12 columns, a capped width
+          and padding that grows with the screen.
         </p>
         <div
           class="doc-table-wrap"
@@ -132,41 +132,22 @@ import { PageComponent } from '../shared/page.component';
             </tbody>
           </table>
         </div>
-        <p>
-          A breakpoint class reads the width its grid's columns get, not the
-          screen's. On a full page that is the screen less the side padding, so
-          md starts on a screen of about 51rem rather than 48rem. In a nested
-          <code>ui-grid</code> inside a narrow column, the cards switch later
-          still, because their grid is narrower. You never write a query
-          yourself.
-        </p>
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Try the page</h2>
         <p>
-          Move the slider to set the screen's width. The padding and gap grow,
-          the side bar moves beside the content at md, and the cards add a
-          column at sm and lg of their own grid. A screen wider than this page
-          is drawn smaller to fit, at its real width, so every breakpoint can be
-          reached on a phone too.
+          Set the screen width: the side bar moves up at md, the cards add
+          columns at sm and lg.
         </p>
-        <div class="ui-field doc-step">
-          <label class="ui-field__label" for="layout-width">Screen width</label>
-          <input
-            id="layout-width"
-            class="doc-step__range"
-            type="range"
-            min="20"
-            max="112"
-            [value]="width()"
-            [attr.aria-valuetext]="readout()"
-            (input)="width.set(+$any($event.target).value)"
-          />
-          <output for="layout-width" class="doc-step__value">{{
-            readout()
-          }}</output>
-        </div>
+        <app-step
+          label="Screen width"
+          [min]="20"
+          [max]="112"
+          [valuetext]="readout()"
+          [(value)]="width"
+          >{{ readout() }}</app-step
+        >
 
         <app-example
           title="A page from four classes"
@@ -214,62 +195,28 @@ import { PageComponent } from '../shared/page.component';
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Your own components</h2>
         <p>
-          Only for a component of your own that must change shape, such as a
-          card that puts its picture beside the text when there is room. Put
-          <code>ui-container</code> on the box and write
-          <code>&#64;container</code> with a breakpoint's value. It works the
-          way a screen query does, but reads the box, so the same card fits a
-          side bar, a dialog and the full page.
+          <code>ui-container</code> on the box, then <code>&#64;container</code>
+          with a breakpoint's value: the card fits a side bar and a full page.
         </p>
         <app-code-block [text]="usage" caption="CSS" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Widths</h2>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="Widths"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">What</th>
-                <th scope="col">Width</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (w of widths; track w.what) {
-                <tr>
-                  <td>{{ w.what }}</td>
-                  <td>{{ w.width }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        <p>
+          The fixed widths in the kit; nothing is wider than 320px less 2rem.
+        </p>
+        <app-token-table label="Widths" [rows]="widths" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
           <li>
-            Nothing scrolls sideways at 320px except a wide table, which scrolls
-            inside its own frame and can be reached with the keyboard.
+            Nothing scrolls sideways at 320px except a table in its frame.
           </li>
-          <li>
-            A floating layer is never wider than the screen less 2rem, so its
-            edges stay in view.
-          </li>
-          <li>
-            Below sm, pagination shows only the current page and the arrows, and
-            a side bar's links go in a drawer.
-          </li>
-          <li>
-            Use the spacing scale for gaps and the logical properties for sides,
-            so the same layout works right to left.
-          </li>
+          <li>Below sm, a side bar's links go in a drawer.</li>
+          <li>Logical sides only, so the layout works right to left.</li>
         </ul>
       </section>
     </app-page>
@@ -380,15 +327,30 @@ export class LayoutComponent {
     });
   }
 
-  protected readonly widths = [
+  protected readonly widths: TokenRow[] = [
     {
-      what: 'Dialog (--ui-dialog-size)',
-      width: '24rem small, 32rem, 48rem large',
+      token: '--ui-dialog-size',
+      value: '24rem · 32rem · 48rem',
+      use: 'Small, default and large dialog.',
     },
-    { what: 'Toast', width: '24rem' },
-    { what: 'Popover', width: '22rem at most' },
-    { what: 'Tooltip', width: '18rem at most' },
-    { what: 'Smallest screen', width: '320px' },
+    {
+      token: '--ui-page-max',
+      value: '96rem',
+      use: 'Widest the page columns get. Set 64rem for a narrow site.',
+    },
+    {
+      token: '--ui-page-gutter',
+      value: '1rem → 3rem',
+      use: 'Side padding of ui-page, grows with the screen.',
+    },
+    {
+      token: '--ui-grid-gap',
+      value: '1rem → 2rem',
+      use: 'Gap between columns and rows.',
+    },
+    { token: '.ui-toast', value: '24rem', use: 'Toast.' },
+    { token: '.ui-popover', value: '22rem at most', use: 'Popover.' },
+    { token: '.ui-tooltip', value: '18rem at most', use: 'Tooltip.' },
   ];
 
   protected readonly usage = `/* <div class="ui-container"><article class="product">…</article></div> */

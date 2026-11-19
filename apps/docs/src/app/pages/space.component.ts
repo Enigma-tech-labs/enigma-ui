@@ -3,132 +3,60 @@ import { CodeBlockComponent } from '../shared/code-block.component';
 import type { FrameworkCode } from '../shared/docs-settings';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+import { StepComponent } from '../shared/step.component';
+import {
+  TokenTableComponent,
+  type TokenRow,
+} from '../shared/token-table.component';
 
 @Component({
   selector: 'app-space',
-  imports: [PageComponent, CodeBlockComponent, ExampleComponent],
+  imports: [
+    PageComponent,
+    CodeBlockComponent,
+    ExampleComponent,
+    StepComponent,
+    TokenTableComponent,
+  ],
   template: `
     <app-page
       title="Space and shadow"
-      lead="One spacing scale for every padding, margin and gap, one radius, and one shadow. The page is flat; only what floats over it has a shadow."
+      lead="One spacing scale for padding, margin and gap, one radius, one shadow."
     >
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Spacing</h2>
         <p>
-          The number in a token is quarters of a rem, 4 pixels each:
-          <code>--ui-space-4</code> is 1rem. Half steps (<code>0-5</code>,
-          <code>1-5</code>, <code>2-5</code>) are only for inside small
-          controls. Padding, margin and gap all take the same tokens; there is
-          no separate scale for each.
+          The number is quarters of a rem: <code>--ui-space-4</code> is 1rem.
         </p>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="Spacing tokens"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">Token</th>
-                <th scope="col">rem</th>
-                <th scope="col">px</th>
-                <th scope="col">For</th>
-                <th scope="col">
-                  <span class="ui-visually-hidden">Size</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (s of space; track s.n) {
-                <tr>
-                  <td>
-                    <code>--ui-space-{{ s.n }}</code>
-                  </td>
-                  <td>{{ s.rem }}</td>
-                  <td>{{ s.px }}</td>
-                  <td>{{ s.use }}</td>
-                  <td class="doc-space__cell">
-                    <span
-                      class="doc-space__bar"
-                      [style.inline-size]="'var(--ui-space-' + s.n + ')'"
-                    ></span>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        <app-token-table label="Spacing tokens" [rows]="spaceRows" />
         <app-code-block [text]="usage" caption="CSS" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Padding, margin and gap classes</h2>
         <p>
-          For one-off space in markup, every step has a class: the letter, the
-          side, then the step. <code>ui-p-4</code> is
-          <code>padding: var(--ui-space-4)</code>, <code>ui-mt-0-5</code> is a
-          0.125rem top margin. Sides are logical, so start and end flip in
-          Arabic. Margin also takes <code>auto</code>. Gap is
-          <code>ui-gap-</code><em>step</em> both ways, <code>ui-gap-x-</code
-          ><em>step</em> between columns and <code>ui-gap-y-</code
-          ><em>step</em> between rows. They work the same in Angular, React and
-          plain HTML.
+          Letter, side, step: <code>ui-p-4</code>, <code>ui-mt-0-5</code>,
+          <code>ui-ms-auto</code>. Sides flip in Arabic.
         </p>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="Padding and margin classes"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">Padding</th>
-                <th scope="col">Margin</th>
-                <th scope="col">Sets</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (u of utilities; track u.side) {
-                <tr>
-                  <td>
-                    <code>ui-p{{ u.side }}-</code><em>step</em>
-                  </td>
-                  <td>
-                    <code>ui-m{{ u.side }}-</code><em>step</em>
-                  </td>
-                  <td>{{ u.sets }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        <app-token-table
+          label="Padding, margin and gap classes"
+          tokenHeading="Class"
+          [rows]="utilities"
+        />
         <app-code-block [text]="utilityUsage" caption="HTML" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Try the classes</h2>
-        <p>
-          Move the slider to pick a step; every demo below and its code follow
-          it. The tinted, dashed area is the space the class adds.
-        </p>
-        <div class="ui-field doc-step">
-          <label class="ui-field__label" for="space-step">Step</label>
-          <input
-            id="space-step"
-            class="doc-step__range"
-            type="range"
-            min="0"
-            [max]="space.length - 1"
-            [value]="index()"
-            [attr.aria-valuetext]="step().n + ', ' + step().rem"
-            (input)="index.set(+$any($event.target).value)"
-          />
-          <output for="space-step" class="doc-step__value">
-            <code>{{ step().n }}</code> · {{ step().rem }} · {{ step().px }}px
-          </output>
-        </div>
+        <p>Every demo below and its code follow the slider.</p>
+        <app-step
+          label="Step"
+          [max]="space.length - 1"
+          [valuetext]="step().n + ', ' + step().rem"
+          [(value)]="index"
+        >
+          <code>{{ step().n }}</code> · {{ step().rem }} · {{ step().px }}px
+        </app-step>
 
         <app-example
           title="Padding"
@@ -191,49 +119,21 @@ import { PageComponent } from '../shared/page.component';
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Radius</h2>
-        <p>
-          Every radius follows <code>--ui-radius</code>: override that one token
-          and the whole kit re-shapes. Something nested inside a rounded box
-          takes a smaller radius than the box.
-        </p>
-        <div class="doc-swatches">
-          @for (r of radii; track r.token) {
-            <div class="doc-swatch">
-              <div
-                class="doc-swatch__chip doc-swatch__chip--surface doc-swatch__chip--square"
-                [style.border-radius]="'var(' + r.token + ')'"
-              ></div>
-              <code>{{ r.token }}</code>
-              <span>{{ r.value }}</span>
-              <span class="doc-muted">{{ r.use }}</span>
-            </div>
-          }
-        </div>
+        <p>Every radius is worked out from <code>--ui-radius</code>.</p>
+        <app-token-table label="Radius tokens" [rows]="radiusRows" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Try the radius</h2>
-        <p>
-          Move the slider to set <code>--ui-radius</code>. The real components
-          below follow it, and so does every other radius token, because each
-          one is worked out from the base.
-        </p>
-        <div class="ui-field doc-step">
-          <label class="ui-field__label" for="radius-step">Base radius</label>
-          <input
-            id="radius-step"
-            class="doc-step__range"
-            type="range"
-            min="0"
-            [max]="radiusSteps.length - 1"
-            [value]="radiusIndex()"
-            [attr.aria-valuetext]="radius()"
-            (input)="radiusIndex.set(+$any($event.target).value)"
-          />
-          <output for="radius-step" class="doc-step__value">
-            <code>{{ radius() }}</code> · {{ radiusPx() }}px
-          </output>
-        </div>
+        <p>Set <code>--ui-radius</code>; real components follow.</p>
+        <app-step
+          label="Base radius"
+          [max]="radiusSteps.length - 1"
+          [valuetext]="radius()"
+          [(value)]="radiusIndex"
+        >
+          <code>{{ radius() }}</code> · {{ radiusPx() }}px
+        </app-step>
 
         <app-example
           title="One token re-shapes the kit"
@@ -265,69 +165,31 @@ import { PageComponent } from '../shared/page.component';
       </section>
 
       <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Control height</h2>
-        <p>
-          <code>--ui-control-height</code> is 2.75rem, 44 pixels: the smallest
-          touch target. Buttons, fields, list items and tabs are never shorter.
-        </p>
+        <h2 class="ui-heading doc-h2">Sizes</h2>
+        <p>Two sizes every control and row of buttons shares.</p>
+        <app-token-table label="Size tokens" [rows]="sizeRows" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Shadow</h2>
-        <div class="doc-depth">
-          <div class="ui-card">
-            <p class="ui-card__title">On the page</p>
-            <p>Cards, tables and fields: a 1px divider, no shadow.</p>
-          </div>
-          <div class="doc-depth__float">
-            <p class="ui-card__title">Floating</p>
-            <p>
-              <code>--ui-shadow</code>, and a border for high contrast. Switch
-              the theme to see it in dark mode.
-            </p>
-          </div>
-        </div>
-        <ul class="doc-list">
-          <li>
-            A shadow means "this floats and will go away": lists, menus,
-            popovers, tooltips, dialogs and toasts. Never add one to a card to
-            make it stand out; use space or a heading.
-          </li>
-          <li>
-            Light mode casts an ink shadow. A dark shadow can't be seen on a
-            dark page, so dark mode uses a light slate glow
-            (<code>--ui-shadow-color</code>): a shade, never pure white.
-          </li>
-          <li>
-            Windows high contrast removes shadows, so every floating layer also
-            has a border (transparent until then) to keep its edge.
-          </li>
-        </ul>
+        <p>
+          Only what floats has a shadow: lists, menus, popovers, dialogs,
+          toasts. Cards stay flat.
+        </p>
+        <app-token-table label="Shadow tokens" [rows]="shadowRows" />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Try the shadow</h2>
-        <p>
-          Move the slider to set how far the layer floats: the offset and the
-          blur grow together. The colour stays
-          <code>--ui-shadow-color</code>, so it still works in dark mode.
-        </p>
-        <div class="ui-field doc-step">
-          <label class="ui-field__label" for="shadow-step">Depth</label>
-          <input
-            id="shadow-step"
-            class="doc-step__range"
-            type="range"
-            min="0"
-            max="16"
-            [value]="depth()"
-            [attr.aria-valuetext]="shadow()"
-            (input)="depth.set(+$any($event.target).value)"
-          />
-          <output for="shadow-step" class="doc-step__value">
-            <code>{{ shadow() }}</code>
-          </output>
-        </div>
+        <p>Offset and blur grow together; the colour stays the token.</p>
+        <app-step
+          label="Depth"
+          [max]="16"
+          [valuetext]="shadow()"
+          [(value)]="depth"
+        >
+          <code>{{ shadow() }}</code>
+        </app-step>
 
         <app-example
           title="A floating layer"
@@ -375,6 +237,14 @@ export class SpaceComponent {
     };
   });
 
+  protected readonly spaceRows: TokenRow[] = this.space.map((s) => ({
+    token: `--ui-space-${s.n}`,
+    value: `${s.rem} · ${s.px}px`,
+    use: s.use,
+    previewClass: 'doc-space__bar',
+    preview: { 'inline-size': `var(--ui-space-${s.n})` },
+  }));
+
   protected readonly radii = [
     {
       token: '--ui-radius-none',
@@ -416,6 +286,55 @@ export class SpaceComponent {
       token: '--ui-radius-full',
       value: '9999px',
       use: 'Pills and circles: badges, switches, spinners, progress bars, round icons.',
+    },
+  ];
+
+  protected readonly radiusRows: TokenRow[] = this.radii.map((r) => ({
+    token: r.token,
+    value: r.value,
+    use: r.use,
+    previewClass: 'doc-token__box',
+    preview: { 'border-radius': `var(${r.token})` },
+  }));
+
+  protected readonly sizeRows: TokenRow[] = [
+    {
+      token: '--ui-control-height',
+      value: '2.75rem · 44px',
+      use: 'Smallest touch target: buttons, fields, list items, tabs. Large buttons take 3.25rem.',
+      previewClass: 'doc-token__box',
+      preview: { 'block-size': 'var(--ui-control-height)' },
+    },
+    {
+      token: '--ui-gap',
+      value: 'var(--ui-space-2)',
+      use: 'Between buttons in a row and items in a group.',
+      previewClass: 'doc-space__bar',
+      preview: { 'inline-size': 'var(--ui-gap)' },
+    },
+  ];
+
+  protected readonly shadowRows: TokenRow[] = [
+    {
+      token: '--ui-shadow',
+      value: '0 8px 24px var(--ui-shadow-color)',
+      use: 'Every floating layer, with a transparent border so high contrast keeps its edge.',
+      previewClass: 'doc-token__box',
+      preview: { 'box-shadow': 'var(--ui-shadow)' },
+    },
+    {
+      token: '--ui-shadow-color',
+      value: 'ink 18%, slate 40% on dark',
+      use: 'A dark shadow is lost on a dark page, so dark mode casts a light slate glow.',
+      previewClass: 'doc-token__chip',
+      preview: { background: 'var(--ui-shadow-color)' },
+    },
+    {
+      token: '--ui-backdrop',
+      value: 'rgb(11 16 32 / 0.6)',
+      use: 'Behind a dialog, drawer or bottom sheet.',
+      previewClass: 'doc-token__chip',
+      preview: { background: 'var(--ui-backdrop)' },
     },
   ];
 
@@ -483,15 +402,22 @@ export class SpaceComponent {
     return { angular: html, react, html };
   }
 
-  protected readonly utilities = [
-    { side: '', sets: 'All four sides.' },
-    { side: 'x', sets: 'Inline: start and end (left and right in English).' },
-    { side: 'y', sets: 'Block: top and bottom.' },
-    { side: 't', sets: 'Top (block start).' },
-    { side: 'b', sets: 'Bottom (block end).' },
-    { side: 's', sets: 'Start: left in English, right in Arabic.' },
-    { side: 'e', sets: 'End: right in English, left in Arabic.' },
-  ];
+  protected readonly utilities: TokenRow[] = [
+    ['p-', 'm-', 'all sides', 'Padding or margin on all four sides.'],
+    ['px-', 'mx-', 'inline', 'Start and end.'],
+    ['py-', 'my-', 'block', 'Top and bottom.'],
+    ['pt-', 'mt-', 'block-start', 'Top.'],
+    ['pb-', 'mb-', 'block-end', 'Bottom.'],
+    ['ps-', 'ms-', 'inline-start', 'Left in English, right in Arabic.'],
+    ['pe-', 'me-', 'inline-end', 'Right in English, left in Arabic.'],
+    ['gap-', '', 'gap', 'Between children of a flex or grid, both ways.'],
+    ['gap-x-', '', 'column-gap', 'Between columns.'],
+    ['gap-y-', '', 'row-gap', 'Between rows.'],
+  ].map(([a, b, value, use]) => ({
+    token: `ui-${a}step` + (b ? ` · ui-${b}step` : ''),
+    value,
+    use,
+  }));
 
   protected readonly utilityUsage = `<section class="ui-card ui-p-8 ui-mb-12">
   <h2 class="ui-heading ui-mb-4">Order summary</h2>

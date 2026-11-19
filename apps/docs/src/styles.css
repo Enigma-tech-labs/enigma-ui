@@ -410,20 +410,6 @@ code {
   padding-inline-start: var(--ui-space-6);
   max-inline-size: 44rem;
 }
-.doc-type-list {
-  display: grid;
-  gap: var(--ui-space-6);
-}
-.doc-type-row {
-  display: grid;
-  gap: var(--ui-space-1);
-  padding-block-end: var(--ui-space-6);
-  border-block-end: 1px solid var(--ui-divider);
-  overflow-wrap: break-word;
-}
-.doc-type-row > p {
-  margin: 0;
-}
 
 /* Example card */
 .doc-card {
@@ -537,28 +523,7 @@ code {
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
   gap: var(--ui-space-4);
 }
-.doc-swatch {
-  display: grid;
-  gap: var(--ui-space-1);
-  align-content: start;
-}
-.doc-swatch code,
-.doc-swatch .doc-muted {
-  font-size: var(--ui-text-sm);
-}
-.doc-swatch__chip {
-  block-size: 4.5rem;
-  margin-block-end: var(--ui-space-2);
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-}
-.doc-swatch__chip--surface {
-  background: var(--ui-surface);
-}
 /* Square, so a full radius reads as a circle. */
-.doc-swatch__chip--square {
-  inline-size: 4.5rem;
-}
 /* Space demos: one step slider that stays in view, and tinted boxes that show the space. */
 .doc-step {
   position: sticky;
@@ -621,9 +586,6 @@ code {
   border: 1px solid var(--ui-divider);
   border-radius: var(--ui-radius);
 }
-.doc-space__cell {
-  min-inline-size: 8.5rem;
-}
 .doc-space__bar {
   display: block;
   block-size: 1rem;
@@ -633,17 +595,13 @@ code {
 
 /* Foundations: depth, motion, focus, direction */
 .doc-depth,
-.doc-focus,
-.doc-direction {
+.doc-focus {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
   gap: var(--ui-space-6);
   align-items: start;
 }
 .doc-depth p,
-.doc-direction .doc-card > * {
-  margin: 0;
-}
 .doc-depth__float {
   display: grid;
   gap: var(--ui-space-4);
@@ -652,10 +610,6 @@ code {
   border-radius: var(--ui-radius-xl);
   background: var(--ui-surface);
   box-shadow: var(--ui-shadow);
-}
-.doc-direction .doc-card {
-  display: grid;
-  gap: var(--ui-space-4);
 }
 /* A still picture of the ring, which otherwise shows only for the keyboard. */
 .doc-ring {
@@ -680,51 +634,6 @@ code {
   min-block-size: var(--ui-control-height);
   padding-inline: var(--ui-space-3);
   border-radius: var(--ui-radius);
-}
-.doc-motion__play {
-  justify-self: start;
-}
-.doc-motion {
-  display: grid;
-  gap: var(--ui-space-3);
-}
-.doc-motion__row {
-  display: grid;
-  grid-template-columns: 12rem 4rem minmax(6rem, 12rem) 1fr;
-  align-items: center;
-  gap: var(--ui-space-3);
-}
-.doc-motion__track {
-  block-size: 1rem;
-  border-radius: var(--ui-radius-full);
-  background: var(--ui-secondary);
-  container-type: inline-size;
-}
-.doc-motion__dot {
-  display: block;
-  inline-size: 1rem;
-  block-size: 1rem;
-  border-radius: var(--ui-radius-full);
-  background: var(--ui-primary);
-  transition-property: translate;
-  transition-timing-function: var(--ui-ease);
-}
-.doc-motion--moved .doc-motion__dot {
-  translate: calc(100cqi - 1rem);
-}
-@media (max-width: 40rem) {
-  .doc-motion__row {
-    grid-template-columns: 1fr 4rem;
-  }
-  .doc-motion__track,
-  .doc-motion__row .doc-muted {
-    grid-column: 1 / -1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .doc-motion__dot {
-    transition: none;
-  }
 }
 /* Breakpoint demo: a box at its real width, scaled down when wider than the page.
    The chips and cards answer to the box with @container. */
@@ -949,4 +858,167 @@ code {
   .doc-home__preview {
     transition: none;
   }
+}
+
+/* Token tables: a live sample of each token in the last column. */
+.doc-token__cell {
+  min-inline-size: 8.5rem;
+  vertical-align: middle;
+}
+.doc-token__preview {
+  display: inline-block;
+  max-inline-size: 100%;
+}
+.doc-token__box {
+  inline-size: 3rem;
+  block-size: 2rem;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+}
+.doc-token__chip {
+  inline-size: 3rem;
+  block-size: 2rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+}
+
+/* Typography demo: the same line in both languages. */
+.doc-type-demo {
+  display: grid;
+  gap: var(--ui-space-4);
+  inline-size: 100%;
+  overflow-wrap: break-word;
+}
+.doc-type-demo > p {
+  margin: 0;
+}
+
+/* Motion demo: a switch, a panel and a fade, all at --doc-duration. */
+.doc-motion-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-4);
+  inline-size: 100%;
+}
+.doc-motion-demo__switch {
+  display: inline-flex;
+  inline-size: 2.75rem;
+  block-size: 1.5rem;
+  padding: 0.125rem;
+  box-sizing: border-box;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-secondary);
+  transition: background-color var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo__knob {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  box-sizing: border-box;
+  transition: translate var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo__track {
+  flex: 1 1 10rem;
+  overflow: hidden;
+  padding: var(--ui-space-1);
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--ui-radius);
+  container-type: inline-size;
+}
+.doc-motion-demo__panel {
+  display: block;
+  inline-size: 5rem;
+  padding: var(--ui-space-1) var(--ui-space-2);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+  text-align: center;
+  transition: translate var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo__fade {
+  opacity: 0.15;
+  transition: opacity var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo--on .doc-motion-demo__switch {
+  background: var(--ui-primary);
+}
+.doc-motion-demo--on .doc-motion-demo__knob {
+  translate: 1.25rem;
+}
+.doc-motion-demo--on .doc-motion-demo__panel {
+  translate: calc(100cqi - 5rem);
+}
+:dir(rtl) .doc-motion-demo--on .doc-motion-demo__knob {
+  translate: -1.25rem;
+}
+:dir(rtl) .doc-motion-demo--on .doc-motion-demo__panel {
+  translate: calc(-100cqi + 5rem);
+}
+.doc-motion-demo--on .doc-motion-demo__fade {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-motion-demo * {
+    transition: none;
+  }
+}
+
+/* Z-index demo: a fan of real layers and your element across them. */
+.doc-stack {
+  position: relative;
+  isolation: isolate;
+  inline-size: 100%;
+  block-size: 8rem;
+}
+.doc-stack__card {
+  position: absolute;
+  inline-size: 28%;
+  padding: var(--ui-space-2) var(--ui-space-3);
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  font-size: var(--ui-text-sm);
+}
+.doc-stack__card--you {
+  inset-block-start: 2.5rem;
+  inset-inline: 10%;
+  inline-size: auto;
+  block-size: 4.5rem;
+  border: 2px dashed var(--ui-primary);
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+  font-weight: 600;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Direction demo. */
+.doc-direction__demo {
+  display: grid;
+  gap: var(--ui-space-4);
+  inline-size: 100%;
+}
+.doc-direction__note {
+  margin: 0;
+  border-inline-start: 4px solid var(--ui-primary);
+}
+
+/* Token tables keep names on one line; on a phone the table scrolls in its own frame. */
+.doc-token-table {
+  min-inline-size: 36rem;
+}
+.doc-token-table td:first-child code {
+  white-space: nowrap;
+}
+/* Two sliders for one demo: only the last one sticks, so they never cover each other. */
+.doc-step:has(+ .doc-step) {
+  position: static;
+  margin-block-end: 0;
+  border-block-end: 0;
 }
