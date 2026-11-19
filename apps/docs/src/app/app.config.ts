@@ -8,9 +8,11 @@ import {
 import {
   provideRouter,
   Router,
+  RouteReuseStrategy,
   Scroll,
   withInMemoryScrolling,
 } from '@angular/router';
+import { KeepRouteStrategy } from '@enigma-tech-lab/angular';
 import { appRoutes } from './app.routes';
 
 /** The docs page a URL belongs to: its first two segments, so a routed tabs demo stays one page. */
@@ -41,5 +43,7 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideEnvironmentInitializer(scrollToTopOnNewPage),
+    // The tabs page keeps its Security tab between visits.
+    { provide: RouteReuseStrategy, useClass: KeepRouteStrategy },
   ],
 };

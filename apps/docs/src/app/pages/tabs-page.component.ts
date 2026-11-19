@@ -8,6 +8,7 @@ import {
 import {
   BadgeComponent,
   SpinnerComponent,
+  TextFieldComponent,
   TabComponent,
   TabContentDirective,
   TabNavComponent,
@@ -51,20 +52,26 @@ export class TabApiDemoComponent {
 class ProfileTabComponent {}
 
 @Component({
-  template: `<p class="doc-flat">Paid monthly by card ending 4242.</p>`,
+  imports: [TabApiDemoComponent],
+  template: `<app-tab-api-demo />`,
 })
 class BillingTabComponent {}
 
 @Component({
-  template: `<p class="doc-flat">Two-step sign-in is on.</p>`,
+  imports: [TextFieldComponent],
+  template: `<ui-text-field label="Recovery note" class="doc-field" />`,
 })
 class SecurityTabComponent {}
 
-/** The routed tabs example: each tab is a child page of this one. */
+/** The routed tabs example: each tab is a child page of this one. Security is kept. */
 export const tabRoutes: Routes = [
   { path: '', component: ProfileTabComponent },
   { path: 'billing', component: BillingTabComponent },
-  { path: 'security', component: SecurityTabComponent },
+  {
+    path: 'security',
+    component: SecurityTabComponent,
+    data: { keep: true },
+  },
 ];
 
 @Component({
@@ -154,7 +161,7 @@ export const tabRoutes: Routes = [
 
       <app-example
         title="A page for each tab"
-        description='When each tab has its own address, use ui-tab-nav: links styled as tabs, over a router-outlet. They are links, not a tablist, so Tab moves through them, the back button works and each one can open in a new browser tab. The current one is marked aria-current="page". Each visit makes the page again; to keep one, give the router a RouteReuseStrategy.'
+        description='When each tab has its own address, use ui-tab-nav: links styled as tabs, over a router-outlet. They are links, not a tablist, so Tab moves through them, the back button works and each one can open in a new browser tab. The current one is marked aria-current="page". Each visit makes the page again, so Billing loads again; Security is kept with KeepRouteStrategy: type a note, go to another tab and come back.'
         [code]="routed"
       >
         <div class="ui-tabs doc-wide">
@@ -221,8 +228,9 @@ export class TabsPageComponent {
   TabContentDirective, // content created only when its tab is shown
   TabNavComponent, // tabs that are pages, with the router
   TabsComponent,
+  KeepRouteStrategy, // keeps a routed tab's page between visits
 } from '@enigma-tech-lab/angular';`,
-    react: `import { Tabs } from '@enigma-tech-lab/react';
+    react: `import { TabNav, Tabs } from '@enigma-tech-lab/react';
 // Arrow keys follow the locale's direction: wrap Arabic pages in <I18nProvider locale="ar">.`,
     html: `<!-- Tabs need script for the keyboard. Follow the WAI-ARIA tabs pattern with these classes: -->
 <div class="ui-tabs">
@@ -260,6 +268,10 @@ export class TabsPageComponent {
     <ui-tab [label]="month">…</ui-tab>
   }
 </ui-tabs>`,
+    react: `<Tabs
+  label="Sales by month"
+  tabs={months.map((month) => ({ id: month, label: month, content: <Sales month={month} /> }))}
+/>`,
     html: `<!-- .ui-tabs__list scrolls on its own. To centre the chosen tab, scroll only the list:
      list.scrollBy({ left: tabCentre - listCentre }) -->`,
   };
@@ -299,6 +311,15 @@ readonly invoices = httpResource<Invoice[]>(() => '/api/invoices');
     <ng-template uiTabContent><app-invoices /></ng-template>
   </ui-tab>
 </ui-tabs>`,
+    react: `<Tabs
+  label="Invoices"
+  tabs={[
+    // Mounted, and fetched, again on each visit
+    { id: 'reloads', label: 'Reloads', content: <Invoices /> },
+    // Fetched once, then kept while hidden
+    { id: 'kept', label: 'Kept', content: <Invoices />, keep: true },
+  ]}
+/>`,
   };
 
   protected readonly routed = {
@@ -310,16 +331,26 @@ readonly invoices = httpResource<Invoice[]>(() => '/api/invoices');
 </ui-tab-nav>
 <router-outlet />
 
-// Routes: each tab is a child of the page.
+// Routes: each tab is a child of the page. data.keep keeps Security between visits.
 {
   path: 'account',
   component: AccountPage,
   children: [
     { path: '', component: Profile },
     { path: 'billing', component: Billing },
-    { path: 'security', component: Security },
+    { path: 'security', component: Security, data: { keep: true } },
   ],
-}`,
+}
+
+// app.config.ts
+providers: [{ provide: RouteReuseStrategy, useClass: KeepRouteStrategy }]`,
+    react: `// NavLink marks the current link aria-current="page".
+<TabNav label="Account">
+  <NavLink className="ui-tab" to="" end>Profile</NavLink>
+  <NavLink className="ui-tab" to="billing">Billing</NavLink>
+  <NavLink className="ui-tab" to="security">Security</NavLink>
+</TabNav>
+<Outlet />`,
     html: `<nav class="ui-tabs__list" aria-label="Account">
   <a class="ui-tab" href="/account" aria-current="page">Profile</a>
   <a class="ui-tab" href="/account/billing">Billing</a>
@@ -385,6 +416,12 @@ readonly invoices = httpResource<Invoice[]>(() => '/api/invoices');
         description:
           'Required. Names the navigation; put links with class="ui-tab" inside.',
       },
+      {
+        name: 'KeepRouteStrategy',
+        type: 'RouteReuseStrategy',
+        description:
+          'Provide it as the RouteReuseStrategy; a route with data: { keep: true } keeps its page between tabs, until the reader leaves the section.',
+      },
     ],
     react: [
       {
@@ -396,7 +433,7 @@ readonly invoices = httpResource<Invoice[]>(() => '/api/invoices');
         name: 'tabs',
         type: 'TabItem[]',
         description:
-          'Required. { id, label, content, disabled? }. content mounts only while its tab is chosen.',
+          'Required. { id, label, content, disabled?, keep? }. content mounts only while its tab is chosen; keep holds it once shown.',
       },
       {
         name: 'selected, defaultSelected',
@@ -408,6 +445,12 @@ readonly invoices = httpResource<Invoice[]>(() => '/api/invoices');
         type: '(id: string) => void',
         description: 'Called when another tab is chosen.',
       },
+      {
+        name: 'TabNav label',
+        type: 'string',
+        description:
+          'Required. Names the navigation; put links with className="ui-tab" inside, the current one aria-current="page".',
+      },
     ],
     html: [
       { name: 'ui-tabs', type: 'class', description: 'The wrapper.' },
@@ -416,6 +459,12 @@ readonly invoices = httpResource<Invoice[]>(() => '/api/invoices');
         type: 'class',
         description:
           'On the element with role="tablist", or on a <nav> of links. Scrolls when the tabs are wider.',
+      },
+      {
+        name: 'ui-tabs__bar, ui-tabs__scroll',
+        type: 'class',
+        description:
+          'A row holding the list and an arrow button at each end; give the arrows tabindex="-1" and aria-hidden="true".',
       },
       {
         name: 'ui-tab',
