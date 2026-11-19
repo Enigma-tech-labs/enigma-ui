@@ -226,5 +226,19 @@ export const appRoutes: Route[] = [
         (m) => m.PopoverPageComponent,
       ),
   },
+  {
+    path: 'components/language-switcher',
+    loadComponent: () =>
+      import('./pages/language-switcher-page.component').then(
+        (m) => m.LanguageSwitcherPageComponent,
+      ),
+  },
+  {
+    path: 'accessibility',
+    loadComponent: () =>
+      import('./pages/accessibility.component').then(
+        (m) => m.AccessibilityComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

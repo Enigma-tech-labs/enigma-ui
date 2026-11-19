@@ -64,3 +64,7 @@ export {
   PopoverTriggerDirective,
 } from './lib/popover/popover';
 export { TooltipDirective, TooltipPanelComponent } from './lib/tooltip/tooltip';
+export {
+  LanguageSwitcherComponent,
+  type Language,
+} from './lib/language-switcher/language-switcher';

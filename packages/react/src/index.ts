@@ -65,3 +65,8 @@ export type {
   PopoverProps,
   TooltipProps,
 } from './lib/overlays.js';
+export { LanguageSwitcher } from './lib/language-switcher.js';
+export type {
+  Language,
+  LanguageSwitcherProps,
+} from './lib/language-switcher.js';

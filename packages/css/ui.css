@@ -1359,6 +1359,15 @@ dialog.ui-dialog::backdrop {
   cursor: not-allowed;
   opacity: 0.6;
 }
+/* The chosen one of a set, such as the current language: a check mark, not only colour. */
+.ui-menu__item[aria-checked='true'] {
+  font-weight: 600;
+}
+.ui-menu__item[aria-checked='true']::after {
+  content: '✓';
+  content: '✓' / '';
+  margin-inline-start: auto;
+}
 .ui-menu__separator {
   block-size: 1px;
   margin: 0.25rem;

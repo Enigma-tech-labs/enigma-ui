@@ -161,6 +161,15 @@ for (const theme of ['light', 'dark']) {
       },
     ],
     [
+      'components/language-switcher',
+      async (page) => {
+        await page
+          .getByRole('button', { name: 'Language: English', exact: true })
+          .click();
+        await page.getByRole('menu').waitFor();
+      },
+    ],
+    [
       'components/popover',
       async (page) => {
         await page
