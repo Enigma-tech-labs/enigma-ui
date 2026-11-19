@@ -162,6 +162,13 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/calendar',
+    loadComponent: () =>
+      import('./pages/calendar-page.component').then(
+        (m) => m.CalendarPageComponent,
+      ),
+  },
+  {
     path: 'components/tree',
     loadComponent: () =>
       import('./pages/tree-page.component').then((m) => m.TreePageComponent),

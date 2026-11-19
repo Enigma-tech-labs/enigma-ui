@@ -100,3 +100,9 @@ export { CommandPalette } from './lib/command-palette.js';
 export type { Command, CommandPaletteProps } from './lib/command-palette.js';
 export { Tree } from './lib/tree.js';
 export type { TreeNode, TreeProps } from './lib/tree.js';
+export { Calendar, RangeCalendar } from './lib/calendar.js';
+export type {
+  CalendarProps,
+  DateRange,
+  RangeCalendarProps,
+} from './lib/calendar.js';

@@ -90,3 +90,5 @@ export { CommandPaletteComponent } from './lib/command-palette/command-palette.c
 export type { Command } from './lib/command-palette/command-palette.component';
 export { TreeComponent } from './lib/tree/tree.component';
 export type { TreeNode } from './lib/tree/tree.component';
+export { CalendarComponent } from './lib/calendar/calendar.component';
+export type { DateRange } from './lib/calendar/calendar.component';

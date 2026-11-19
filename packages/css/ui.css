@@ -2704,6 +2704,113 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
+ * Calendar: a month grid to pick a date or a range. Arrow keys move by day and week
+ * (flipped in Arabic), Home and End go to the week's ends, Page Up and Down change the month
+ * (with Shift, the year). Each day is named in full ("Thursday, 19 November 2026"). Today is
+ * underlined, the picked days are filled, so neither depends on colour alone.
+ */
+.ui-calendar {
+  /* Fills its container up to seven 44px days, so it fits a 320px screen at any padding. */
+  display: grid;
+  max-inline-size: calc(7 * 2.75rem + 2 * var(--ui-space-3) + 2px);
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-3);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-xl);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+.ui-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+}
+.ui-calendar__title {
+  margin: 0;
+  font-size: var(--ui-font-size);
+  font-weight: 600;
+}
+.ui-calendar__nav svg {
+  flex: none;
+}
+:dir(rtl) .ui-calendar__nav svg {
+  scale: -1 1;
+}
+.ui-calendar__grid {
+  inline-size: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.ui-calendar__grid th {
+  padding: 0 0 var(--ui-space-1);
+  color: var(--ui-text-muted);
+  font-size: var(--ui-text-sm);
+  font-weight: 600;
+}
+.ui-calendar__grid td {
+  padding: 0;
+}
+.ui-calendar__day {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-md);
+  background: transparent;
+  color: var(--ui-text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.ui-calendar__day:hover {
+  background: var(--ui-secondary);
+  color: var(--ui-on-secondary);
+}
+.ui-calendar__day:focus {
+  outline: none;
+}
+.ui-calendar__day:focus-visible,
+.ui-calendar__day--focus {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+}
+.ui-calendar__day--today {
+  font-weight: 700;
+  text-decoration: underline 2px;
+  text-underline-offset: 0.25em;
+}
+.ui-calendar__day--in-range,
+.ui-calendar__day--in-range:hover {
+  border-radius: 0;
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+}
+.ui-calendar__day--selected,
+.ui-calendar__day--selected:hover {
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+  font-weight: 600;
+}
+.ui-calendar__day--focus.ui-calendar__day--selected,
+.ui-calendar__day--selected:focus-visible {
+  outline-color: var(--ui-text);
+}
+.ui-calendar__day--disabled,
+.ui-calendar__day--disabled:hover {
+  background: transparent;
+  color: var(--ui-text-muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+.ui-calendar__day--outside {
+  visibility: hidden;
+}
+
+/*
  * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)

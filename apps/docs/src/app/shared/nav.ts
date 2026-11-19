@@ -24,6 +24,7 @@ export const NAV = [
     title: 'Forms',
     links: [
       { path: '/components/button', label: 'Button' },
+      { path: '/components/calendar', label: 'Calendar' },
       { path: '/components/checkbox', label: 'Checkbox' },
       { path: '/components/chip-input', label: 'Chip input' },
       { path: '/components/combobox', label: 'Combobox' },
