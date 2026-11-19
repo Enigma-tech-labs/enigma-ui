@@ -684,3 +684,94 @@ code {
     transition: none;
   }
 }
+/* Breakpoint demo: a box at its real width, scaled down when wider than the page.
+   The chips and cards answer to the box with @container. */
+.doc-bp {
+  flex: 1 1 100%;
+  overflow: hidden;
+}
+.doc-bp__frame {
+  display: grid;
+  gap: var(--ui-space-4);
+  /* Queries read the content box, so the slider sets that; padding sits outside it. */
+  box-sizing: content-box;
+  padding: var(--ui-space-4);
+  border: 1px dashed var(--ui-primary);
+  border-radius: var(--ui-radius);
+  background: var(--ui-highlight);
+  transform-origin: 0 0;
+}
+.doc-bp__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+/* Passed: solid fill and border. Not passed: dashed and muted. Shape, not colour alone. */
+.doc-bp__chip {
+  padding: var(--ui-space-1) var(--ui-space-3);
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.doc-bp__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--doc-bp-columns, 1), minmax(0, 1fr));
+  gap: var(--ui-space-3);
+}
+@container (width >= 40rem) {
+  .doc-bp__chip--sm {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+  .doc-bp__grid {
+    --doc-bp-columns: 2;
+  }
+}
+@container (width >= 48rem) {
+  .doc-bp__chip--md {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+  .doc-bp__grid {
+    --doc-bp-columns: 3;
+  }
+}
+@container (width >= 64rem) {
+  .doc-bp__chip--lg {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+  .doc-bp__grid {
+    --doc-bp-columns: 4;
+  }
+}
+@container (width >= 80rem) {
+  .doc-bp__chip--xl {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+  .doc-bp__grid {
+    --doc-bp-columns: 5;
+  }
+}
+@container (width >= 96rem) {
+  .doc-bp__chip--2xl {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+  .doc-bp__grid {
+    --doc-bp-columns: 6;
+  }
+}

@@ -172,6 +172,15 @@
   --ui-radius-full: 9999px;
   --ui-control-height: 2.75rem;
 
+  /* Breakpoints: Tailwind's five, in rem so they move with the reader's text size.
+     CSS cannot read a custom property inside a query, so @container writes the
+     value out; these are for max widths and scripts. */
+  --ui-breakpoint-sm: 40rem;
+  --ui-breakpoint-md: 48rem;
+  --ui-breakpoint-lg: 64rem;
+  --ui-breakpoint-xl: 80rem;
+  --ui-breakpoint-2xl: 96rem;
+
   /* Shadow. A dark shadow vanishes on a dark page, so in dark mode the
      shadow is a light slate glow: still a shade, never white. */
   --ui-shadow-color: light-dark(rgb(11 16 32 / 0.18), rgb(159 165 192 / 0.4));
@@ -2789,4 +2798,9 @@ dialog.ui-dialog::backdrop {
 }
 .ui-gap-y-32 {
   row-gap: var(--ui-space-32);
+}
+
+/* Container: children answer to this box's width with @container, not the screen's. */
+.ui-container {
+  container-type: inline-size;
 }
