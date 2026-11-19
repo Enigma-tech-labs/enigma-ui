@@ -2459,8 +2459,7 @@ dialog.ui-dialog::backdrop {
  * buttons; the current one has aria-current="step" and done steps say "Done" to screen
  * readers. Done steps show a tick, so the state is in the shape, not only the colour. A
  * step that cannot be reached yet is a disabled button. Below the list, the current step's
- * panel and the Back and Next buttons. Under 30rem wide only the current step's name
- * shows; the others stay readable by screen readers.
+ * panel and the Back and Next buttons. Under 30rem wide each name sits under its circle.
  */
 .ui-stepper {
   display: grid;
@@ -2573,20 +2572,33 @@ dialog.ui-dialog::backdrop {
   font-weight: 600;
 }
 @container (max-width: 30rem) {
-  .ui-steps__item {
-    --ui-steps-line: var(--ui-space-2);
+  /* Each step gets an equal share of the width, its name under its circle. */
+  .ui-steps__item,
+  .ui-steps__item:not(:last-child),
+  .ui-steps__item:last-child {
+    position: relative;
+    flex: 1 1 0;
+    min-inline-size: 0;
   }
-  /* The current step takes the room its name needs; the others shrink to their circles. */
-  .ui-steps__item--current {
-    flex: 0 1 auto;
-    max-inline-size: 60%;
+  .ui-steps__step {
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding-inline: var(--ui-space-1);
+    text-align: center;
   }
-  .ui-steps__item:not(.ui-steps__item--current) .ui-steps__label {
+  .ui-steps__label {
+    max-inline-size: 100%;
+    font-size: var(--ui-text-sm);
+  }
+  /* The line runs from this circle to the next, at the circles' middle. */
+  .ui-steps__item:not(:last-child)::after {
     position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
+    inset-block-start: calc(1rem - 1px);
+    inset-inline-start: calc(50% + 1rem + var(--ui-space-1));
+    inset-inline-end: calc(1rem + var(--ui-space-1) - 50%);
+    min-inline-size: 0;
   }
 }
 

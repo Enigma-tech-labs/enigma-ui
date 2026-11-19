@@ -455,6 +455,15 @@ ol.doc-list {
 .doc-preview > * {
   min-inline-size: 0;
 }
+/* On a phone the example gets the width, not the padding. */
+@media (max-width: 30rem) {
+  .doc-card {
+    padding: var(--ui-space-4);
+  }
+  .doc-preview {
+    padding: var(--ui-space-3);
+  }
+}
 /* Grid content may shrink below its widest part, so wide tables and code scroll inside. */
 .doc-card,
 .doc-section,
