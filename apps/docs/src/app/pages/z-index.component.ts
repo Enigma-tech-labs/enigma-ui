@@ -25,7 +25,7 @@ import { PageComponent } from '../shared/page.component';
   template: `
     <app-page
       title="Z-index"
-      lead="Four layer tokens put everything that floats in a fixed order, so any mix can be open at once: a drawer, a popover inside it, a tooltip on that, and a toast over all. Their shadow is on the Space and shadow page."
+      lead="Twelve layer tokens put everything in a fixed order, so any mix can be open at once: a drawer, a popover inside it, a tooltip on that, and a toast over all. Their shadow is on the Space and shadow page."
     >
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Layers</h2>
@@ -91,9 +91,9 @@ import { PageComponent } from '../shared/page.component';
             overlays use the tokens.
           </li>
           <li>
-            Inside a component, stack with 1 and 2 only (a table's sticky
-            header, its loading cover). Never invent a number between the
-            layers.
+            Three bands: under 100 stays inside one component, 100 to 999 is the
+            page's own bars, 1000 and up is overlays. Always use a token; never
+            invent a number between two of them.
           </li>
         </ul>
       </section>
@@ -139,9 +139,34 @@ export class ZIndexComponent {
 
   protected readonly layers = [
     {
-      token: '(none)',
-      value: '1, 2',
-      use: "Inside one component: a table's sticky header and loading cover.",
+      token: '--ui-layer-below',
+      value: '-1',
+      use: 'Behind the content of its own box: a decorative background or pattern.',
+    },
+    {
+      token: '--ui-layer-base',
+      value: '0',
+      use: 'The page itself. Also resets a z-index set somewhere else.',
+    },
+    {
+      token: '--ui-layer-raised',
+      value: '1',
+      use: "Inside one component, over its siblings: a table's sticky header.",
+    },
+    {
+      token: '--ui-layer-cover',
+      value: '2',
+      use: "Inside one component, over everything in it: a table's loading cover.",
+    },
+    {
+      token: '--ui-layer-sticky',
+      value: '100',
+      use: 'Bars that stick while the page scrolls: a sticky page header, a side bar.',
+    },
+    {
+      token: '--ui-layer-fixed',
+      value: '200',
+      use: 'Bars fixed to the screen: an app bar, a bottom navigation, a floating action button.',
     },
     {
       token: '--ui-layer-dialog',
@@ -161,7 +186,12 @@ export class ZIndexComponent {
     {
       token: '--ui-layer-toast',
       value: '1300',
-      use: 'Toasts: on top of everything, so a note sent from a dialog is seen.',
+      use: 'Toasts: on top of every overlay, so a note sent from a dialog is seen.',
+    },
+    {
+      token: '--ui-layer-skip-link',
+      value: '1400',
+      use: 'The "Skip to content" link: when focused, nothing may cover it.',
     },
   ];
 

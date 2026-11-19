@@ -161,11 +161,19 @@
 
   /* Layers, lowest first, so any mix can be open at once: a popover or tooltip inside a
      drawer sits on the drawer, and a toast is never hidden. Browsers that put overlays
-     in the top layer (Angular CDK, <dialog>, [popover]) stack them in opening order. */
+     in the top layer (Angular CDK, <dialog>, [popover]) stack them in opening order.
+     Below 100: inside one component. 100-999: the page's own bars. 1000 and up: overlays. */
+  --ui-layer-below: -1;
+  --ui-layer-base: 0;
+  --ui-layer-raised: 1;
+  --ui-layer-cover: 2;
+  --ui-layer-sticky: 100;
+  --ui-layer-fixed: 200;
   --ui-layer-dialog: 1000;
   --ui-layer-popover: 1100;
   --ui-layer-tooltip: 1200;
   --ui-layer-toast: 1300;
+  --ui-layer-skip-link: 1400;
 
   /* Focus: one ring for every control. Outside the control, or inset for items
      inside a list or a bar, where an outside ring would be clipped. */
@@ -491,7 +499,7 @@ textarea.ui-input {
 .ui-table thead th {
   position: sticky;
   inset-block-start: 0;
-  z-index: 1;
+  z-index: var(--ui-layer-raised);
   border-block-end-color: var(--ui-border);
 }
 .ui-table tbody tr:hover {
@@ -537,7 +545,7 @@ textarea.ui-input {
 .ui-table__loading {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: var(--ui-layer-cover);
   display: grid;
   place-items: center;
   background: color-mix(in srgb, var(--ui-surface) 70%, transparent);
@@ -1302,22 +1310,6 @@ dialog.ui-dialog::backdrop {
     scroll-behavior: smooth;
   }
 }
-.ui-tab {
-  display: inline-flex;
-  align-items: center;
-  flex: none;
-  min-block-size: var(--ui-control-height);
-  text-decoration: none;
-  padding-inline: var(--ui-space-4);
-  border: 0;
-  border-block-end: 3px solid transparent;
-  background: none;
-  color: var(--ui-text-muted);
-  font: inherit;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-}
 /* The list with an arrow at each end, shown only while the tabs are wider than it. */
 .ui-tabs__bar {
   display: flex;
@@ -1359,6 +1351,22 @@ dialog.ui-dialog::backdrop {
 /* A kept panel that is not chosen (React Aria leaves it in the page, inert). */
 .ui-tabs__panel[data-inert='true'] {
   display: none;
+}
+.ui-tab {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  min-block-size: var(--ui-control-height);
+  text-decoration: none;
+  padding-inline: var(--ui-space-4);
+  border: 0;
+  border-block-end: 3px solid transparent;
+  background: none;
+  color: var(--ui-text-muted);
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
 }
 .ui-tab:hover {
   color: var(--ui-text);

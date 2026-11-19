@@ -71,7 +71,7 @@ import { PageComponent } from '../shared/page.component';
           @for (r of radii; track r.token) {
             <div class="doc-swatch">
               <div
-                class="doc-swatch__chip doc-swatch__chip--surface"
+                class="doc-swatch__chip doc-swatch__chip--surface doc-swatch__chip--square"
                 [style.border-radius]="'var(' + r.token + ')'"
               ></div>
               <code>{{ r.token }}</code>
