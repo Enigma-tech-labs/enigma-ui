@@ -2588,6 +2588,49 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
+ * Command palette: a dialog with a search field over a list of actions (Ctrl+K or ⌘K).
+ * The field is a combobox whose list is always shown: arrow keys move the highlight, Enter
+ * runs it, and the number of matches is announced as you type. Items reuse .ui-option.
+ */
+.ui-command {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+.ui-command .ui-input {
+  inline-size: 100%;
+}
+.ui-command__list {
+  max-block-size: min(20rem, 50dvh);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.ui-command__shortcut {
+  margin-inline-start: auto;
+  padding-inline-start: var(--ui-space-3);
+  color: var(--ui-text-muted);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+}
+.ui-option--active .ui-command__shortcut {
+  color: inherit;
+}
+/* aria-selected follows the highlight here (combobox pattern); it is not a choice, so no tick. */
+.ui-command .ui-option[aria-selected='true'] {
+  font-weight: inherit;
+}
+.ui-command .ui-option[aria-selected='true']::after {
+  content: none;
+}
+.ui-command__empty {
+  margin: 0;
+  padding: var(--ui-space-6) var(--ui-space-3);
+  color: var(--ui-text-muted);
+  text-align: center;
+}
+
+/*
  * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)

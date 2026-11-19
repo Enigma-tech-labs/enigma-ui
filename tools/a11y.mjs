@@ -120,6 +120,7 @@ for (const theme of ['light', 'dark']) {
     ['html', 'components/bottom-sheet', 'Order 1042', 'dialog'],
     ['html', 'components/alert-dialog', 'Delete file', 'alertdialog'],
     ['angular', 'components/toast', 'Pay', 'region', 'Notifications'],
+    ['angular', 'components/command-palette', 'Commands', 'dialog'],
     ['angular', 'components/toast', 'Delete order', 'region', 'Notifications'],
   ];
   for (const [framework, path, button, role, name] of states) {

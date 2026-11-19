@@ -55,6 +55,7 @@ export const NAV = [
     title: 'Navigation',
     links: [
       { path: '/components/breadcrumbs', label: 'Breadcrumbs' },
+      { path: '/components/command-palette', label: 'Command palette' },
       {
         path: '/components/language-switcher',
         label: 'Language switcher',

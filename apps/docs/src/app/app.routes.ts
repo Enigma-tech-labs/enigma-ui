@@ -155,6 +155,13 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/command-palette',
+    loadComponent: () =>
+      import('./pages/command-palette-page.component').then(
+        (m) => m.CommandPalettePageComponent,
+      ),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),
