@@ -30,6 +30,7 @@ export const NAV = [
       { path: '/components/fieldset', label: 'Fieldset' },
       { path: '/components/file-field', label: 'File field' },
       { path: '/components/radio-group', label: 'Radio group' },
+      { path: '/components/rating', label: 'Rating' },
       { path: '/components/select', label: 'Select' },
       { path: '/components/slider', label: 'Slider' },
       { path: '/components/switch', label: 'Switch' },

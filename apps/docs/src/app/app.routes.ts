@@ -134,6 +134,13 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/rating',
+    loadComponent: () =>
+      import('./pages/rating-page.component').then(
+        (m) => m.RatingPageComponent,
+      ),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),

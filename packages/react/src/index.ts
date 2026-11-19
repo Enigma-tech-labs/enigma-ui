@@ -90,3 +90,5 @@ export type {
 } from './lib/content.js';
 export { Slider } from './lib/slider.js';
 export type { SliderProps } from './lib/slider.js';
+export { Rating } from './lib/rating.js';
+export type { RatingProps } from './lib/rating.js';

@@ -2371,6 +2371,90 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
+ * Rating. To pick: native radios in a fieldset, so arrow keys move between stars and screen
+ * readers say "3 stars, 3 of 5". Stars up to the picked or hovered one fill, by :has().
+ * To show: one image named "4 out of 5 stars". Filled stars are solid, empty ones an outline,
+ * so the shape carries the value, not colour alone.
+ */
+.ui-rating {
+  display: grid;
+  gap: var(--ui-space-1-5);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--ui-text);
+}
+.ui-rating legend {
+  padding: 0;
+}
+.ui-rating__stars {
+  display: inline-flex;
+  inline-size: fit-content;
+}
+.ui-rating__star {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--ui-radius-sm);
+  color: var(--ui-border);
+  cursor: pointer;
+}
+.ui-rating--readonly .ui-rating__star {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  cursor: default;
+}
+.ui-rating__star svg {
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.ui-rating--readonly .ui-rating__star svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+.ui-rating__star:has(input:focus-visible) {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: calc(var(--ui-focus-width) * -1);
+}
+.ui-rating__star--on,
+.ui-rating__star:has(input:checked),
+.ui-rating__star:has(~ .ui-rating__star input:checked) {
+  color: var(--ui-primary);
+}
+.ui-rating__star--on svg,
+.ui-rating__star:has(input:checked) svg,
+.ui-rating__star:has(~ .ui-rating__star input:checked) svg {
+  fill: currentColor;
+}
+/* While hovering, the stars show what a click would pick. */
+@media (hover: hover) {
+  .ui-rating__stars:hover .ui-rating__star {
+    color: var(--ui-border);
+  }
+  .ui-rating__stars:hover .ui-rating__star svg {
+    fill: none;
+  }
+  .ui-rating__stars:hover .ui-rating__star:hover,
+  .ui-rating__stars:hover .ui-rating__star:has(~ .ui-rating__star:hover) {
+    color: var(--ui-primary);
+  }
+  .ui-rating__stars:hover .ui-rating__star:hover svg,
+  .ui-rating__stars:hover .ui-rating__star:has(~ .ui-rating__star:hover) svg {
+    fill: currentColor;
+  }
+}
+.ui-rating:disabled .ui-rating__star {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/*
  * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)
