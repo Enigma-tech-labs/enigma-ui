@@ -24,9 +24,13 @@ import type { FrameworkCode } from './docs-settings';
   `,
 })
 export class ExampleComponent {
-  /** Links in a demo show the look only: following one would leave the docs page. */
+  /** Links in a demo show the look only: following one would leave the docs page. Router links in a demo stay in the page. */
   protected stayOnPage(event: MouseEvent): void {
-    if ((event.target as Element).closest('.doc-preview a[href]'))
+    if (
+      (event.target as Element).closest(
+        '.doc-preview a[href]:not([routerlinkactive])',
+      )
+    )
       event.preventDefault();
   }
 

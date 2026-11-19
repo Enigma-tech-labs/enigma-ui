@@ -1,16 +1,49 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
+  afterNextRender,
+  afterRenderEffect,
   booleanAttribute,
   Component,
+  computed,
+  contentChild,
   contentChildren,
+  DestroyRef,
+  Directive,
+  effect,
   ElementRef,
   inject,
   input,
   model,
+  signal,
   TemplateRef,
   viewChild,
   viewChildren,
 } from '@angular/core';
+
+/** Scrolls a tab to the middle of its list, moving only the list, never the page. */
+function centerTab(tab: HTMLElement | null | undefined): void {
+  const list = tab?.parentElement;
+  if (!tab || !list) return;
+  const t = tab.getBoundingClientRect();
+  const l = list.getBoundingClientRect();
+  // Smooth or not comes from the CSS scroll-behavior, which honours reduced motion.
+  list.scrollBy?.({ left: t.left + t.width / 2 - (l.left + l.width / 2) });
+}
+
+/**
+ * Marks a tab's content to be created only when the tab is shown, such as a list that
+ * loads from an API. Without it, the content is created with the page.
+ *
+ * ```html
+ * <ui-tab label="Invoices">
+ *   <ng-template uiTabContent><app-invoices /></ng-template>
+ * </ui-tab>
+ * ```
+ */
+@Directive({ selector: 'ng-template[uiTabContent]' })
+export class TabContentDirective {
+  readonly template = inject(TemplateRef);
+}
 
 /** One tab: its label, and the content shown while it is chosen. */
 @Component({
@@ -20,7 +53,17 @@ import {
 export class TabComponent {
   readonly label = input.required<string>();
   readonly disabled = input(false, { transform: booleanAttribute });
-  readonly content = viewChild.required(TemplateRef);
+  /**
+   * Keeps lazy content once it has been shown, so coming back finds it as it was.
+   * Off, it is created again, and loads again, each time the tab is chosen.
+   */
+  readonly keep = input(false, { transform: booleanAttribute });
+
+  private readonly lazy = contentChild(TabContentDirective);
+  private readonly projected = viewChild.required(TemplateRef);
+  readonly content = computed(() => this.lazy()?.template ?? this.projected());
+  /** Set once the tab has been chosen. */
+  readonly visited = signal(false);
 }
 
 let nextId = 0;
@@ -28,12 +71,15 @@ let nextId = 0;
 /**
  * Views of one thing side by side, such as an order's details and history. Tab reaches
  * the chosen tab, arrow keys move between tabs and show each one (mirrored right to
- * left), Home and End go to the first and last.
+ * left), Home and End go to the first and last. When the tabs are wider than the page
+ * they scroll, and the chosen one moves to the middle.
  *
  * ```html
  * <ui-tabs label="Order 1042" [(selected)]="tab">
  *   <ui-tab label="Details">…</ui-tab>
- *   <ui-tab label="History">…</ui-tab>
+ *   <ui-tab label="History" keep>
+ *     <ng-template uiTabContent><app-history /></ng-template>
+ *   </ui-tab>
  * </ui-tabs>
  * ```
  */
@@ -71,7 +117,7 @@ let nextId = 0;
         [attr.aria-labelledby]="id + '-tab-' + i"
         [hidden]="i !== selected()"
       >
-        @if (i === selected()) {
+        @if (i === selected() || (tab.keep() && tab.visited())) {
           <ng-container [ngTemplateOutlet]="tab.content()" />
         }
       </div>
@@ -91,6 +137,13 @@ export class TabsComponent {
   private readonly buttons =
     viewChildren<ElementRef<HTMLButtonElement>>('tabButton');
   private readonly host: HTMLElement = inject(ElementRef).nativeElement;
+
+  constructor() {
+    effect(() => this.tabs()[this.selected()]?.visited.set(true));
+    afterRenderEffect(() =>
+      centerTab(this.buttons()[this.selected()]?.nativeElement),
+    );
+  }
 
   protected keydown(event: KeyboardEvent): void {
     const rtl = getComputedStyle(this.host).direction === 'rtl';
@@ -118,5 +171,49 @@ export class TabsComponent {
       if (!tabs[next].disabled()) return next;
     }
     return -1;
+  }
+}
+
+/**
+ * Tabs that are pages, each with its own address: links styled as tabs, over your
+ * `<router-outlet>`. They stay links, not a tablist, so Tab moves through them and
+ * each one can open in a new browser tab. The current link scrolls to the middle.
+ *
+ * ```html
+ * <ui-tab-nav label="Account">
+ *   <a class="ui-tab" routerLink="profile" routerLinkActive ariaCurrentWhenActive="page">Profile</a>
+ *   <a class="ui-tab" routerLink="billing" routerLinkActive ariaCurrentWhenActive="page">Billing</a>
+ * </ui-tab-nav>
+ * <router-outlet />
+ * ```
+ */
+@Component({
+  selector: 'ui-tab-nav',
+  host: {
+    class: 'ui-tabs__list',
+    role: 'navigation',
+    '[attr.aria-label]': 'label()',
+  },
+  template: `<ng-content />`,
+})
+export class TabNavComponent {
+  /** Names the navigation landmark, such as the section the pages belong to. */
+  readonly label = input.required<string>();
+
+  constructor() {
+    const host: HTMLElement = inject(ElementRef).nativeElement;
+    const center = () =>
+      centerTab(host.querySelector<HTMLElement>('[aria-current="page"]'));
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      center();
+      // The router (or your own code) moves aria-current; follow it wherever it goes.
+      const observer = new MutationObserver(center);
+      observer.observe(host, {
+        subtree: true,
+        attributeFilter: ['aria-current'],
+      });
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
   }
 }

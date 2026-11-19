@@ -54,7 +54,12 @@ export {
   MenuTriggerDirective,
 } from './lib/menu/menu';
 export { BreadcrumbsComponent, NavComponent } from './lib/nav/nav.component';
-export { TabComponent, TabsComponent } from './lib/tabs/tabs.component';
+export {
+  TabComponent,
+  TabContentDirective,
+  TabNavComponent,
+  TabsComponent,
+} from './lib/tabs/tabs.component';
 export {
   AccordionComponent,
   AccordionItemComponent,

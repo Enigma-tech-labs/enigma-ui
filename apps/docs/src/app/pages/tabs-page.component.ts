@@ -1,12 +1,71 @@
-import { Component } from '@angular/core';
+import { Component, resource } from '@angular/core';
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+  Routes,
+} from '@angular/router';
 import {
   BadgeComponent,
+  SpinnerComponent,
   TabComponent,
+  TabContentDirective,
+  TabNavComponent,
   TabsComponent,
 } from '@enigma-tech-lab/angular';
 import { ApiTableComponent } from '../shared/api-table.component';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+
+/** Stands in for a list from an API: answers after a second, and says when. */
+@Component({
+  selector: 'app-tab-api-demo',
+  imports: [SpinnerComponent],
+  template: `
+    @if (data.isLoading()) {
+      <ui-spinner [label]="'Loading ' + what" showLabel />
+    } @else if (data.value(); as value) {
+      <p class="doc-flat">{{ value }}</p>
+    }
+  `,
+})
+export class TabApiDemoComponent {
+  protected readonly what = 'invoices';
+  protected readonly data = resource({
+    loader: () =>
+      new Promise<string>((resolve) =>
+        setTimeout(
+          () =>
+            resolve(
+              `3 ${this.what}, loaded at ${new Date().toLocaleTimeString()}.`,
+            ),
+          1000,
+        ),
+      ),
+  });
+}
+
+@Component({
+  template: `<p class="doc-flat">Mona Adel, mona&#64;example.com.</p>`,
+})
+class ProfileTabComponent {}
+
+@Component({
+  template: `<p class="doc-flat">Paid monthly by card ending 4242.</p>`,
+})
+class BillingTabComponent {}
+
+@Component({
+  template: `<p class="doc-flat">Two-step sign-in is on.</p>`,
+})
+class SecurityTabComponent {}
+
+/** The routed tabs example: each tab is a child page of this one. */
+export const tabRoutes: Routes = [
+  { path: '', component: ProfileTabComponent },
+  { path: 'billing', component: BillingTabComponent },
+  { path: 'security', component: SecurityTabComponent },
+];
 
 @Component({
   selector: 'app-tabs-page',
@@ -16,7 +75,13 @@ import { PageComponent } from '../shared/page.component';
     ApiTableComponent,
     TabsComponent,
     TabComponent,
+    TabContentDirective,
+    TabNavComponent,
+    TabApiDemoComponent,
     BadgeComponent,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
   ],
   template: `
     <app-page
@@ -44,6 +109,72 @@ import { PageComponent } from '../shared/page.component';
       </app-example>
 
       <app-example
+        title="Many tabs"
+        description="Wider than the page, the tabs scroll. Choosing one, by click or arrow key, moves it to the middle, so the tabs on both sides of it stay in sight. Under reduced motion it moves without gliding."
+        [code]="many"
+      >
+        <ui-tabs label="Sales by month" class="doc-wide">
+          @for (month of months; track month) {
+            <ui-tab [label]="month">
+              <p class="doc-flat">Sales for {{ month }}.</p>
+            </ui-tab>
+          }
+        </ui-tabs>
+      </app-example>
+
+      <app-example
+        title="Load when shown"
+        description="Put content that calls an API in an ng-template with uiTabContent: it is created, and its call made, only when the tab is chosen. Without it, everything inside a tab is created with the page. The spinner tells screen readers the panel is loading."
+        [code]="lazy"
+      >
+        <ui-tabs label="Customer 518" class="doc-wide">
+          <ui-tab label="Details">
+            <p class="doc-flat">Customer since 2021.</p>
+          </ui-tab>
+          <ui-tab label="Invoices">
+            <ng-template uiTabContent><app-tab-api-demo /></ng-template>
+          </ui-tab>
+        </ui-tabs>
+      </app-example>
+
+      <app-example
+        title="Keep or reload"
+        description="By default, lazy content is created again each time its tab is chosen, so it loads fresh: watch the time change. Add keep to a tab to load it once and find it as it was when you come back, with what was typed and where it was scrolled."
+        [code]="keep"
+      >
+        <ui-tabs label="Invoices" class="doc-wide">
+          <ui-tab label="Reloads">
+            <ng-template uiTabContent><app-tab-api-demo /></ng-template>
+          </ui-tab>
+          <ui-tab label="Kept" keep>
+            <ng-template uiTabContent><app-tab-api-demo /></ng-template>
+          </ui-tab>
+        </ui-tabs>
+      </app-example>
+
+      <app-example
+        title="A page for each tab"
+        description='When each tab has its own address, use ui-tab-nav: links styled as tabs, over a router-outlet. They are links, not a tablist, so Tab moves through them, the back button works and each one can open in a new browser tab. The current one is marked aria-current="page". Each visit makes the page again; to keep one, give the router a RouteReuseStrategy.'
+        [code]="routed"
+      >
+        <div class="ui-tabs doc-wide">
+          <ui-tab-nav label="Account">
+            @for (page of pages; track page.path) {
+              <a
+                class="ui-tab"
+                [routerLink]="page.path"
+                routerLinkActive
+                ariaCurrentWhenActive="page"
+                [routerLinkActiveOptions]="{ exact: true }"
+                >{{ page.label }}</a
+              >
+            }
+          </ui-tab-nav>
+          <router-outlet />
+        </div>
+      </app-example>
+
+      <app-example
         title="In Arabic"
         description="The tabs run right to left and the arrow keys follow: the right arrow goes back."
         [rtl]="true"
@@ -64,8 +195,33 @@ import { PageComponent } from '../shared/page.component';
   `,
 })
 export class TabsPageComponent {
+  protected readonly months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  protected readonly pages = [
+    { path: './', label: 'Profile' },
+    { path: 'billing', label: 'Billing' },
+    { path: 'security', label: 'Security' },
+  ];
+
   protected readonly usage = {
-    angular: `import { TabComponent, TabsComponent } from '@enigma-tech-lab/angular';`,
+    angular: `import {
+  TabComponent,
+  TabContentDirective, // content created only when its tab is shown
+  TabNavComponent, // tabs that are pages, with the router
+  TabsComponent,
+} from '@enigma-tech-lab/angular';`,
     react: `import { Tabs } from '@enigma-tech-lab/react';
 // Arrow keys follow the locale's direction: wrap Arabic pages in <I18nProvider locale="ar">.`,
     html: `<!-- Tabs need script for the keyboard. Follow the WAI-ARIA tabs pattern with these classes: -->
@@ -96,6 +252,78 @@ export class TabsPageComponent {
   onChange={setTab}
 />`,
     html: `<!-- See "Use it" -->`,
+  };
+
+  protected readonly many = {
+    angular: `<ui-tabs label="Sales by month">
+  @for (month of months; track month) {
+    <ui-tab [label]="month">…</ui-tab>
+  }
+</ui-tabs>`,
+    html: `<!-- .ui-tabs__list scrolls on its own. To centre the chosen tab, scroll only the list:
+     list.scrollBy({ left: tabCentre - listCentre }) -->`,
+  };
+
+  protected readonly lazy = {
+    angular: `<ui-tabs label="Customer 518">
+  <ui-tab label="Details">…</ui-tab>
+  <ui-tab label="Invoices">
+    <ng-template uiTabContent><app-invoices /></ng-template>
+  </ui-tab>
+</ui-tabs>
+
+// app-invoices: the call starts when the tab is first chosen.
+readonly invoices = httpResource<Invoice[]>(() => '/api/invoices');
+
+@if (invoices.isLoading()) {
+  <ui-spinner label="Loading invoices" showLabel />
+} @else { … }`,
+    react: `// A tab's content mounts only while it is chosen, so its fetch starts then.
+<Tabs
+  label="Customer 518"
+  tabs={[
+    { id: 'details', label: 'Details', content: <Details /> },
+    { id: 'invoices', label: 'Invoices', content: <Invoices /> },
+  ]}
+/>`,
+  };
+
+  protected readonly keep = {
+    angular: `<ui-tabs label="Invoices">
+  <!-- Created, and loaded, again on each visit -->
+  <ui-tab label="Reloads">
+    <ng-template uiTabContent><app-invoices /></ng-template>
+  </ui-tab>
+  <!-- Loaded once, then kept while hidden -->
+  <ui-tab label="Kept" keep>
+    <ng-template uiTabContent><app-invoices /></ng-template>
+  </ui-tab>
+</ui-tabs>`,
+  };
+
+  protected readonly routed = {
+    angular: `<ui-tab-nav label="Account">
+  <a class="ui-tab" routerLink="./" routerLinkActive ariaCurrentWhenActive="page"
+     [routerLinkActiveOptions]="{ exact: true }">Profile</a>
+  <a class="ui-tab" routerLink="billing" routerLinkActive ariaCurrentWhenActive="page">Billing</a>
+  <a class="ui-tab" routerLink="security" routerLinkActive ariaCurrentWhenActive="page">Security</a>
+</ui-tab-nav>
+<router-outlet />
+
+// Routes: each tab is a child of the page.
+{
+  path: 'account',
+  component: AccountPage,
+  children: [
+    { path: '', component: Profile },
+    { path: 'billing', component: Billing },
+    { path: 'security', component: Security },
+  ],
+}`,
+    html: `<nav class="ui-tabs__list" aria-label="Account">
+  <a class="ui-tab" href="/account" aria-current="page">Profile</a>
+  <a class="ui-tab" href="/account/billing">Billing</a>
+</nav>`,
   };
 
   protected readonly arabic = {
@@ -138,6 +366,25 @@ export class TabsPageComponent {
         default: 'false',
         description: 'Shown but not chosen; arrow keys skip it.',
       },
+      {
+        name: 'ui-tab keep',
+        type: 'boolean',
+        default: 'false',
+        description:
+          'Keeps uiTabContent once shown, hidden while another tab is chosen. Off, it is made again on each visit.',
+      },
+      {
+        name: 'ng-template uiTabContent',
+        type: 'directive',
+        description:
+          "Inside ui-tab. The tab's content, created only when the tab is chosen.",
+      },
+      {
+        name: 'ui-tab-nav label',
+        type: 'string',
+        description:
+          'Required. Names the navigation; put links with class="ui-tab" inside.',
+      },
     ],
     react: [
       {
@@ -148,7 +395,8 @@ export class TabsPageComponent {
       {
         name: 'tabs',
         type: 'TabItem[]',
-        description: 'Required. { id, label, content, disabled? }.',
+        description:
+          'Required. { id, label, content, disabled? }. content mounts only while its tab is chosen.',
       },
       {
         name: 'selected, defaultSelected',
@@ -166,13 +414,14 @@ export class TabsPageComponent {
       {
         name: 'ui-tabs__list',
         type: 'class',
-        description: 'On the element with role="tablist".',
+        description:
+          'On the element with role="tablist", or on a <nav> of links. Scrolls when the tabs are wider.',
       },
       {
         name: 'ui-tab',
         type: 'class',
         description:
-          'On each button with role="tab"; aria-selected marks the chosen one.',
+          'On each button with role="tab" (aria-selected marks the chosen one), or each link (aria-current="page").',
       },
       {
         name: 'ui-tabs__panel',

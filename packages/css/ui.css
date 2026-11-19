@@ -1269,9 +1269,18 @@ dialog.ui-dialog::backdrop {
   overflow-x: auto;
   border-block-end: 1px solid var(--ui-divider);
 }
+@media (prefers-reduced-motion: no-preference) {
+  /* The chosen tab glides to the middle when the tabs scroll; it jumps under reduced motion. */
+  .ui-tabs__list {
+    scroll-behavior: smooth;
+  }
+}
 .ui-tab {
+  display: inline-flex;
+  align-items: center;
   flex: none;
   min-block-size: var(--ui-control-height);
+  text-decoration: none;
   padding-inline: var(--ui-space-4);
   border: 0;
   border-block-end: 3px solid transparent;
@@ -1285,7 +1294,8 @@ dialog.ui-dialog::backdrop {
 .ui-tab:hover {
   color: var(--ui-text);
 }
-.ui-tab[aria-selected='true'] {
+.ui-tab[aria-selected='true'],
+.ui-tab[aria-current='page'] {
   border-block-end-color: var(--ui-primary);
   color: var(--ui-text);
 }
@@ -1303,7 +1313,8 @@ dialog.ui-dialog::backdrop {
   .ui-tab {
     border-block-end-color: Canvas;
   }
-  .ui-tab[aria-selected='true'] {
+  .ui-tab[aria-selected='true'],
+  .ui-tab[aria-current='page'] {
     border-block-end-color: Highlight;
   }
 }

@@ -212,6 +212,8 @@ export const appRoutes: Route[] = [
     path: 'components/tabs',
     loadComponent: () =>
       import('./pages/tabs-page.component').then((m) => m.TabsPageComponent),
+    loadChildren: () =>
+      import('./pages/tabs-page.component').then((m) => m.tabRoutes),
   },
   {
     path: 'components/breadcrumbs',
