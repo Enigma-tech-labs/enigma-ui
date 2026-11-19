@@ -60,6 +60,7 @@ export { TabNav, Tabs } from './lib/tabs.js';
 export type { TabItem, TabNavProps, TabsProps } from './lib/tabs.js';
 export { Accordion, AccordionItem, Popover, Tooltip } from './lib/overlays.js';
 export type {
+  AccordionIcon,
   AccordionItemProps,
   AccordionProps,
   PopoverProps,

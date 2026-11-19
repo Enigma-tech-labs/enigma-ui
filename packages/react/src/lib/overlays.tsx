@@ -3,7 +3,10 @@
 import {
   createContext,
   useContext,
-  useId,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
   type ComponentPropsWithRef,
   type ReactElement,
   type ReactNode,
@@ -23,53 +26,196 @@ import { cx } from './class-names.js';
 // and spreads its props (Button) works the same at runtime.
 type AriaChild = Parameters<typeof Pressable>[0]['children'];
 
-const AccordionName = createContext<string | undefined>(undefined);
+/** Where the chevron sits: after the heading, before it (as in a tree), or not at all. */
+export type AccordionIcon = 'end' | 'start' | 'none';
+
+const AccordionContext = createContext<{
+  icon: AccordionIcon;
+  single?: boolean;
+}>({ icon: 'end' });
+
+let closings = 0;
+
+/**
+ * Closes a details after its closing motion has run, so Safari closes as smoothly as the
+ * others (it would hide the content at once). Opening it again meanwhile keeps it open.
+ */
+function closeDetails(details: HTMLDetailsElement): void {
+  if (!details.open || details.hasAttribute('data-closing')) return;
+  const run = String(++closings);
+  details.setAttribute('data-closing', run);
+  const motion = details.getAnimations?.({ subtree: true }) ?? [];
+  void Promise.allSettled(motion.map((a) => a.finished)).then(() => {
+    if (details.getAttribute('data-closing') !== run) return;
+    details.removeAttribute('data-closing');
+    details.open = false;
+  });
+}
+
+function showDetails(details: HTMLDetailsElement): void {
+  details.removeAttribute('data-closing');
+  details.open = true;
+}
+
+const sections = (group: HTMLElement) =>
+  Array.from(group.querySelectorAll<HTMLDetailsElement>(':scope > details'));
 
 export interface AccordionProps extends ComponentPropsWithRef<'div'> {
   /** Keeps one section open at a time: opening one closes the others. */
   single?: boolean;
+  /** The chevron of every section; one section can set its own. Defaults to end. */
+  icon?: AccordionIcon;
 }
 
 /**
  * A stack of sections that open and close, such as questions and answers. Native
- * `<details>`, so it opens with Enter and Space and works without script.
+ * `<details>`, so it opens with Enter and Space, and find-in-page opens the section that
+ * holds the match. Sections grow and shrink both ways. Up and Down move between the
+ * headings, Home and End go to the first and last.
  *
  * ```tsx
  * <Accordion single>
  *   <AccordionItem heading="Can I change my order?">Yes, until it ships.</AccordionItem>
+ *   <AccordionItem heading="Invoices" lazy><Invoices /></AccordionItem>
  * </Accordion>
  * ```
  */
-export function Accordion({ single, className, ...div }: AccordionProps) {
-  const name = useId();
+export function Accordion({
+  single,
+  icon = 'end',
+  className,
+  onKeyDown,
+  ...div
+}: AccordionProps) {
+  const context = useMemo(() => ({ icon, single }), [icon, single]);
   return (
-    <AccordionName.Provider value={single ? name : undefined}>
-      <div {...div} className={cx('ui-accordion', className)} />
-    </AccordionName.Provider>
+    <AccordionContext.Provider value={context}>
+      <div
+        {...div}
+        className={cx('ui-accordion', className)}
+        onKeyDown={(event) => {
+          onKeyDown?.(event);
+          const summaries = sections(event.currentTarget).map((d) =>
+            d.querySelector('summary'),
+          );
+          const i = summaries.indexOf(event.target as HTMLElement);
+          if (i < 0 || event.defaultPrevented) return;
+          const last = summaries.length - 1;
+          const next: number | undefined = {
+            ArrowDown: i === last ? 0 : i + 1,
+            ArrowUp: i === 0 ? last : i - 1,
+            Home: 0,
+            End: last,
+          }[event.key];
+          if (next === undefined) return;
+          event.preventDefault();
+          summaries[next]?.focus();
+        }}
+      />
+    </AccordionContext.Provider>
   );
 }
 
-export interface AccordionItemProps extends ComponentPropsWithRef<'details'> {
-  /** The text of the summary that opens it. */
-  heading: string;
+export interface AccordionItemProps
+  extends Omit<ComponentPropsWithRef<'details'>, 'open'> {
+  /** The summary that opens it: text, or richer content. */
+  heading: ReactNode;
+  /** A quieter line under the heading, such as a count or a status. */
+  description?: ReactNode;
+  /** Open or not. Without it, the reader opens and closes it. */
+  open?: boolean;
+  /** Open at first, when `open` is not given. */
+  defaultOpen?: boolean;
+  /** Seen, focusable and announced, but it does not open or close. */
+  disabled?: boolean;
+  /**
+   * Mounts the children only when the section first opens, such as a list that loads
+   * from an API. They stay once mounted, so closing it again is smooth.
+   */
+  lazy?: boolean;
+  /** This section's chevron; by default the accordion's. */
+  icon?: AccordionIcon;
 }
 
-/** One section of an accordion. Every other prop goes to the `<details>`: open, onToggle. */
+/** One section of an accordion. Every other prop goes to the `<details>`, such as onToggle. */
 export function AccordionItem({
   heading,
+  description,
+  open,
+  defaultOpen,
+  disabled,
+  lazy,
+  icon,
   className,
   children,
+  onToggle,
+  ref,
   ...details
 }: AccordionItemProps) {
-  const name = useContext(AccordionName);
+  const group = useContext(AccordionContext);
+  const own = useRef<HTMLDetailsElement | null>(null);
+  // Only the first value goes to the DOM; later changes close it with its motion.
+  const [initial] = useState(open ?? defaultOpen ?? false);
+  const [visited, setVisited] = useState(initial);
+  const iconAt = icon ?? group.icon;
+
+  useEffect(() => {
+    const el = own.current;
+    if (!el || open === undefined) return;
+    if (open) showDetails(el);
+    else closeDetails(el);
+  }, [open]);
+
   return (
     <details
-      name={name}
       {...details}
-      className={cx('ui-accordion__item', className)}
+      open={initial}
+      ref={(el) => {
+        own.current = el;
+        if (typeof ref === 'function') return ref(el);
+        if (ref) ref.current = el;
+      }}
+      className={cx(
+        'ui-accordion__item',
+        iconAt === 'start' && 'ui-accordion__item--icon-start',
+        iconAt === 'none' && 'ui-accordion__item--no-icon',
+        className,
+      )}
+      onToggle={(event) => {
+        const el = event.currentTarget;
+        if (el.open) {
+          setVisited(true);
+          if (group.single && el.parentElement)
+            for (const other of sections(el.parentElement))
+              if (other !== el) closeDetails(other);
+        }
+        onToggle?.(event);
+      }}
     >
-      <summary>{heading}</summary>
-      <div className="ui-accordion__content">{children}</div>
+      <summary
+        aria-disabled={disabled || undefined}
+        onClick={(event) => {
+          const el = event.currentTarget.parentElement as HTMLDetailsElement;
+          if (disabled) event.preventDefault();
+          else if (el.hasAttribute('data-closing')) {
+            event.preventDefault();
+            showDetails(el);
+          } else if (el.open) {
+            event.preventDefault();
+            closeDetails(el);
+          }
+        }}
+      >
+        <span className="ui-accordion__heading">
+          {heading}
+          {description && (
+            <span className="ui-accordion__description">{description}</span>
+          )}
+        </span>
+      </summary>
+      <div className="ui-accordion__content">
+        {!lazy || visited ? children : null}
+      </div>
     </details>
   );
 }

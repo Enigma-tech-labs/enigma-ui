@@ -1609,7 +1609,7 @@ dialog.ui-dialog::backdrop {
     rotate var(--ui-duration-slow) var(--ui-ease),
     translate var(--ui-duration-slow) var(--ui-ease);
 }
-.ui-accordion__item[open] > summary::after {
+.ui-accordion__item[open]:not([data-closing]) > summary::after {
   rotate: 225deg;
   translate: 0 0.125rem;
 }
@@ -1628,8 +1628,10 @@ dialog.ui-dialog::backdrop {
 .ui-accordion__item--icon-start > summary:dir(rtl)::after {
   rotate: 135deg;
 }
-.ui-accordion--icon-start .ui-accordion__item[open] > summary::after,
-.ui-accordion__item--icon-start[open] > summary::after {
+.ui-accordion--icon-start
+  .ui-accordion__item[open]:not([data-closing])
+  > summary::after,
+.ui-accordion__item--icon-start[open]:not([data-closing]) > summary::after {
   rotate: 45deg;
   translate: 0 -0.125rem;
 }
@@ -1637,14 +1639,16 @@ dialog.ui-dialog::backdrop {
 .ui-accordion__item--no-icon > summary::after {
   content: none;
 }
-.ui-accordion__item[aria-disabled='true'] > summary {
+.ui-accordion__item > summary[aria-disabled='true'] {
   cursor: not-allowed;
   opacity: 0.6;
 }
 /*
  * The motion: the content box goes from no rows to its own height. The browser hides it
  * on close with content-visibility; allow-discrete holds that back until the rows have
- * closed, so closing is as smooth as opening.
+ * closed, so closing is as smooth as opening (Chrome, Edge, Firefox). Safari hides it at
+ * once, so the Angular and React items close in two steps: data-closing runs the closing
+ * motion while the details is still open, then they close it.
  */
 .ui-accordion__item::details-content {
   display: grid;
@@ -1653,7 +1657,7 @@ dialog.ui-dialog::backdrop {
     grid-template-rows var(--ui-duration-slow) var(--ui-ease),
     content-visibility var(--ui-duration-slow) allow-discrete;
 }
-.ui-accordion__item[open]::details-content {
+.ui-accordion__item[open]:not([data-closing])::details-content {
   grid-template-rows: 1fr;
 }
 .ui-accordion__content {
@@ -1662,7 +1666,7 @@ dialog.ui-dialog::backdrop {
   opacity: 0;
   transition: opacity var(--ui-duration-slow) var(--ui-ease);
 }
-.ui-accordion__item[open] .ui-accordion__content {
+.ui-accordion__item[open]:not([data-closing]) > .ui-accordion__content {
   opacity: 1;
 }
 /* The space under the content, inside the clip, so it grows and shrinks with it. */

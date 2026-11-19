@@ -63,7 +63,9 @@ export {
 export { KeepRouteStrategy } from './lib/tabs/keep-route-strategy';
 export {
   AccordionComponent,
+  AccordionContentDirective,
   AccordionItemComponent,
+  type AccordionIcon,
 } from './lib/accordion/accordion.component';
 export {
   PopoverPanelComponent,

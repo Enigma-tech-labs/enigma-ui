@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   AccordionComponent,
+  AccordionContentDirective,
   AccordionItemComponent,
 } from '../accordion/accordion.component';
 import { ButtonComponent } from '../button/button.component';
@@ -11,6 +12,7 @@ import { PopoverTriggerDirective } from './popover';
 @Component({
   imports: [
     AccordionComponent,
+    AccordionContentDirective,
     AccordionItemComponent,
     TooltipDirective,
     PopoverTriggerDirective,
@@ -23,6 +25,14 @@ import { PopoverTriggerDirective } from './popover';
       </details>
       <details ui-accordion-item heading="How do refunds work?">
         <p>Within 14 days.</p>
+      </details>
+      <details ui-accordion-item heading="Invoices">
+        <ng-template uiAccordionContent
+          ><p data-testid="lazy">Loaded</p></ng-template
+        >
+      </details>
+      <details ui-accordion-item heading="Archived" disabled>
+        <p>Old orders.</p>
       </details>
     </ui-accordion>
     <button ui-button data-testid="copy" uiTooltip="Copy link">Copy</button>
@@ -45,16 +55,59 @@ describe('accordion, tooltip and popover', () => {
     return { fixture, root, get };
   }
 
-  it('renders native details that share a name in single mode', async () => {
-    const { root } = await setup();
+  it('keeps one section open in single mode, closing the other after its motion', async () => {
+    const { fixture, root } = await setup();
     const items = root.querySelectorAll('details');
     expect(items[0].open).toBe(true);
-    expect(items[1].open).toBe(false);
-    expect(items[0].querySelector('summary')?.textContent).toBe(
+    expect(items[0].querySelector('summary')?.textContent?.trim()).toBe(
       'Can I change my order?',
     );
-    expect(items[0].getAttribute('name')).toBeTruthy();
-    expect(items[0].getAttribute('name')).toBe(items[1].getAttribute('name'));
+    items[1].open = true;
+    items[1].dispatchEvent(new Event('toggle'));
+    await fixture.whenStable();
+    expect(items[1].open).toBe(true);
+    expect(items[0].open).toBe(false);
+    expect(items[0].hasAttribute('data-closing')).toBe(false);
+  });
+
+  it('creates lazy content on first open and keeps it', async () => {
+    const { fixture, root } = await setup();
+    const invoices = root.querySelectorAll('details')[2];
+    expect(invoices.querySelector('[data-testid="lazy"]')).toBeNull();
+    invoices.open = true;
+    invoices.dispatchEvent(new Event('toggle'));
+    await fixture.whenStable();
+    expect(invoices.querySelector('[data-testid="lazy"]')?.textContent).toBe(
+      'Loaded',
+    );
+    invoices.querySelector('summary')!.click();
+    await fixture.whenStable();
+    expect(invoices.open).toBe(false);
+    expect(invoices.querySelector('[data-testid="lazy"]')).not.toBeNull();
+  });
+
+  it('does not open a disabled section, and arrows move between headings', async () => {
+    const { root } = await setup();
+    const summaries = root.querySelectorAll('summary');
+    const archived = summaries[3];
+    expect(archived.getAttribute('aria-disabled')).toBe('true');
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+    archived.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(true);
+
+    summaries[0].focus();
+    const key = (k: string) =>
+      document.activeElement!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: k, bubbles: true }),
+      );
+    key('ArrowDown');
+    expect(document.activeElement).toBe(summaries[1]);
+    key('End');
+    expect(document.activeElement).toBe(summaries[3]);
+    key('ArrowDown');
+    expect(document.activeElement).toBe(summaries[0]);
+    key('ArrowUp');
+    expect(document.activeElement).toBe(summaries[3]);
   });
 
   it('describes the control with the tooltip and shows it on focus until Escape', async () => {
