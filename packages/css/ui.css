@@ -2455,6 +2455,90 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
+ * Stepper: where you are in a flow of steps (checkout, sign up). An ordered list; the current
+ * step has aria-current="step" and done steps say "Done" to screen readers. Done steps show a
+ * tick, so the state is in the shape, not only the colour. Under 30rem wide only the current
+ * step's name shows; the others stay readable by screen readers.
+ */
+.ui-steps {
+  container-type: inline-size;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-steps__item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--ui-space-2);
+  min-inline-size: 0;
+  color: var(--ui-text-muted);
+}
+.ui-steps__item:last-child {
+  flex: none;
+}
+.ui-steps__item:not(:last-child)::after {
+  content: '';
+  flex: 1;
+  min-inline-size: var(--ui-space-4);
+  border-block-start: 2px solid var(--ui-border);
+}
+.ui-steps__item--done:not(:last-child)::after {
+  border-color: var(--ui-primary);
+}
+.ui-steps__marker {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border: 2px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+  font-size: var(--ui-text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ui-steps__item--current {
+  color: var(--ui-text);
+}
+.ui-steps__item--current .ui-steps__marker {
+  border-color: var(--ui-primary);
+  color: var(--ui-primary);
+}
+.ui-steps__item--done {
+  color: var(--ui-text);
+}
+.ui-steps__item--done .ui-steps__marker {
+  border-color: var(--ui-primary);
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+.ui-steps__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-steps__item--current .ui-steps__label {
+  font-weight: 600;
+}
+@container (max-width: 30rem) {
+  /* The current step takes the room its name needs; the others shrink to their circles. */
+  .ui-steps__item--current {
+    flex: none;
+    max-inline-size: 60%;
+  }
+  .ui-steps__item:not(.ui-steps__item--current) .ui-steps__label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+/*
  * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)

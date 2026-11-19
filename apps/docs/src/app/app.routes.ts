@@ -141,6 +141,13 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/stepper',
+    loadComponent: () =>
+      import('./pages/stepper-page.component').then(
+        (m) => m.StepperPageComponent,
+      ),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),

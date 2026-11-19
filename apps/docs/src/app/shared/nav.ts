@@ -61,6 +61,7 @@ export const NAV = [
       { path: '/components/menu', label: 'Menu' },
       { path: '/components/nav', label: 'Navigation' },
       { path: '/components/pagination', label: 'Pagination' },
+      { path: '/components/stepper', label: 'Stepper' },
       { path: '/components/tabs', label: 'Tabs' },
     ],
   },
