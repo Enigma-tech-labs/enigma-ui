@@ -187,7 +187,7 @@ export class AppComponent {
       title: 'Foundations',
       links: [
         { path: '/foundations/colour', label: 'Colour' },
-        { path: '/foundations/type', label: 'Type' },
+        { path: '/foundations/typography', label: 'Typography' },
         { path: '/foundations/space', label: 'Space and shadow' },
         { path: '/foundations/z-index', label: 'Z-index' },
         { path: '/foundations/motion', label: 'Motion' },

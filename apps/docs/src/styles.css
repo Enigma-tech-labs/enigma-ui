@@ -368,17 +368,19 @@ code {
   padding-inline-start: var(--ui-space-6);
   max-inline-size: 44rem;
 }
-.doc-type-3xl {
-  font-size: var(--ui-text-3xl);
+.doc-type-list {
+  display: grid;
+  gap: var(--ui-space-6);
 }
-.doc-type-2xl {
-  font-size: var(--ui-text-2xl);
+.doc-type-row {
+  display: grid;
+  gap: var(--ui-space-1);
+  padding-block-end: var(--ui-space-6);
+  border-block-end: 1px solid var(--ui-divider);
+  overflow-wrap: break-word;
 }
-.doc-type-lg {
-  font-size: var(--ui-text-lg);
-}
-.doc-type-sm {
-  font-size: var(--ui-text-sm);
+.doc-type-row > p {
+  margin: 0;
 }
 
 /* Example card */

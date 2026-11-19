@@ -119,6 +119,24 @@
   --ui-text-2xl: 2rem;
   --ui-text-3xl: 2.75rem;
 
+  /* Type styles: face, weight, size and line height in one token, for the `font` property.
+     Markup uses the class of the same name (ui-head-md); your own CSS uses font: var(--ui-head-md).
+     The three biggest shrink on narrow screens so long words still fit at 320px. */
+  --ui-head-3xl: 800 expanded clamp(2.25rem, 1.5rem + 3vw, 3.5rem) / 1.1
+    var(--ui-font-display);
+  --ui-head-2xl: 800 expanded clamp(2rem, 1.25rem + 3vw, var(--ui-text-3xl)) /
+    1.15 var(--ui-font-display);
+  --ui-head-xl: 800 expanded clamp(1.625rem, 1rem + 2.5vw, var(--ui-text-2xl)) /
+    1.2 var(--ui-font-display);
+  --ui-head-lg: 800 expanded 1.75rem / 1.25 var(--ui-font-display);
+  --ui-head-md: 800 expanded var(--ui-text-xl) / 1.3 var(--ui-font-display);
+  --ui-head-sm: 800 expanded var(--ui-text-lg) / 1.3 var(--ui-font-display);
+  --ui-head-xs: 800 expanded 1.125rem / 1.4 var(--ui-font-display);
+  --ui-head-2xs: 800 expanded var(--ui-font-size) / 1.4 var(--ui-font-display);
+  --ui-body-lg: 400 var(--ui-text-lg) / 1.5 var(--ui-font);
+  --ui-body-md: 400 var(--ui-font-size) / 1.5 var(--ui-font);
+  --ui-body-sm: 400 var(--ui-text-sm) / 1.5 var(--ui-font);
+
   /* Space: every padding, margin and gap. The number is quarters of a rem (4px each):
      --ui-space-4 = 1rem, --ui-space-0-5 = 0.125rem. Half steps only inside small controls. */
   --ui-space-0: 0;
@@ -217,6 +235,75 @@
 }
 .ui-label:lang(ar) {
   letter-spacing: 0;
+}
+
+/* Type style classes: one class instead of size + line height + weight + face.
+   Heads are always ExtraBold (the brand) and drop the heading's default margin.
+   Body takes a weight suffix: -m 500, -s 600, -b 700. */
+.ui-head-3xl {
+  margin: 0;
+  font: var(--ui-head-3xl);
+}
+.ui-head-2xl {
+  margin: 0;
+  font: var(--ui-head-2xl);
+}
+.ui-head-xl {
+  margin: 0;
+  font: var(--ui-head-xl);
+}
+.ui-head-lg {
+  margin: 0;
+  font: var(--ui-head-lg);
+}
+.ui-head-md {
+  margin: 0;
+  font: var(--ui-head-md);
+}
+.ui-head-sm {
+  margin: 0;
+  font: var(--ui-head-sm);
+}
+.ui-head-xs {
+  margin: 0;
+  font: var(--ui-head-xs);
+}
+.ui-head-2xs {
+  margin: 0;
+  font: var(--ui-head-2xs);
+}
+.ui-body-lg,
+.ui-body-lg-m,
+.ui-body-lg-s,
+.ui-body-lg-b {
+  font: var(--ui-body-lg);
+}
+.ui-body-md,
+.ui-body-md-m,
+.ui-body-md-s,
+.ui-body-md-b {
+  font: var(--ui-body-md);
+}
+.ui-body-sm,
+.ui-body-sm-m,
+.ui-body-sm-s,
+.ui-body-sm-b {
+  font: var(--ui-body-sm);
+}
+.ui-body-lg-m,
+.ui-body-md-m,
+.ui-body-sm-m {
+  font-weight: 500;
+}
+.ui-body-lg-s,
+.ui-body-md-s,
+.ui-body-sm-s {
+  font-weight: 600;
+}
+.ui-body-lg-b,
+.ui-body-md-b,
+.ui-body-sm-b {
+  font-weight: 700;
 }
 
 [data-theme='light'] {

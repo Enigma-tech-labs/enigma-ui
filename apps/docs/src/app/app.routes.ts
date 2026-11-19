@@ -14,9 +14,9 @@ export const appRoutes: Route[] = [
       import('./pages/colour.component').then((m) => m.ColourComponent),
   },
   {
-    path: 'foundations/type',
+    path: 'foundations/typography',
     loadComponent: () =>
-      import('./pages/type.component').then((m) => m.TypeComponent),
+      import('./pages/typography.component').then((m) => m.TypographyComponent),
   },
   {
     path: 'foundations/space',

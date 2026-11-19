@@ -102,7 +102,7 @@ import { PageComponent } from '../shared/page.component';
           </li>
           <li>
             Arabic is never letter-spaced or slanted into italics; see
-            <a routerLink="/foundations/type">Type</a>.
+            <a routerLink="/foundations/typography">Typography</a>.
           </li>
           <li>
             Choose one kind of digit per product. Intl.NumberFormat with
