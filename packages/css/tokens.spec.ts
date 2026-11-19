@@ -70,3 +70,17 @@ describe('design tokens', () => {
     );
   }
 });
+
+describe('spacing utilities', () => {
+  const steps = [...css.matchAll(/^ {2}--ui-space-([\d-]+):/gm)].map(
+    ([, n]) => n,
+  );
+  const prefixes = ['p', 'px', 'py', 'pt', 'pb', 'ps', 'pe'];
+  const classes = prefixes.flatMap((p) => [p, p.replace('p', 'm')]);
+
+  it.each(steps)('every padding and margin class exists for step %s', (n) => {
+    for (const c of classes) {
+      expect(css).toContain(`.ui-${c}-${n} {`);
+    }
+  });
+});

@@ -61,6 +61,48 @@ import { PageComponent } from '../shared/page.component';
       </section>
 
       <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Padding and margin classes</h2>
+        <p>
+          For one-off space in markup, every step has a class: the letter, the
+          side, then the step. <code>ui-p-4</code> is
+          <code>padding: var(--ui-space-4)</code>, <code>ui-mt-0-5</code> is a
+          0.125rem top margin. Sides are logical, so start and end flip in
+          Arabic. Margin also takes <code>auto</code>. They work the same in
+          Angular, React and plain HTML.
+        </p>
+        <div
+          class="doc-table-wrap"
+          tabindex="0"
+          role="region"
+          aria-label="Padding and margin classes"
+        >
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th scope="col">Padding</th>
+                <th scope="col">Margin</th>
+                <th scope="col">Sets</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of utilities; track u.side) {
+                <tr>
+                  <td>
+                    <code>ui-p{{ u.side }}-</code><em>step</em>
+                  </td>
+                  <td>
+                    <code>ui-m{{ u.side }}-</code><em>step</em>
+                  </td>
+                  <td>{{ u.sets }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-code-block [text]="utilityUsage" caption="HTML" />
+      </section>
+
+      <section class="doc-section">
         <h2 class="ui-heading doc-h2">Radius</h2>
         <p>
           Every radius follows <code>--ui-radius</code>: override that one token
@@ -198,6 +240,24 @@ export class SpaceComponent {
       use: 'Pills and circles: badges, switches, spinners, progress bars, round icons.',
     },
   ];
+
+  protected readonly utilities = [
+    { side: '', sets: 'All four sides.' },
+    { side: 'x', sets: 'Inline: start and end (left and right in English).' },
+    { side: 'y', sets: 'Block: top and bottom.' },
+    { side: 't', sets: 'Top (block start).' },
+    { side: 'b', sets: 'Bottom (block end).' },
+    { side: 's', sets: 'Start: left in English, right in Arabic.' },
+    { side: 'e', sets: 'End: right in English, left in Arabic.' },
+  ];
+
+  protected readonly utilityUsage = `<section class="ui-card ui-p-8 ui-mb-12">
+  <h2 class="ui-heading ui-mb-4">Order summary</h2>
+  <div class="ui-py-2" style="display: flex">
+    <span>Delivery</span>
+    <span class="ui-ms-auto">EGP 45</span>
+  </div>
+</section>`;
 
   protected readonly usage = `.order-summary {
   display: grid;

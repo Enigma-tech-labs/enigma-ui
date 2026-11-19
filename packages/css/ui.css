@@ -1550,8 +1550,10 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
- * Accordion: native <details> and <summary>, so it opens with Enter and Space and works
- * without script. Give the items one name to keep only one open at a time.
+ * Accordion: native <details> and <summary>, so it opens with Enter and Space, works
+ * without script, and find-in-page opens the section that holds the match. Give the
+ * items one name to keep only one open at a time. The section grows and shrinks both
+ * ways (the closed state waits for the motion to end), and the chevron turns.
  */
 .ui-accordion {
   display: grid;
@@ -1564,8 +1566,7 @@ dialog.ui-dialog::backdrop {
 .ui-accordion__item > summary {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--ui-space-4);
+  gap: var(--ui-space-3);
   min-block-size: var(--ui-control-height);
   padding-block: var(--ui-space-2);
   font-weight: 600;
@@ -1575,29 +1576,106 @@ dialog.ui-dialog::backdrop {
 .ui-accordion__item > summary::-webkit-details-marker {
   display: none;
 }
-/* A chevron drawn with two borders: down when closed, up when open. */
+.ui-accordion__item > summary:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+/* The heading text takes the room, so the chevron sits at the end (or the start). */
+.ui-accordion__heading {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ui-accordion__description {
+  display: block;
+  color: var(--ui-text-muted);
+  font-size: var(--ui-text-sm);
+  font-weight: 400;
+}
+/*
+ * The chevron, drawn with two physical borders so it never mirrors by itself: down when
+ * closed, up when open. A down chevron reads the same in both directions.
+ */
 .ui-accordion__item > summary::after {
   content: '';
   flex: none;
   inline-size: 0.5rem;
   block-size: 0.5rem;
-  margin-inline-end: var(--ui-space-2);
-  border-block-end: 2px solid currentColor;
-  border-inline-end: 2px solid currentColor;
+  margin-inline: var(--ui-space-2);
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
   rotate: 45deg;
   translate: 0 -0.125rem;
-  transition: rotate var(--ui-duration);
+  transition:
+    rotate var(--ui-duration-slow) var(--ui-ease),
+    translate var(--ui-duration-slow) var(--ui-ease);
 }
 .ui-accordion__item[open] > summary::after {
   rotate: 225deg;
   translate: 0 0.125rem;
 }
-.ui-accordion__item > summary:focus-visible {
-  outline: var(--ui-focus-width) solid var(--ui-focus);
-  outline-offset: var(--ui-focus-offset);
+/*
+ * Chevron at the start, as in a tree: it points to where the text reads on (right, or
+ * left in Arabic) and turns down to open, clockwise left to right and the other way
+ * right to left.
+ */
+.ui-accordion--icon-start .ui-accordion__item > summary::after,
+.ui-accordion__item--icon-start > summary::after {
+  order: -1;
+  rotate: -45deg;
+  translate: 0;
+}
+.ui-accordion--icon-start .ui-accordion__item > summary:dir(rtl)::after,
+.ui-accordion__item--icon-start > summary:dir(rtl)::after {
+  rotate: 135deg;
+}
+.ui-accordion--icon-start .ui-accordion__item[open] > summary::after,
+.ui-accordion__item--icon-start[open] > summary::after {
+  rotate: 45deg;
+  translate: 0 -0.125rem;
+}
+/* No chevron, for a heading that brings its own icon. */
+.ui-accordion__item--no-icon > summary::after {
+  content: none;
+}
+.ui-accordion__item[aria-disabled='true'] > summary {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+/*
+ * The motion: the content box goes from no rows to its own height. The browser hides it
+ * on close with content-visibility; allow-discrete holds that back until the rows have
+ * closed, so closing is as smooth as opening.
+ */
+.ui-accordion__item::details-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows var(--ui-duration-slow) var(--ui-ease),
+    content-visibility var(--ui-duration-slow) allow-discrete;
+}
+.ui-accordion__item[open]::details-content {
+  grid-template-rows: 1fr;
 }
 .ui-accordion__content {
-  padding-block-end: var(--ui-space-4);
+  min-block-size: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity var(--ui-duration-slow) var(--ui-ease);
+}
+.ui-accordion__item[open] .ui-accordion__content {
+  opacity: 1;
+}
+/* The space under the content, inside the clip, so it grows and shrinks with it. */
+.ui-accordion__content::after {
+  content: '';
+  display: block;
+  block-size: var(--ui-space-4);
+}
+.ui-accordion--icon-start .ui-accordion__content,
+.ui-accordion__item--icon-start .ui-accordion__content {
+  padding-inline-start: calc(
+    0.5rem + 2 * var(--ui-space-2) + var(--ui-space-3)
+  );
 }
 .ui-accordion__content > * {
   margin-block: 0 var(--ui-space-3);
@@ -1647,7 +1725,9 @@ dialog.ui-dialog::backdrop {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ui-accordion__item > summary::after {
+  .ui-accordion__item > summary::after,
+  .ui-accordion__item::details-content,
+  .ui-accordion__content {
     transition: none;
   }
   .ui-toast,
@@ -1669,4 +1749,790 @@ dialog.ui-dialog::backdrop {
     border-inline-end-color: currentColor;
     opacity: 0.6;
   }
+}
+
+/*
+ * Spacing utilities: one class per space token, for padding and margin.
+ * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
+ *   x inline (both sides)   y block (top and bottom)
+ *   t top   b bottom        s start (left in English, right in Arabic)   e end
+ * Margin also takes auto (ui-ms-auto pushes an item to the end of a row).
+ * They come last in this file, so they win over a component class of the same weight.
+ */
+.ui-p-0 {
+  padding: var(--ui-space-0);
+}
+.ui-p-0-5 {
+  padding: var(--ui-space-0-5);
+}
+.ui-p-1 {
+  padding: var(--ui-space-1);
+}
+.ui-p-1-5 {
+  padding: var(--ui-space-1-5);
+}
+.ui-p-2 {
+  padding: var(--ui-space-2);
+}
+.ui-p-2-5 {
+  padding: var(--ui-space-2-5);
+}
+.ui-p-3 {
+  padding: var(--ui-space-3);
+}
+.ui-p-4 {
+  padding: var(--ui-space-4);
+}
+.ui-p-5 {
+  padding: var(--ui-space-5);
+}
+.ui-p-6 {
+  padding: var(--ui-space-6);
+}
+.ui-p-7 {
+  padding: var(--ui-space-7);
+}
+.ui-p-8 {
+  padding: var(--ui-space-8);
+}
+.ui-p-10 {
+  padding: var(--ui-space-10);
+}
+.ui-p-12 {
+  padding: var(--ui-space-12);
+}
+.ui-p-16 {
+  padding: var(--ui-space-16);
+}
+.ui-p-20 {
+  padding: var(--ui-space-20);
+}
+.ui-p-24 {
+  padding: var(--ui-space-24);
+}
+.ui-p-32 {
+  padding: var(--ui-space-32);
+}
+.ui-px-0 {
+  padding-inline: var(--ui-space-0);
+}
+.ui-px-0-5 {
+  padding-inline: var(--ui-space-0-5);
+}
+.ui-px-1 {
+  padding-inline: var(--ui-space-1);
+}
+.ui-px-1-5 {
+  padding-inline: var(--ui-space-1-5);
+}
+.ui-px-2 {
+  padding-inline: var(--ui-space-2);
+}
+.ui-px-2-5 {
+  padding-inline: var(--ui-space-2-5);
+}
+.ui-px-3 {
+  padding-inline: var(--ui-space-3);
+}
+.ui-px-4 {
+  padding-inline: var(--ui-space-4);
+}
+.ui-px-5 {
+  padding-inline: var(--ui-space-5);
+}
+.ui-px-6 {
+  padding-inline: var(--ui-space-6);
+}
+.ui-px-7 {
+  padding-inline: var(--ui-space-7);
+}
+.ui-px-8 {
+  padding-inline: var(--ui-space-8);
+}
+.ui-px-10 {
+  padding-inline: var(--ui-space-10);
+}
+.ui-px-12 {
+  padding-inline: var(--ui-space-12);
+}
+.ui-px-16 {
+  padding-inline: var(--ui-space-16);
+}
+.ui-px-20 {
+  padding-inline: var(--ui-space-20);
+}
+.ui-px-24 {
+  padding-inline: var(--ui-space-24);
+}
+.ui-px-32 {
+  padding-inline: var(--ui-space-32);
+}
+.ui-py-0 {
+  padding-block: var(--ui-space-0);
+}
+.ui-py-0-5 {
+  padding-block: var(--ui-space-0-5);
+}
+.ui-py-1 {
+  padding-block: var(--ui-space-1);
+}
+.ui-py-1-5 {
+  padding-block: var(--ui-space-1-5);
+}
+.ui-py-2 {
+  padding-block: var(--ui-space-2);
+}
+.ui-py-2-5 {
+  padding-block: var(--ui-space-2-5);
+}
+.ui-py-3 {
+  padding-block: var(--ui-space-3);
+}
+.ui-py-4 {
+  padding-block: var(--ui-space-4);
+}
+.ui-py-5 {
+  padding-block: var(--ui-space-5);
+}
+.ui-py-6 {
+  padding-block: var(--ui-space-6);
+}
+.ui-py-7 {
+  padding-block: var(--ui-space-7);
+}
+.ui-py-8 {
+  padding-block: var(--ui-space-8);
+}
+.ui-py-10 {
+  padding-block: var(--ui-space-10);
+}
+.ui-py-12 {
+  padding-block: var(--ui-space-12);
+}
+.ui-py-16 {
+  padding-block: var(--ui-space-16);
+}
+.ui-py-20 {
+  padding-block: var(--ui-space-20);
+}
+.ui-py-24 {
+  padding-block: var(--ui-space-24);
+}
+.ui-py-32 {
+  padding-block: var(--ui-space-32);
+}
+.ui-pt-0 {
+  padding-block-start: var(--ui-space-0);
+}
+.ui-pt-0-5 {
+  padding-block-start: var(--ui-space-0-5);
+}
+.ui-pt-1 {
+  padding-block-start: var(--ui-space-1);
+}
+.ui-pt-1-5 {
+  padding-block-start: var(--ui-space-1-5);
+}
+.ui-pt-2 {
+  padding-block-start: var(--ui-space-2);
+}
+.ui-pt-2-5 {
+  padding-block-start: var(--ui-space-2-5);
+}
+.ui-pt-3 {
+  padding-block-start: var(--ui-space-3);
+}
+.ui-pt-4 {
+  padding-block-start: var(--ui-space-4);
+}
+.ui-pt-5 {
+  padding-block-start: var(--ui-space-5);
+}
+.ui-pt-6 {
+  padding-block-start: var(--ui-space-6);
+}
+.ui-pt-7 {
+  padding-block-start: var(--ui-space-7);
+}
+.ui-pt-8 {
+  padding-block-start: var(--ui-space-8);
+}
+.ui-pt-10 {
+  padding-block-start: var(--ui-space-10);
+}
+.ui-pt-12 {
+  padding-block-start: var(--ui-space-12);
+}
+.ui-pt-16 {
+  padding-block-start: var(--ui-space-16);
+}
+.ui-pt-20 {
+  padding-block-start: var(--ui-space-20);
+}
+.ui-pt-24 {
+  padding-block-start: var(--ui-space-24);
+}
+.ui-pt-32 {
+  padding-block-start: var(--ui-space-32);
+}
+.ui-pb-0 {
+  padding-block-end: var(--ui-space-0);
+}
+.ui-pb-0-5 {
+  padding-block-end: var(--ui-space-0-5);
+}
+.ui-pb-1 {
+  padding-block-end: var(--ui-space-1);
+}
+.ui-pb-1-5 {
+  padding-block-end: var(--ui-space-1-5);
+}
+.ui-pb-2 {
+  padding-block-end: var(--ui-space-2);
+}
+.ui-pb-2-5 {
+  padding-block-end: var(--ui-space-2-5);
+}
+.ui-pb-3 {
+  padding-block-end: var(--ui-space-3);
+}
+.ui-pb-4 {
+  padding-block-end: var(--ui-space-4);
+}
+.ui-pb-5 {
+  padding-block-end: var(--ui-space-5);
+}
+.ui-pb-6 {
+  padding-block-end: var(--ui-space-6);
+}
+.ui-pb-7 {
+  padding-block-end: var(--ui-space-7);
+}
+.ui-pb-8 {
+  padding-block-end: var(--ui-space-8);
+}
+.ui-pb-10 {
+  padding-block-end: var(--ui-space-10);
+}
+.ui-pb-12 {
+  padding-block-end: var(--ui-space-12);
+}
+.ui-pb-16 {
+  padding-block-end: var(--ui-space-16);
+}
+.ui-pb-20 {
+  padding-block-end: var(--ui-space-20);
+}
+.ui-pb-24 {
+  padding-block-end: var(--ui-space-24);
+}
+.ui-pb-32 {
+  padding-block-end: var(--ui-space-32);
+}
+.ui-ps-0 {
+  padding-inline-start: var(--ui-space-0);
+}
+.ui-ps-0-5 {
+  padding-inline-start: var(--ui-space-0-5);
+}
+.ui-ps-1 {
+  padding-inline-start: var(--ui-space-1);
+}
+.ui-ps-1-5 {
+  padding-inline-start: var(--ui-space-1-5);
+}
+.ui-ps-2 {
+  padding-inline-start: var(--ui-space-2);
+}
+.ui-ps-2-5 {
+  padding-inline-start: var(--ui-space-2-5);
+}
+.ui-ps-3 {
+  padding-inline-start: var(--ui-space-3);
+}
+.ui-ps-4 {
+  padding-inline-start: var(--ui-space-4);
+}
+.ui-ps-5 {
+  padding-inline-start: var(--ui-space-5);
+}
+.ui-ps-6 {
+  padding-inline-start: var(--ui-space-6);
+}
+.ui-ps-7 {
+  padding-inline-start: var(--ui-space-7);
+}
+.ui-ps-8 {
+  padding-inline-start: var(--ui-space-8);
+}
+.ui-ps-10 {
+  padding-inline-start: var(--ui-space-10);
+}
+.ui-ps-12 {
+  padding-inline-start: var(--ui-space-12);
+}
+.ui-ps-16 {
+  padding-inline-start: var(--ui-space-16);
+}
+.ui-ps-20 {
+  padding-inline-start: var(--ui-space-20);
+}
+.ui-ps-24 {
+  padding-inline-start: var(--ui-space-24);
+}
+.ui-ps-32 {
+  padding-inline-start: var(--ui-space-32);
+}
+.ui-pe-0 {
+  padding-inline-end: var(--ui-space-0);
+}
+.ui-pe-0-5 {
+  padding-inline-end: var(--ui-space-0-5);
+}
+.ui-pe-1 {
+  padding-inline-end: var(--ui-space-1);
+}
+.ui-pe-1-5 {
+  padding-inline-end: var(--ui-space-1-5);
+}
+.ui-pe-2 {
+  padding-inline-end: var(--ui-space-2);
+}
+.ui-pe-2-5 {
+  padding-inline-end: var(--ui-space-2-5);
+}
+.ui-pe-3 {
+  padding-inline-end: var(--ui-space-3);
+}
+.ui-pe-4 {
+  padding-inline-end: var(--ui-space-4);
+}
+.ui-pe-5 {
+  padding-inline-end: var(--ui-space-5);
+}
+.ui-pe-6 {
+  padding-inline-end: var(--ui-space-6);
+}
+.ui-pe-7 {
+  padding-inline-end: var(--ui-space-7);
+}
+.ui-pe-8 {
+  padding-inline-end: var(--ui-space-8);
+}
+.ui-pe-10 {
+  padding-inline-end: var(--ui-space-10);
+}
+.ui-pe-12 {
+  padding-inline-end: var(--ui-space-12);
+}
+.ui-pe-16 {
+  padding-inline-end: var(--ui-space-16);
+}
+.ui-pe-20 {
+  padding-inline-end: var(--ui-space-20);
+}
+.ui-pe-24 {
+  padding-inline-end: var(--ui-space-24);
+}
+.ui-pe-32 {
+  padding-inline-end: var(--ui-space-32);
+}
+.ui-m-0 {
+  margin: var(--ui-space-0);
+}
+.ui-m-0-5 {
+  margin: var(--ui-space-0-5);
+}
+.ui-m-1 {
+  margin: var(--ui-space-1);
+}
+.ui-m-1-5 {
+  margin: var(--ui-space-1-5);
+}
+.ui-m-2 {
+  margin: var(--ui-space-2);
+}
+.ui-m-2-5 {
+  margin: var(--ui-space-2-5);
+}
+.ui-m-3 {
+  margin: var(--ui-space-3);
+}
+.ui-m-4 {
+  margin: var(--ui-space-4);
+}
+.ui-m-5 {
+  margin: var(--ui-space-5);
+}
+.ui-m-6 {
+  margin: var(--ui-space-6);
+}
+.ui-m-7 {
+  margin: var(--ui-space-7);
+}
+.ui-m-8 {
+  margin: var(--ui-space-8);
+}
+.ui-m-10 {
+  margin: var(--ui-space-10);
+}
+.ui-m-12 {
+  margin: var(--ui-space-12);
+}
+.ui-m-16 {
+  margin: var(--ui-space-16);
+}
+.ui-m-20 {
+  margin: var(--ui-space-20);
+}
+.ui-m-24 {
+  margin: var(--ui-space-24);
+}
+.ui-m-32 {
+  margin: var(--ui-space-32);
+}
+.ui-m-auto {
+  margin: auto;
+}
+.ui-mx-0 {
+  margin-inline: var(--ui-space-0);
+}
+.ui-mx-0-5 {
+  margin-inline: var(--ui-space-0-5);
+}
+.ui-mx-1 {
+  margin-inline: var(--ui-space-1);
+}
+.ui-mx-1-5 {
+  margin-inline: var(--ui-space-1-5);
+}
+.ui-mx-2 {
+  margin-inline: var(--ui-space-2);
+}
+.ui-mx-2-5 {
+  margin-inline: var(--ui-space-2-5);
+}
+.ui-mx-3 {
+  margin-inline: var(--ui-space-3);
+}
+.ui-mx-4 {
+  margin-inline: var(--ui-space-4);
+}
+.ui-mx-5 {
+  margin-inline: var(--ui-space-5);
+}
+.ui-mx-6 {
+  margin-inline: var(--ui-space-6);
+}
+.ui-mx-7 {
+  margin-inline: var(--ui-space-7);
+}
+.ui-mx-8 {
+  margin-inline: var(--ui-space-8);
+}
+.ui-mx-10 {
+  margin-inline: var(--ui-space-10);
+}
+.ui-mx-12 {
+  margin-inline: var(--ui-space-12);
+}
+.ui-mx-16 {
+  margin-inline: var(--ui-space-16);
+}
+.ui-mx-20 {
+  margin-inline: var(--ui-space-20);
+}
+.ui-mx-24 {
+  margin-inline: var(--ui-space-24);
+}
+.ui-mx-32 {
+  margin-inline: var(--ui-space-32);
+}
+.ui-mx-auto {
+  margin-inline: auto;
+}
+.ui-my-0 {
+  margin-block: var(--ui-space-0);
+}
+.ui-my-0-5 {
+  margin-block: var(--ui-space-0-5);
+}
+.ui-my-1 {
+  margin-block: var(--ui-space-1);
+}
+.ui-my-1-5 {
+  margin-block: var(--ui-space-1-5);
+}
+.ui-my-2 {
+  margin-block: var(--ui-space-2);
+}
+.ui-my-2-5 {
+  margin-block: var(--ui-space-2-5);
+}
+.ui-my-3 {
+  margin-block: var(--ui-space-3);
+}
+.ui-my-4 {
+  margin-block: var(--ui-space-4);
+}
+.ui-my-5 {
+  margin-block: var(--ui-space-5);
+}
+.ui-my-6 {
+  margin-block: var(--ui-space-6);
+}
+.ui-my-7 {
+  margin-block: var(--ui-space-7);
+}
+.ui-my-8 {
+  margin-block: var(--ui-space-8);
+}
+.ui-my-10 {
+  margin-block: var(--ui-space-10);
+}
+.ui-my-12 {
+  margin-block: var(--ui-space-12);
+}
+.ui-my-16 {
+  margin-block: var(--ui-space-16);
+}
+.ui-my-20 {
+  margin-block: var(--ui-space-20);
+}
+.ui-my-24 {
+  margin-block: var(--ui-space-24);
+}
+.ui-my-32 {
+  margin-block: var(--ui-space-32);
+}
+.ui-my-auto {
+  margin-block: auto;
+}
+.ui-mt-0 {
+  margin-block-start: var(--ui-space-0);
+}
+.ui-mt-0-5 {
+  margin-block-start: var(--ui-space-0-5);
+}
+.ui-mt-1 {
+  margin-block-start: var(--ui-space-1);
+}
+.ui-mt-1-5 {
+  margin-block-start: var(--ui-space-1-5);
+}
+.ui-mt-2 {
+  margin-block-start: var(--ui-space-2);
+}
+.ui-mt-2-5 {
+  margin-block-start: var(--ui-space-2-5);
+}
+.ui-mt-3 {
+  margin-block-start: var(--ui-space-3);
+}
+.ui-mt-4 {
+  margin-block-start: var(--ui-space-4);
+}
+.ui-mt-5 {
+  margin-block-start: var(--ui-space-5);
+}
+.ui-mt-6 {
+  margin-block-start: var(--ui-space-6);
+}
+.ui-mt-7 {
+  margin-block-start: var(--ui-space-7);
+}
+.ui-mt-8 {
+  margin-block-start: var(--ui-space-8);
+}
+.ui-mt-10 {
+  margin-block-start: var(--ui-space-10);
+}
+.ui-mt-12 {
+  margin-block-start: var(--ui-space-12);
+}
+.ui-mt-16 {
+  margin-block-start: var(--ui-space-16);
+}
+.ui-mt-20 {
+  margin-block-start: var(--ui-space-20);
+}
+.ui-mt-24 {
+  margin-block-start: var(--ui-space-24);
+}
+.ui-mt-32 {
+  margin-block-start: var(--ui-space-32);
+}
+.ui-mt-auto {
+  margin-block-start: auto;
+}
+.ui-mb-0 {
+  margin-block-end: var(--ui-space-0);
+}
+.ui-mb-0-5 {
+  margin-block-end: var(--ui-space-0-5);
+}
+.ui-mb-1 {
+  margin-block-end: var(--ui-space-1);
+}
+.ui-mb-1-5 {
+  margin-block-end: var(--ui-space-1-5);
+}
+.ui-mb-2 {
+  margin-block-end: var(--ui-space-2);
+}
+.ui-mb-2-5 {
+  margin-block-end: var(--ui-space-2-5);
+}
+.ui-mb-3 {
+  margin-block-end: var(--ui-space-3);
+}
+.ui-mb-4 {
+  margin-block-end: var(--ui-space-4);
+}
+.ui-mb-5 {
+  margin-block-end: var(--ui-space-5);
+}
+.ui-mb-6 {
+  margin-block-end: var(--ui-space-6);
+}
+.ui-mb-7 {
+  margin-block-end: var(--ui-space-7);
+}
+.ui-mb-8 {
+  margin-block-end: var(--ui-space-8);
+}
+.ui-mb-10 {
+  margin-block-end: var(--ui-space-10);
+}
+.ui-mb-12 {
+  margin-block-end: var(--ui-space-12);
+}
+.ui-mb-16 {
+  margin-block-end: var(--ui-space-16);
+}
+.ui-mb-20 {
+  margin-block-end: var(--ui-space-20);
+}
+.ui-mb-24 {
+  margin-block-end: var(--ui-space-24);
+}
+.ui-mb-32 {
+  margin-block-end: var(--ui-space-32);
+}
+.ui-mb-auto {
+  margin-block-end: auto;
+}
+.ui-ms-0 {
+  margin-inline-start: var(--ui-space-0);
+}
+.ui-ms-0-5 {
+  margin-inline-start: var(--ui-space-0-5);
+}
+.ui-ms-1 {
+  margin-inline-start: var(--ui-space-1);
+}
+.ui-ms-1-5 {
+  margin-inline-start: var(--ui-space-1-5);
+}
+.ui-ms-2 {
+  margin-inline-start: var(--ui-space-2);
+}
+.ui-ms-2-5 {
+  margin-inline-start: var(--ui-space-2-5);
+}
+.ui-ms-3 {
+  margin-inline-start: var(--ui-space-3);
+}
+.ui-ms-4 {
+  margin-inline-start: var(--ui-space-4);
+}
+.ui-ms-5 {
+  margin-inline-start: var(--ui-space-5);
+}
+.ui-ms-6 {
+  margin-inline-start: var(--ui-space-6);
+}
+.ui-ms-7 {
+  margin-inline-start: var(--ui-space-7);
+}
+.ui-ms-8 {
+  margin-inline-start: var(--ui-space-8);
+}
+.ui-ms-10 {
+  margin-inline-start: var(--ui-space-10);
+}
+.ui-ms-12 {
+  margin-inline-start: var(--ui-space-12);
+}
+.ui-ms-16 {
+  margin-inline-start: var(--ui-space-16);
+}
+.ui-ms-20 {
+  margin-inline-start: var(--ui-space-20);
+}
+.ui-ms-24 {
+  margin-inline-start: var(--ui-space-24);
+}
+.ui-ms-32 {
+  margin-inline-start: var(--ui-space-32);
+}
+.ui-ms-auto {
+  margin-inline-start: auto;
+}
+.ui-me-0 {
+  margin-inline-end: var(--ui-space-0);
+}
+.ui-me-0-5 {
+  margin-inline-end: var(--ui-space-0-5);
+}
+.ui-me-1 {
+  margin-inline-end: var(--ui-space-1);
+}
+.ui-me-1-5 {
+  margin-inline-end: var(--ui-space-1-5);
+}
+.ui-me-2 {
+  margin-inline-end: var(--ui-space-2);
+}
+.ui-me-2-5 {
+  margin-inline-end: var(--ui-space-2-5);
+}
+.ui-me-3 {
+  margin-inline-end: var(--ui-space-3);
+}
+.ui-me-4 {
+  margin-inline-end: var(--ui-space-4);
+}
+.ui-me-5 {
+  margin-inline-end: var(--ui-space-5);
+}
+.ui-me-6 {
+  margin-inline-end: var(--ui-space-6);
+}
+.ui-me-7 {
+  margin-inline-end: var(--ui-space-7);
+}
+.ui-me-8 {
+  margin-inline-end: var(--ui-space-8);
+}
+.ui-me-10 {
+  margin-inline-end: var(--ui-space-10);
+}
+.ui-me-12 {
+  margin-inline-end: var(--ui-space-12);
+}
+.ui-me-16 {
+  margin-inline-end: var(--ui-space-16);
+}
+.ui-me-20 {
+  margin-inline-end: var(--ui-space-20);
+}
+.ui-me-24 {
+  margin-inline-end: var(--ui-space-24);
+}
+.ui-me-32 {
+  margin-inline-end: var(--ui-space-32);
+}
+.ui-me-auto {
+  margin-inline-end: auto;
 }
