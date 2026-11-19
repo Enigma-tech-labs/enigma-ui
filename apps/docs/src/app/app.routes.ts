@@ -24,9 +24,9 @@ export const appRoutes: Route[] = [
       import('./pages/space.component').then((m) => m.SpaceComponent),
   },
   {
-    path: 'foundations/depth',
+    path: 'foundations/z-index',
     loadComponent: () =>
-      import('./pages/depth.component').then((m) => m.DepthComponent),
+      import('./pages/z-index.component').then((m) => m.ZIndexComponent),
   },
   {
     path: 'foundations/motion',

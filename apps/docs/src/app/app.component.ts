@@ -188,8 +188,8 @@ export class AppComponent {
       links: [
         { path: '/foundations/colour', label: 'Colour' },
         { path: '/foundations/type', label: 'Type' },
-        { path: '/foundations/space', label: 'Space and shape' },
-        { path: '/foundations/depth', label: 'Depth and z-index' },
+        { path: '/foundations/space', label: 'Space and shadow' },
+        { path: '/foundations/z-index', label: 'Z-index' },
         { path: '/foundations/motion', label: 'Motion' },
         { path: '/foundations/focus', label: 'Focus' },
         { path: '/foundations/layout', label: 'Layout' },

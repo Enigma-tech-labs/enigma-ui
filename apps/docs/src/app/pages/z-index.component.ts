@@ -12,7 +12,7 @@ import { CodeBlockComponent } from '../shared/code-block.component';
 import { PageComponent } from '../shared/page.component';
 
 @Component({
-  selector: 'app-depth',
+  selector: 'app-z-index',
   imports: [
     PageComponent,
     CodeBlockComponent,
@@ -24,23 +24,9 @@ import { PageComponent } from '../shared/page.component';
   ],
   template: `
     <app-page
-      title="Depth and z-index"
-      lead="The page is flat. Only what floats over it has a shadow: lists, menus, popovers, tooltips, dialogs and toasts. Layer tokens put them in a fixed order, so any mix can be open at once: a drawer, a popover inside it, a tooltip on that, and a toast over all."
+      title="Z-index"
+      lead="Four layer tokens put everything that floats in a fixed order, so any mix can be open at once: a drawer, a popover inside it, a tooltip on that, and a toast over all. Their shadow is on the Space and shadow page."
     >
-      <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Flat and floating</h2>
-        <div class="doc-depth">
-          <div class="ui-card">
-            <p class="ui-card__title">On the page</p>
-            <p>Cards, tables and fields: a 1px divider, no shadow.</p>
-          </div>
-          <div class="doc-depth__float">
-            <p class="ui-card__title">Floating</p>
-            <p><code>--ui-shadow</code>, and a border for high contrast.</p>
-          </div>
-        </div>
-      </section>
-
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Layers</h2>
         <div
@@ -99,14 +85,6 @@ import { PageComponent } from '../shared/page.component';
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
           <li>
-            A shadow means "this floats and will go away". Never add one to a
-            card to make it stand out; use space or a heading.
-          </li>
-          <li>
-            Windows high contrast removes shadows, so every floating layer also
-            has a border (transparent until then) to keep its edge.
-          </li>
-          <li>
             Angular (CDK), native <code>&lt;dialog&gt;</code> and
             <code>popover</code> open in the browser's top layer, above any
             z-index, newest on top; toasts raise themselves back above. React
@@ -151,7 +129,7 @@ import { PageComponent } from '../shared/page.component';
     </ng-template>
   `,
 })
-export class DepthComponent {
+export class ZIndexComponent {
   protected readonly dialog = inject(UiDialog);
   private readonly toast = inject(UiToast);
 
