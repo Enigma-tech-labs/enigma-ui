@@ -148,6 +148,13 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'components/chip-input',
+    loadComponent: () =>
+      import('./pages/chip-input-page.component').then(
+        (m) => m.ChipInputPageComponent,
+      ),
+  },
+  {
     path: 'components/badge',
     loadComponent: () =>
       import('./pages/badge-page.component').then((m) => m.BadgePageComponent),

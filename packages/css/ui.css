@@ -2539,6 +2539,55 @@ dialog.ui-dialog::backdrop {
 }
 
 /*
+ * Chip input: a text field that collects several short values (toppings, emails, skills).
+ * Enter or a comma adds the text as a tag; each tag has its own named × button. The box looks
+ * like .ui-input and shows the focus ring while its text field has focus.
+ */
+.ui-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-1-5);
+  min-block-size: var(--ui-control-height);
+  padding: var(--ui-space-1) var(--ui-space-2);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+.ui-chips:has(.ui-chips__input:focus-visible) {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+.ui-chips:has(.ui-chips__input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ui-chips__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-1-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-chips__list:empty {
+  display: none;
+}
+.ui-chips__input {
+  flex: 1;
+  min-inline-size: 8rem;
+  min-block-size: 2rem;
+  padding: 0 var(--ui-space-1);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--ui-font-size);
+}
+
+/*
  * Spacing utilities: one class per space token, for padding, margin and gap.
  * ui-p-4 = padding: var(--ui-space-4). Sides are logical, so they flip in Arabic:
  *   x inline (both sides)   y block (top and bottom)
