@@ -1,7 +1,8 @@
-import { CdkMenu, CdkMenuItemRadio, CdkMenuTrigger } from '@angular/cdk/menu';
+import { CdkMenu, CdkMenuItemRadio } from '@angular/cdk/menu';
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, model } from '@angular/core';
 import { ButtonComponent, type ButtonSize } from '../button/button.component';
+import { MenuTriggerDirective } from '../menu/menu';
 
 export interface Language {
   /** The language tag, such as 'en' or 'ar'. */
@@ -26,7 +27,7 @@ export interface Language {
     ButtonComponent,
     CdkMenu,
     CdkMenuItemRadio,
-    CdkMenuTrigger,
+    MenuTriggerDirective,
     NgTemplateOutlet,
   ],
   template: `
@@ -64,7 +65,7 @@ export interface Language {
         variant="secondary"
         type="button"
         [size]="size()"
-        [cdkMenuTriggerFor]="list"
+        [uiMenuTrigger]="list"
       >
         <ng-container [ngTemplateOutlet]="globe" />
         <span class="ui-visually-hidden">{{ label() }}: </span>

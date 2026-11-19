@@ -71,11 +71,6 @@ import { PageComponent } from '../shared/page.component';
             user meets.
           </li>
           <li>
-            In Angular, popups (the select list, menus, popovers, tooltips) are
-            placed at the end of the page, outside its landmarks. Screen readers
-            reach them through the control that opens them.
-          </li>
-          <li>
             Tooltips never show on touch screens, so nothing needed may live
             only in a tooltip.
           </li>

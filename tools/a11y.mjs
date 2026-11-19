@@ -134,8 +134,8 @@ for (const theme of ['light', 'dark']) {
     await close();
   }
 
-  // The CDK puts popups at the end of <body>, outside any landmark. That is how overlays
-  // work and each popup is announced through the control that opens it, so `region` is off here.
+  // Open popups too. The kit places every CDK popup right after its trigger, so `region`
+  // (everything inside a landmark) stays on: it fails if a popup lands at the end of <body>.
   const popups = [
     [
       'components/select',
@@ -193,9 +193,7 @@ for (const theme of ['light', 'dark']) {
   for (const [path, openPopup] of popups) {
     const { page, close } = await open(theme, 'angular', path);
     await openPopup(page);
-    await audit(page, `${theme} angular /${path}: popup open`, {
-      disableRules: ['region'],
-    });
+    await audit(page, `${theme} angular /${path}: popup open`);
     audits++;
     await close();
   }

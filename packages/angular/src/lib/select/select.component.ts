@@ -80,6 +80,7 @@ let nextId = 0;
       [cdkConnectedOverlayOrigin]="origin"
       [cdkConnectedOverlayOpen]="open()"
       [cdkConnectedOverlayMatchWidth]="true"
+      cdkConnectedOverlayUsePopover="inline"
       (overlayOutsideClick)="outsideClick($event)"
       (overlayKeydown)="keydown($event)"
       (detach)="open.set(false)"
