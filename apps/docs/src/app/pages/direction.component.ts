@@ -1,25 +1,93 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { CodeBlockComponent } from '../shared/code-block.component';
+import { Component, computed, signal } from '@angular/core';
+import type { FrameworkCode } from '../shared/docs-settings';
+import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+import { StepComponent } from '../shared/step.component';
+import {
+  TokenTableComponent,
+  type TokenRow,
+} from '../shared/token-table.component';
+
+const langs = [
+  {
+    code: 'en',
+    dir: 'ltr',
+    name: 'English',
+    crumbs: ['Home', 'Orders', 'Order 1042'],
+    label: 'Breadcrumbs, English',
+    toggle: 'Email me',
+    note: 'Paid by card',
+  },
+  {
+    code: 'ar',
+    dir: 'rtl',
+    name: 'العربية',
+    crumbs: ['الرئيسية', 'الطلبات', 'الطلب ١٠٤٢'],
+    label: 'مسار الصفحة',
+    toggle: 'راسلني بالبريد',
+    note: 'مدفوع بالبطاقة',
+  },
+];
 
 @Component({
   selector: 'app-direction',
-  imports: [PageComponent, CodeBlockComponent, RouterLink],
+  imports: [
+    PageComponent,
+    ExampleComponent,
+    StepComponent,
+    TokenTableComponent,
+  ],
   template: `
     <app-page
       title="Right to left"
-      lead="Arabic is a first language here, not a translation. Set lang and dir on the page and every component turns around by itself: the kit uses only logical sides (start and end), never left and right."
+      lead="Arabic is a first language here. Set lang and dir on the page; every component turns by itself."
     >
       <section class="doc-section">
-        <h2 class="ui-heading doc-h2">The same markup, both ways</h2>
-        <div class="doc-direction">
-          <div class="doc-card" lang="en" dir="ltr">
-            <nav class="ui-breadcrumbs" aria-label="Breadcrumbs, English">
+        <h2 class="ui-heading doc-h2">Logical properties</h2>
+        <p>
+          The kit writes start and end, never left and right. So should you.
+        </p>
+        <app-token-table
+          label="Logical properties"
+          tokenHeading="Write"
+          valueHeading="Instead of"
+          [rows]="logical"
+        />
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try the direction</h2>
+        <p>
+          The same markup; only <code>lang</code> and <code>dir</code> change.
+        </p>
+        <app-step
+          label="Language"
+          [max]="1"
+          [valuetext]="lang().name"
+          [(value)]="index"
+        >
+          <code>dir="{{ lang().dir }}"</code> · {{ lang().name }}
+        </app-step>
+
+        <app-example
+          title="Breadcrumbs, switch and a start border"
+          description="Separators, the switch knob and the start border all turn round."
+          [code]="code()"
+        >
+          <div
+            class="doc-direction__demo"
+            [attr.lang]="lang().code"
+            [attr.dir]="lang().dir"
+          >
+            <nav class="ui-breadcrumbs" [attr.aria-label]="lang().label">
               <ol>
-                <li><span>Home</span></li>
-                <li><span>Orders</span></li>
-                <li><span aria-current="page">Order 1042</span></li>
+                @for (c of lang().crumbs; track c; let last = $last) {
+                  <li>
+                    <span [attr.aria-current]="last ? 'page' : null">{{
+                      c
+                    }}</span>
+                  </li>
+                }
               </ol>
             </nav>
             <label class="ui-switch">
@@ -29,85 +97,33 @@ import { PageComponent } from '../shared/page.component';
                 role="switch"
                 checked
               />
-              Email me
+              {{ lang().toggle }}
             </label>
+            <p class="doc-block doc-direction__note">{{ lang().note }}</p>
           </div>
-          <div class="doc-card" lang="ar" dir="rtl">
-            <nav class="ui-breadcrumbs" aria-label="مسار الصفحة">
-              <ol>
-                <li><span>الرئيسية</span></li>
-                <li><span>الطلبات</span></li>
-                <li><span aria-current="page">الطلب ١٠٤٢</span></li>
-              </ol>
-            </nav>
-            <label class="ui-switch">
-              <input
-                class="ui-switch__input"
-                type="checkbox"
-                role="switch"
-                checked
-              />
-              راسلني بالبريد
-            </label>
-          </div>
-        </div>
-        <app-code-block [text]="usage" caption="HTML" />
+        </app-example>
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">What turns, what does not</h2>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="What turns around"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">Turns around</th>
-                <th scope="col">Stays as is</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Text, padding, borders, the side bar's current bar</td>
-                <td>Logos, and code samples (always left to right)</td>
-              </tr>
-              <tr>
-                <td>Arrows that mean back and next (pagination)</td>
-                <td>Check marks, the clock, play and pause</td>
-              </tr>
-              <tr>
-                <td>The switch knob, drawers (from the left in Arabic)</td>
-                <td>Numbers: 1042 reads left to right in both</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <p>Direction-free things keep their shape.</p>
+        <app-token-table
+          label="What turns around"
+          tokenHeading="Turns around"
+          valueHeading="Stays as is"
+          useHeading="Why"
+          [rows]="turns"
+        />
       </section>
 
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
+          <li>Mirror a pointing icon with <code>:dir(rtl)</code>.</li>
+          <li>Give a word in the other language its own <code>lang</code>.</li>
           <li>
-            In your own CSS, write <code>margin-inline-start</code>, not
-            <code>margin-left</code>; <code>inset-inline-end</code>, not
-            <code>right</code>. Mirror a pointing icon with
-            <code>:dir(rtl)</code>.
-          </li>
-          <li>
-            Mark a word in the other language with its own <code>lang</code>, so
-            it gets the right face and is read out in the right voice.
-          </li>
-          <li>
-            Arabic is never letter-spaced or slanted into italics; see
-            <a routerLink="/foundations/typography">Typography</a>.
-          </li>
-          <li>
-            Choose one kind of digit per product. Intl.NumberFormat with
-            <code>ar-EG</code> writes ١٠٤٢; with <code>ar-EG-u-nu-latn</code>,
-            1042.
+            One kind of digit per product: <code>ar-EG</code> writes ١٠٤٢,
+            <code>ar-EG-u-nu-latn</code> writes 1042.
           </li>
         </ul>
       </section>
@@ -115,9 +131,51 @@ import { PageComponent } from '../shared/page.component';
   `,
 })
 export class DirectionComponent {
-  protected readonly usage = `<html lang="ar" dir="rtl">
-  …
-  <!-- A word in English inside Arabic text -->
-  <p>افتح <span lang="en" dir="ltr">Settings</span> من القائمة.</p>
+  /** Starts in English. */
+  protected readonly index = signal(0);
+  protected readonly lang = computed(() => langs[this.index()]);
+
+  protected readonly logical: TokenRow[] = [
+    [
+      'margin-inline-start',
+      'margin-left',
+      'Space before, on the reading side.',
+    ],
+    ['padding-inline-end', 'padding-right', 'Space after.'],
+    ['inset-inline-start', 'left', 'Position from the start edge.'],
+    [
+      'border-inline-start',
+      'border-left',
+      'A start bar, like the side bar current link.',
+    ],
+    ['text-align: start', 'text-align: left', 'Text follows the reading side.'],
+    [
+      'ui-ps-4 · ui-me-2',
+      'pl-4 · mr-2',
+      'The spacing classes are logical already.',
+    ],
+  ].map(([token, value, use]) => ({ token, value, use }));
+
+  protected readonly turns: TokenRow[] = [
+    [
+      'Text, padding, borders',
+      'Logos and code',
+      'Code is always left to right.',
+    ],
+    ['Back and next arrows', 'Check, clock, play', 'They do not point a way.'],
+    ['Switch knob, drawers', 'Numbers', '1042 reads left to right in both.'],
+  ].map(([token, value, use]) => ({ token, value, use }));
+
+  protected readonly code = computed((): FrameworkCode => {
+    const { code, dir } = this.lang();
+    const html = `<html lang="${code}" dir="${dir}">
+  <nav class="ui-breadcrumbs">…</nav>
+  <label class="ui-switch">…</label>
 </html>`;
+    return {
+      angular: html,
+      react: html.replace(/class=/g, 'className='),
+      html,
+    };
+  });
 }

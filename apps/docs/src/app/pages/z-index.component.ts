@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   ButtonComponent,
   DialogCloseDirective,
@@ -9,13 +9,20 @@ import {
   UiToast,
 } from '@enigma-tech-lab/angular';
 import { CodeBlockComponent } from '../shared/code-block.component';
+import type { FrameworkCode } from '../shared/docs-settings';
+import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+import { StepComponent } from '../shared/step.component';
+import { TokenTableComponent } from '../shared/token-table.component';
 
 @Component({
   selector: 'app-z-index',
   imports: [
     PageComponent,
     CodeBlockComponent,
+    ExampleComponent,
+    StepComponent,
+    TokenTableComponent,
     ButtonComponent,
     DialogComponent,
     DialogCloseDirective,
@@ -25,47 +32,60 @@ import { PageComponent } from '../shared/page.component';
   template: `
     <app-page
       title="Z-index"
-      lead="Twelve layer tokens put everything in a fixed order, so any mix can be open at once: a drawer, a popover inside it, a tooltip on that, and a toast over all. Their shadow is on the Space and shadow page."
+      lead="Layer tokens in a fixed order, so a drawer, a popover in it, a tooltip and a toast can all be open at once."
     >
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Layers</h2>
-        <div
-          class="doc-table-wrap"
-          tabindex="0"
-          role="region"
-          aria-label="Layers"
-        >
-          <table class="doc-table">
-            <thead>
-              <tr>
-                <th scope="col">Token</th>
-                <th scope="col">Value</th>
-                <th scope="col">For</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (l of layers; track l.token) {
-                <tr>
-                  <td>
-                    <code>{{ l.token }}</code>
-                  </td>
-                  <td>{{ l.value }}</td>
-                  <td>{{ l.use }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        <p>
+          Under 100 stays in one component, 100–999 is page bars, 1000 and up is
+          overlays.
+        </p>
+        <app-token-table label="Layer tokens" [rows]="layers" />
         <app-code-block [text]="usage" caption="CSS" />
       </section>
 
       <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try a layer</h2>
+        <p>Pick a token for your element and see which layers cover it.</p>
+        <app-step
+          label="Layer"
+          [max]="layers.length - 1"
+          [valuetext]="layer().token + ', ' + layer().value"
+          [(value)]="index"
+        >
+          <code>{{ layer().token }}</code> · {{ layer().value }}
+        </app-step>
+
+        <app-example
+          title="Your element in the stack"
+          [description]="layer().use"
+          [code]="layerCode()"
+        >
+          <div class="doc-stack" aria-hidden="true">
+            @for (l of fan; track l.token; let i = $index) {
+              <div
+                class="doc-stack__card"
+                [style.z-index]="'var(' + l.token + ')'"
+                [style.inset-inline-start.%]="i * 14"
+                [style.inset-block-start.rem]="i * 0.75"
+              >
+                <code>{{ l.token.replace('--ui-layer-', '') }}</code>
+                {{ l.value }}
+              </div>
+            }
+            <div
+              class="doc-stack__card doc-stack__card--you"
+              [style.z-index]="'var(' + layer().token + ')'"
+            >
+              Your element · {{ layer().value }}
+            </div>
+          </div>
+        </app-example>
+      </section>
+
+      <section class="doc-section">
         <h2 class="ui-heading doc-h2">Try them all at once</h2>
-        <p>
-          Open the drawer, open the popover inside it, point at the popover's
-          button for its tooltip, then press it to send a toast. Each one lands
-          on top of the one before.
-        </p>
+        <p>Drawer, then its popover, its tooltip, then a toast over all.</p>
         <div class="doc-row">
           <button ui-button type="button" (click)="dialog.open(stack)">
             Open the drawer
@@ -84,16 +104,10 @@ import { PageComponent } from '../shared/page.component';
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
+          <li>Always a token; never a number between two of them.</li>
           <li>
-            Angular (CDK), native <code>&lt;dialog&gt;</code> and
-            <code>popover</code> open in the browser's top layer, above any
-            z-index, newest on top; toasts raise themselves back above. React
-            overlays use the tokens.
-          </li>
-          <li>
-            Three bands: under 100 stays inside one component, 100 to 999 is the
-            page's own bars, 1000 and up is overlays. Always use a token; never
-            invent a number between two of them.
+            Native <code>&lt;dialog&gt;</code>, <code>popover</code> and the
+            Angular CDK use the top layer; React overlays use the tokens.
           </li>
         </ul>
       </section>
@@ -194,6 +208,23 @@ export class ZIndexComponent {
       use: 'The "Skip to content" link: when focused, nothing may cover it.',
     },
   ];
+
+  /** Starts at --ui-layer-sticky. */
+  protected readonly index = signal(4);
+  protected readonly layer = computed(() => this.layers[this.index()]);
+  /** The cards your element is placed among. */
+  protected readonly fan = this.layers.filter((l) =>
+    ['sticky', 'fixed', 'dialog', 'popover', 'tooltip', 'toast'].some((n) =>
+      l.token.endsWith(n),
+    ),
+  );
+  protected readonly layerCode = computed((): FrameworkCode => {
+    const css = `.my-element {
+  position: relative;
+  z-index: var(${this.layer().token});
+}`;
+    return { angular: css, react: css, html: css };
+  });
 
   protected readonly usage = `.my-banner {
   position: fixed;
