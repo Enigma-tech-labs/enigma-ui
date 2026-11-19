@@ -2,7 +2,7 @@
 
 The design system of Enigma Technology Lab: accessible, Arabic and English from the start, and built to work with any frontend.
 
-**[Read the docs](https://enigma-tech-labs.github.io/enigma-ui/)**: every component live, with the code for your framework.
+**[Read the docs](https://enigma-tech-labs.github.io/enigma-ui/)** ([setup guide](https://enigma-tech-labs.github.io/enigma-ui/getting-started)): every component live, with the code for your framework.
 
 | Package                                        | What it is                                                                                          | Status                                                                                                                       |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -39,7 +39,7 @@ Any stack:
 Angular:
 
 ```shell
-pnpm add @enigma-tech-lab/angular @angular/cdk
+pnpm add @enigma-tech-lab/angular @enigma-tech-lab/css @angular/cdk
 ```
 
 ```css
@@ -55,7 +55,7 @@ import { ButtonComponent, SelectComponent, TextFieldComponent } from '@enigma-te
 React:
 
 ```shell
-pnpm add @enigma-tech-lab/react
+pnpm add @enigma-tech-lab/react @enigma-tech-lab/css
 ```
 
 ```tsx

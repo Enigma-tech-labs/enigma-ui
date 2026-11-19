@@ -3,7 +3,7 @@
 Accessible Angular 22 components in the Enigma Technology Lab design system, right to left ready: alert dialog, badge, bottom sheet, button, card, data table, dialog, drawer, pagination, select, text field and textarea. Built on signals and the Angular CDK; styles come from [`@enigma-tech-lab/css`](../css).
 
 ```shell
-pnpm add @enigma-tech-lab/angular @angular/cdk
+pnpm add @enigma-tech-lab/angular @enigma-tech-lab/css @angular/cdk
 ```
 
 ```css

@@ -4,6 +4,11 @@ export const appRoutes: Route[] = [
   {
     path: '',
     loadComponent: () =>
+      import('./pages/home.component').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'getting-started',
+    loadComponent: () =>
       import('./pages/getting-started.component').then(
         (m) => m.GettingStartedComponent,
       ),

@@ -795,3 +795,156 @@ code {
     color: var(--ui-on-primary);
   }
 }
+
+/* Home: one full-width interactive hero. */
+.doc-layout--home {
+  grid-template-columns: minmax(0, 1fr);
+  max-inline-size: none;
+}
+.doc-layout--home .doc-main {
+  padding: 0;
+}
+.doc-home {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-12);
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: calc(100dvh - var(--doc-header-height));
+  max-inline-size: 84rem;
+  margin-inline: auto;
+  padding: var(--ui-space-12) var(--ui-space-6);
+  isolation: isolate;
+}
+/* A dot grid fading out from the stage: the token grid the kit is built on. */
+.doc-home::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(50% - 50vw);
+  z-index: var(--ui-layer-below);
+  background-image: radial-gradient(var(--ui-divider) 1px, transparent 1px);
+  background-size: var(--ui-space-6) var(--ui-space-6);
+  mask-image: radial-gradient(ellipse at 75% 45%, #000 0%, transparent 65%);
+}
+.doc-home__intro {
+  display: grid;
+  gap: var(--ui-space-6);
+  justify-items: start;
+}
+.doc-home__eyebrow {
+  margin: 0;
+  color: var(--ui-text-muted);
+}
+.doc-home__title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+/* Large text, so brand blue is allowed here. */
+.doc-home__accent {
+  color: var(--ui-primary);
+}
+.doc-home__lead {
+  margin: 0;
+  max-inline-size: 34rem;
+  color: var(--ui-text-muted);
+}
+.doc-home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+}
+.doc-home__actions a {
+  text-decoration: none;
+}
+.doc-home__counts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, auto));
+  gap: var(--ui-space-6);
+  margin: var(--ui-space-4) 0 0;
+  padding-block-start: var(--ui-space-6);
+  border-block-start: 1px solid var(--ui-divider);
+}
+.doc-home__count {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--ui-space-1);
+}
+.doc-home__count dt {
+  color: var(--ui-text-muted);
+}
+.doc-home__count dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.doc-home__stage {
+  display: grid;
+  gap: var(--ui-space-4);
+  min-inline-size: 0;
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-xl);
+  background: color-mix(in srgb, var(--ui-surface) 80%, transparent);
+  box-shadow: 0 1.5rem 4rem -1.5rem var(--ui-shadow-color);
+  backdrop-filter: blur(6px);
+}
+.doc-home__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3) var(--ui-space-4);
+}
+.doc-home__controls .doc-picker__legend {
+  margin-block-end: var(--ui-space-1);
+  color: var(--ui-text-muted);
+}
+.doc-home__swatch {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: var(--ui-radius-full);
+  background: #0059ff;
+  forced-color-adjust: none;
+}
+.doc-home__swatch--client {
+  background: #0f5132;
+}
+/* The live card has its own theme, direction and brand, so it sets its own ground. */
+.doc-home__preview {
+  padding: var(--ui-space-6);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  transition: background-color var(--ui-duration) var(--ui-ease);
+}
+.doc-home__card {
+  display: grid;
+  gap: var(--ui-space-4);
+  justify-items: start;
+}
+.doc-home__card > ui-text-field,
+.doc-home__card > ui-select,
+.doc-home__card > ui-switch {
+  justify-self: stretch;
+}
+@media (min-width: 64rem) {
+  .doc-home {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    padding-block: var(--ui-space-16);
+  }
+}
+@media (max-width: 40rem) {
+  .doc-home {
+    padding: var(--ui-space-8) var(--ui-space-4);
+  }
+  .doc-home__counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .doc-home__stage {
+    padding: var(--ui-space-3);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-home__preview {
+    transition: none;
+  }
+}

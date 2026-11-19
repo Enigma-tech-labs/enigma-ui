@@ -85,7 +85,7 @@ async function open(theme, framework, path) {
   );
   const page = await context.newPage();
   await page.goto(site + path);
-  await page.locator('app-page').waitFor();
+  await page.locator('main h1').waitFor();
   return { page, close: () => context.close() };
 }
 
@@ -93,8 +93,12 @@ let audits = 0;
 for (const theme of ['light', 'dark']) {
   for (const framework of ['angular', 'react', 'html']) {
     for (const path of paths) {
-      // Only component pages change with the framework.
-      if (framework !== 'angular' && !path.startsWith('components/')) continue;
+      // Component pages, Getting started and home change with the framework.
+      if (
+        framework !== 'angular' &&
+        !/^(components\/|getting-started$|$)/.test(path)
+      )
+        continue;
       const { page, close } = await open(theme, framework, path);
       await audit(page, `${theme} ${framework} /${path}`);
       audits++;
