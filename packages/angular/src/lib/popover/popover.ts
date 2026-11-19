@@ -42,7 +42,7 @@ const FOCUSABLE =
 /**
  * Opens a small panel next to its button, for a few details or settings. Not modal:
  * focus moves into it, Escape or a click outside closes it and focus returns to the
- * button. The panel is named after the button.
+ * button. The panel is named after the button. On a narrow screen it slides back inside.
  *
  * ```html
  * <button ui-button variant="secondary" [uiPopoverTrigger]="info">Delivery fee</button>
@@ -98,22 +98,41 @@ export class PopoverTriggerDirective {
   }
 
   private create(): OverlayRef {
-    const overlay = anchoredOverlay(this.injector, this.host, [
-      {
-        originX: 'start',
-        originY: 'bottom',
-        overlayX: 'start',
-        overlayY: 'top',
-        offsetY: 8,
-      },
-      {
-        originX: 'start',
-        originY: 'top',
-        overlayX: 'start',
-        overlayY: 'bottom',
-        offsetY: -8,
-      },
-    ]);
+    const overlay = anchoredOverlay(
+      this.injector,
+      this.host,
+      [
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetY: 8,
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+          offsetY: -8,
+        },
+        {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top',
+          offsetY: 8,
+        },
+        {
+          originX: 'end',
+          originY: 'top',
+          overlayX: 'end',
+          overlayY: 'bottom',
+          offsetY: -8,
+        },
+      ],
+      true,
+    );
     overlay.keydownEvents().subscribe((event) => {
       if (event.key === 'Escape') {
         event.preventDefault();

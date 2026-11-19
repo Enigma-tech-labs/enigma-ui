@@ -20,7 +20,7 @@ import { PageComponent } from '../shared/page.component';
     >
       <app-example
         title="Date"
-        description="min and max keep the picker to dates that make sense."
+        description="min and max keep the picker to dates that make sense. To show a month with closed days or a range, use the calendar instead."
         [code]="date"
       >
         <ui-text-field
