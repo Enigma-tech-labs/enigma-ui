@@ -1,0 +1,34 @@
+{
+  "name": "@enigma-ui/angular",
+  "version": "0.0.0",
+  "peerDependencies": {
+    "@angular/cdk": "^22.2.0",
+    "@angular/common": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/router": "^22.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "sideEffects": false,
+  "description": "Accessible Angular 22 components in the Enigma Technology Lab design system, right to left ready: alert dialog, badge, button, card, data table, dialog, pagination, select, text field and textarea.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enigma-tech-labs/enigma-ui.git",
+    "directory": "packages/angular"
+  },
+  "keywords": [
+    "angular",
+    "ui",
+    "components",
+    "accessibility",
+    "rtl",
+    "signals"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@enigma-ui/css": "0.0.0"
+  }
+}

@@ -1,0 +1,1442 @@
+/*
+ * The docs site: built on the kit's own stylesheet and tokens, no colour of its own.
+ * One file for the whole site (no per-component styles).
+ */
+@import 'tailwindcss';
+@import '../../../packages/css/tailwind.css';
+@import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/cdk/a11y-prebuilt.css';
+
+/* Classes the live demos build at run time, which Tailwind's scan cannot see in the source. */
+@source inline('{p,mb,gap,ps}-{0,0.5,1,1.5,2,2.5,3,4,5,6,7,8,10,12,16,20,24,32}');
+@source inline('{head-{3xl,2xl,xl,lg,md,sm,xs,2xs},body-{lg,md,sm}}');
+
+/* The header is one row on wide screens; the side bar sticks just under it. */
+:root {
+  --doc-header-height: 5rem;
+  /* Keyboard focus and anchor jumps land below the sticky header, not under it. */
+  scroll-padding-block-start: var(--doc-header-height);
+}
+/* Element defaults in the base layer, so a kit class (a ui-button on a link) always wins. */
+@layer base {
+  body {
+    margin: 0;
+    background: var(--ui-bg);
+    color: var(--ui-text);
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--ui-primary);
+    text-decoration-line: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  a:focus-visible,
+  pre:focus-visible,
+  .doc-table-wrap:focus-visible,
+  input[type='radio']:focus-visible {
+    outline: var(--ui-focus-width) solid var(--ui-focus);
+    outline-offset: var(--ui-focus-offset);
+  }
+
+  code {
+    font-family: var(--ui-font-mono);
+    font-size: 0.95em;
+  }
+}
+
+.doc-skip {
+  position: absolute;
+  inset-inline-start: var(--ui-space-4);
+  inset-block-start: -4rem;
+  z-index: var(--ui-layer-skip-link);
+  padding: var(--ui-space-2) var(--ui-space-4);
+  border-radius: var(--ui-radius);
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+.doc-skip:focus {
+  inset-block-start: var(--ui-space-2);
+}
+
+.doc-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Header */
+.doc-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--ui-layer-sticky);
+  box-sizing: border-box;
+  block-size: var(--doc-header-height);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border-block-end: 1px solid var(--ui-divider);
+  background: var(--ui-surface);
+}
+.doc-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  color: var(--ui-text);
+  text-decoration: none;
+}
+.doc-brand img {
+  block-size: 1.75rem;
+  inline-size: auto;
+}
+.doc-lockup {
+  display: flex;
+}
+/* The mark alone stands in for the lockup on a phone. */
+.doc-brand .doc-mark {
+  display: none;
+}
+@media (max-width: 30rem) {
+  .doc-lockup {
+    display: none;
+  }
+  .doc-brand .doc-mark {
+    display: block;
+  }
+}
+/* Menu and settings chip: small screens only. */
+.doc-header__button {
+  display: none;
+}
+.doc-brand__product {
+  padding-inline-start: var(--ui-space-3);
+  border-inline-start: 2px solid var(--ui-divider);
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-text-lg);
+  font-weight: 800;
+  font-stretch: 125%;
+}
+.doc-logo-dark {
+  display: none;
+}
+[data-theme='dark'] .doc-logo-light {
+  display: none;
+}
+[data-theme='dark'] .doc-logo-dark {
+  display: block;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .doc-logo-light {
+    display: none;
+  }
+  :root:not([data-theme='light']) .doc-logo-dark {
+    display: block;
+  }
+}
+
+/* High contrast mode ignores the theme: show the ink lockup on its own paper. */
+@media (forced-colors: active) {
+  :root .doc-brand .doc-logo-light {
+    display: block;
+    forced-color-adjust: none;
+    background: var(--ui-paper);
+  }
+  :root .doc-brand .doc-logo-dark {
+    display: none;
+  }
+}
+
+.doc-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2) var(--ui-space-3);
+  margin-inline-start: auto;
+}
+.doc-picker {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+/*
+ * Header pickers: native radios under a segmented control. The chosen segment is raised
+ * (border, surface, bold) and its logo takes its brand colour; the others are grey until
+ * hovered, so the choice never rests on colour alone.
+ */
+.doc-segmented {
+  display: flex;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0.1875rem;
+  border: 1px solid var(--ui-divider);
+  border-radius: calc(var(--ui-radius) + 0.1875rem);
+  background: var(--ui-bg);
+}
+.doc-segment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4375rem;
+  min-block-size: var(--ui-control-height);
+  padding-inline: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius);
+  color: var(--ui-text-muted);
+  font-size: var(--ui-text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.doc-segment__icon {
+  display: inline-flex;
+  flex: none;
+  filter: grayscale(1);
+  opacity: 0.75;
+  transition:
+    filter 200ms ease,
+    opacity 200ms ease,
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.doc-segment__second {
+  margin-inline-start: -0.3125rem;
+}
+.doc-segment:hover {
+  color: var(--ui-text);
+}
+.doc-segment:hover .doc-segment__icon {
+  filter: none;
+  opacity: 1;
+}
+.doc-segment:has(:checked) {
+  border-color: var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-weight: 600;
+  box-shadow: 0 1px 2px var(--ui-shadow-color);
+}
+.doc-segment:has(:checked) .doc-segment__icon {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.12) rotate(-6deg);
+}
+.doc-segment:has(:focus-visible) {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-segment,
+  .doc-segment__icon {
+    transition: none;
+  }
+  .doc-segment:has(:checked) .doc-segment__icon {
+    transform: none;
+  }
+}
+@media (forced-colors: active) {
+  .doc-segment:has(:checked) {
+    border: 2px solid Highlight;
+  }
+}
+/*
+ * Small screens: the pickers live in a bottom sheet. The header keeps one chip that
+ * shows what is chosen (framework logo | theme icon), so the state stays in sight.
+ */
+.doc-settings-button {
+  gap: var(--ui-space-2);
+  margin-inline-start: auto;
+  padding-inline: var(--ui-space-3);
+}
+.doc-settings-button__icon {
+  display: inline-flex;
+}
+.doc-settings-button__divider {
+  inline-size: 1px;
+  block-size: 1.25rem;
+  background: currentColor;
+  opacity: 0.3;
+}
+/* In the sheet: visible legends, and wide segments with the icon over the label. */
+.doc-settings-sheet .ui-dialog__body {
+  gap: var(--ui-space-6);
+}
+.doc-settings-sheet .doc-picker__legend {
+  margin-block-end: var(--ui-space-2);
+  padding: 0;
+  color: var(--ui-text-muted);
+}
+.doc-settings-sheet .doc-segment {
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-3) var(--ui-space-2);
+  white-space: normal;
+  text-align: center;
+}
+/* The nav drawer opens from the inline start, where the side bar sits, and leaves a
+   strip of page in sight to tap away. */
+.doc-nav-drawer {
+  --ui-drawer-from: -100%;
+  inset-inline: 0 auto;
+  inline-size: min(20rem, 85vw);
+}
+.doc-nav-drawer:dir(rtl) {
+  --ui-drawer-from: 100%;
+}
+
+/* Layout */
+.doc-layout {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  max-inline-size: 84rem;
+  margin-inline: auto;
+}
+.doc-nav--side {
+  position: sticky;
+  inset-block-start: var(--doc-header-height);
+  align-self: start;
+  box-sizing: border-box;
+  max-block-size: calc(100dvh - var(--doc-header-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--ui-space-6) var(--ui-space-4);
+  border-inline-end: 1px solid var(--ui-divider);
+}
+.doc-nav__title {
+  margin: var(--ui-space-6) 0 var(--ui-space-2);
+  color: var(--ui-text-muted);
+}
+.doc-nav__title:first-child {
+  margin-block-start: 0;
+}
+.doc-nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.doc-nav a {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--ui-control-height);
+  padding-inline: var(--ui-space-3);
+  border-radius: var(--ui-radius);
+  color: var(--ui-text);
+  text-decoration: none;
+}
+.doc-nav a:hover {
+  background: var(--ui-secondary);
+  color: var(--ui-on-secondary);
+}
+.doc-nav a[aria-current='page'] {
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+  font-weight: 600;
+}
+.doc-main {
+  min-inline-size: 0;
+  padding: var(--ui-space-8) var(--ui-space-6) var(--ui-space-12);
+}
+.doc-main:focus {
+  outline: none;
+}
+/* Small screens: one slim sticky bar (menu, mark, settings chip); the side bar is a drawer. */
+@media (max-width: 56rem) {
+  :root {
+    --doc-header-height: 3.75rem;
+  }
+  .doc-header {
+    flex-wrap: nowrap;
+    gap: var(--ui-space-2);
+    padding-block: var(--ui-space-2);
+  }
+  .doc-header__button {
+    display: inline-flex;
+  }
+  .doc-settings,
+  .doc-nav--side {
+    display: none;
+  }
+  .doc-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .doc-main {
+    padding-inline: var(--ui-space-4);
+  }
+}
+
+/* Page */
+.doc-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-8);
+  max-inline-size: 60rem;
+}
+.doc-section {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+.doc-section > p,
+.doc-card > p {
+  margin: 0;
+  max-inline-size: 44rem;
+}
+.doc-h1 {
+  font-size: clamp(2rem, 9vw, var(--ui-text-3xl));
+  overflow-wrap: break-word;
+}
+.doc-h2 {
+  font-size: var(--ui-text-xl);
+}
+.doc-lead {
+  margin: 0;
+  max-inline-size: 44rem;
+  color: var(--ui-text-muted);
+  font-size: var(--ui-text-lg);
+}
+.doc-muted {
+  color: var(--ui-text-muted);
+}
+.doc-note {
+  margin: 0;
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border-inline-start: 4px solid var(--ui-primary);
+  border-radius: var(--ui-radius);
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+}
+.doc-list {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin: 0;
+  padding-inline-start: var(--ui-space-6);
+  max-inline-size: 44rem;
+  list-style: disc; /* Tailwind's reset removes markers */
+}
+ol.doc-list {
+  list-style: decimal;
+}
+
+/* Example card */
+.doc-card {
+  display: grid;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-xl);
+  background: var(--ui-surface);
+}
+.doc-card__title {
+  margin: 0;
+  font-size: var(--ui-text-lg);
+  font-weight: 700;
+}
+.doc-card__text {
+  margin: 0;
+  color: var(--ui-text-muted);
+}
+.doc-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-6);
+  border-radius: var(--ui-radius);
+  background: var(--ui-bg);
+}
+.doc-preview > * {
+  min-inline-size: 0;
+}
+/* On a phone the example gets the width, not the padding. */
+@media (max-width: 30rem) {
+  .doc-card {
+    padding: var(--ui-space-4);
+  }
+  .doc-preview {
+    padding: var(--ui-space-3);
+  }
+}
+/* Grid content may shrink below its widest part, so wide tables and code scroll inside. */
+.doc-card,
+.doc-section,
+.doc-stack {
+  grid-template-columns: minmax(0, 1fr);
+}
+.doc-field {
+  inline-size: min(100%, 22rem);
+}
+.doc-flat {
+  margin: 0;
+}
+.doc-wide {
+  inline-size: 100%;
+}
+.doc-grow {
+  flex: 1;
+  min-inline-size: 8rem;
+}
+.doc-stack {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+.doc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+}
+
+/* Code */
+.doc-code {
+  display: grid;
+  gap: var(--ui-space-2);
+  min-inline-size: 0;
+}
+.doc-code__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+  color: var(--ui-text-muted);
+}
+.doc-code pre {
+  margin: 0;
+  padding: var(--ui-space-4);
+  overflow-x: auto;
+  border-radius: var(--ui-radius);
+  background: var(--ui-secondary);
+  color: var(--ui-on-secondary);
+  font-size: var(--ui-text-sm);
+  line-height: 1.7;
+}
+.doc-code pre code {
+  font-size: inherit;
+}
+
+/* Tables */
+.doc-table-wrap {
+  position: relative; /* clips visually hidden headers too, which are absolutely placed */
+  overflow-x: auto;
+}
+.doc-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+.doc-table th,
+.doc-table td {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border-block-end: 1px solid var(--ui-divider);
+  text-align: start;
+  vertical-align: top;
+}
+.doc-table th {
+  color: var(--ui-text-muted);
+  font-weight: 600;
+}
+
+/* Foundations */
+.doc-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--ui-space-4);
+}
+/* Square, so a full radius reads as a circle. */
+/* Space demos: one step slider that stays in view, and tinted boxes that show the space. */
+.doc-step {
+  position: sticky;
+  inset-block-start: var(--doc-header-height);
+  z-index: var(--ui-layer-raised);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-2) var(--ui-space-4);
+  margin-block-end: var(--ui-space-6);
+  padding-block: var(--ui-space-3);
+  border-block-end: 1px solid var(--ui-divider);
+  background: var(--ui-bg);
+}
+.doc-step__range {
+  flex: 1 1 10rem;
+  min-block-size: var(--ui-control-height);
+  margin: 0;
+  accent-color: var(--ui-primary);
+}
+.doc-step__range:focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+.doc-step__value {
+  min-inline-size: 10rem;
+  font-variant-numeric: tabular-nums;
+}
+.doc-tint {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+  border: 1px dashed var(--ui-primary);
+  border-radius: var(--ui-radius);
+  background: var(--ui-highlight);
+}
+.doc-tint--flow {
+  display: flow-root;
+}
+.doc-tint--row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.doc-block {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+.doc-pairs {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+.doc-pair {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--ui-space-2) var(--ui-space-4);
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius);
+}
+.doc-space__bar {
+  display: block;
+  block-size: 1rem;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-primary);
+}
+
+/* Foundations: depth, motion, focus, direction */
+.doc-depth,
+.doc-focus {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
+  gap: var(--ui-space-6);
+  align-items: start;
+}
+.doc-depth p,
+.doc-depth__float {
+  display: grid;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-xl);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+/* A still picture of the ring, which otherwise shows only for the keyboard. */
+.doc-ring {
+  justify-self: start;
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+.doc-ring--inset {
+  justify-self: stretch;
+  outline-offset: calc(-1 * var(--ui-focus-width));
+}
+.doc-focus__list {
+  display: grid;
+  padding: var(--ui-space-2);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+}
+.doc-focus__item {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--ui-control-height);
+  padding-inline: var(--ui-space-3);
+  border-radius: var(--ui-radius);
+}
+/* Breakpoint demo: a box at its real width, scaled down when wider than the page.
+   The chips and cards answer to the box with @container. */
+.doc-bp {
+  flex: 1 1 100%;
+  overflow: hidden;
+}
+.doc-bp__frame {
+  /* The slider sets the content box: the screen the page sits on. */
+  box-sizing: content-box;
+  padding-block: var(--ui-space-4);
+  border: 1px dashed var(--ui-primary);
+  border-radius: var(--ui-radius);
+  background: var(--ui-highlight);
+  transform-origin: 0 0;
+}
+.doc-bp__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+/* Passed: solid fill and border. Not passed: dashed and muted. Shape, not colour alone. */
+.doc-bp__chip {
+  padding: var(--ui-space-1) var(--ui-space-3);
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+@container (width >= 40rem) {
+  .doc-bp__chip--sm {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+}
+@container (width >= 48rem) {
+  .doc-bp__chip--md {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+}
+@container (width >= 64rem) {
+  .doc-bp__chip--lg {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+}
+@container (width >= 80rem) {
+  .doc-bp__chip--xl {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+}
+@container (width >= 96rem) {
+  .doc-bp__chip--2xl {
+    border-style: solid;
+    border-color: var(--ui-primary);
+    background: var(--ui-primary);
+    color: var(--ui-on-primary);
+  }
+}
+
+/* Home: one full-width interactive hero. */
+.doc-layout--home {
+  grid-template-columns: minmax(0, 1fr);
+  max-inline-size: none;
+  /* The dot grid runs edge to edge (100vw counts the scrollbar): never scroll sideways. */
+  overflow-x: clip;
+}
+.doc-layout--home .doc-main {
+  padding: 0;
+}
+.doc-home {
+  display: block;
+}
+.doc-home__hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-12);
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: calc(100dvh - var(--doc-header-height));
+  max-inline-size: 84rem;
+  margin-inline: auto;
+  padding: var(--ui-space-12) var(--ui-space-6);
+  isolation: isolate;
+  --tx: 0;
+  --ty: 0;
+}
+/* A dot grid fading out from the scene: the token grid the kit is built on. */
+.doc-home__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(50% - 50vw);
+  z-index: var(--ui-layer-below);
+  background-image: radial-gradient(var(--ui-divider) 1px, transparent 1px);
+  background-size: var(--ui-space-6) var(--ui-space-6);
+  mask-image: radial-gradient(ellipse at 75% 45%, #000 0%, transparent 65%);
+}
+.doc-home__intro {
+  display: grid;
+  gap: var(--ui-space-6);
+  justify-items: start;
+}
+.doc-home__eyebrow {
+  margin: 0;
+  color: var(--ui-text-muted);
+}
+.doc-home__title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+/* Large text, so brand blue is allowed here. */
+.doc-home__accent {
+  color: var(--ui-primary);
+}
+.doc-home__underlined {
+  position: relative;
+  display: inline-block;
+}
+/* A hand-drawn brand-red underline that draws itself in. */
+.doc-home__scribble {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -0.28em;
+  inline-size: 100%;
+  block-size: 0.3em;
+  overflow: visible;
+  fill: none;
+  stroke: #dc4b4b;
+  stroke-width: 5;
+  stroke-linecap: round;
+  --d: 6;
+}
+.doc-home__lead {
+  margin: 0;
+  max-inline-size: 34rem;
+  color: var(--ui-text-muted);
+}
+.doc-home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+}
+.doc-home__actions a {
+  text-decoration: none;
+}
+.doc-home__counts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, auto));
+  gap: var(--ui-space-6);
+  margin: var(--ui-space-4) 0 0;
+  padding-block-start: var(--ui-space-6);
+  border-block-start: 1px solid var(--ui-divider);
+}
+.doc-home__count {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--ui-space-1);
+}
+.doc-home__count dt {
+  color: var(--ui-text-muted);
+}
+.doc-home__count dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The 3D scene. Every size is in cqi, so it scales with its column. */
+.doc-scene {
+  container-type: inline-size;
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: 36rem;
+  aspect-ratio: 1;
+  justify-self: center;
+  perspective: 1400px;
+  user-select: none;
+}
+/* A soft brand glow behind the mark. */
+.doc-scene::before {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  border-radius: var(--ui-radius-full);
+  background:
+    radial-gradient(
+      circle at 35% 35%,
+      color-mix(in srgb, #dc4b4b 30%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 65% 65%,
+      color-mix(in srgb, #0059ff 35%, transparent),
+      transparent 60%
+    );
+  filter: blur(40px);
+}
+.doc-scene__world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--ty) * 1deg)) rotateY(calc(var(--tx) * 1deg));
+  transition: transform var(--ui-duration-slow) var(--ui-ease);
+}
+.doc-scene__world > * {
+  position: absolute;
+}
+.doc-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* Blueprint floor under the mark. */
+.doc-scene__floor {
+  inset: 10%;
+  overflow: visible;
+  transform: translateY(32cqi) rotateX(78deg);
+  stroke: var(--ui-border);
+  stroke-width: 1.5;
+  mask-image: radial-gradient(circle, #000 30%, transparent 70%);
+}
+
+/* Orbits: flat rings tipped back in 3D; spinning the ring carries its moon around. */
+.doc-scene__orbit {
+  inset: 6%;
+  transform-style: preserve-3d;
+  transform: rotateX(72deg) rotateY(-12deg);
+}
+.doc-scene__orbit--b {
+  inset: 16%;
+  transform: rotateX(68deg) rotateY(28deg);
+}
+.doc-scene__orbit svg {
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--ui-border);
+  stroke-width: 0.35;
+  --d: 3;
+}
+.doc-scene__orbit--b svg {
+  --d: 5;
+}
+.doc-scene__moon {
+  fill: var(--ui-primary);
+  stroke: none;
+}
+.doc-scene__orbit--b .doc-scene__moon {
+  fill: #dc4b4b;
+}
+
+/* The Enigma mark, extruded: 14 copies of each half stacked along z, darker towards the back. */
+.doc-scene__mark {
+  inset: 27% 21%;
+  transform-style: preserve-3d;
+  transform: rotateX(-8deg) rotateY(-22deg);
+}
+.doc-scene__part {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.doc-scene__part svg {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  transform: translateZ(calc((var(--i) - 7) * 0.45cqi));
+  filter: brightness(calc(0.45 + var(--i) * 0.03));
+}
+.doc-scene__part svg:last-child {
+  filter: none;
+}
+
+/* Floating pieces of the kit, each at its own depth. */
+.doc-chip {
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font: var(--ui-body-sm);
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 1rem 2rem -1rem var(--ui-shadow-color);
+  translate: var(--x) var(--y) var(--z);
+}
+.doc-chip--button {
+  border-color: transparent;
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+.doc-chip--code {
+  font-family: ui-monospace, monospace;
+}
+.doc-chip--contrast b {
+  font: var(--ui-head-xs);
+}
+.doc-chip__dot {
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: var(--ui-radius-full);
+  background: #dc4b4b;
+}
+.doc-chip__track {
+  position: relative;
+  inline-size: 2.25rem;
+  block-size: 1.25rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary);
+}
+.doc-chip__track span {
+  position: absolute;
+  inset-block: 0.1875rem;
+  inset-inline-start: 0.1875rem;
+  inline-size: 0.875rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-on-primary);
+  translate: 1rem 0;
+}
+.doc-chip--slider {
+  padding-block: var(--ui-space-3);
+}
+.doc-chip__rail {
+  position: relative;
+  inline-size: 8rem;
+  block-size: 0.375rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-divider);
+}
+.doc-chip__rail span {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 65%;
+  border-radius: inherit;
+  background: var(--ui-primary);
+}
+.doc-chip__rail span::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: -0.5rem;
+  inset-block-start: -0.3125rem;
+  inline-size: 1rem;
+  block-size: 1rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+  box-shadow: 0 0 0 2px var(--ui-primary);
+}
+
+/* Motion only for people who have not asked for less; the still scene is complete. */
+@media (prefers-reduced-motion: no-preference) {
+  .doc-draw {
+    animation: doc-draw 1.6s var(--ui-ease) backwards;
+    animation-delay: calc(var(--d, 0) * 80ms + 200ms);
+  }
+  .doc-scene__mark {
+    animation: doc-spin 16s ease-in-out infinite;
+  }
+  /* The two halves drift apart in depth and lock back together. */
+  .doc-scene__part--red {
+    animation: doc-split-red 8s var(--ui-ease) infinite;
+  }
+  .doc-scene__part--blue {
+    animation: doc-split-blue 8s var(--ui-ease) infinite;
+  }
+  .doc-scene__orbit svg {
+    animation:
+      doc-draw 1.6s var(--ui-ease) backwards,
+      doc-orbit 18s linear infinite;
+    animation-delay: calc(var(--d) * 80ms + 200ms), 0s;
+  }
+  .doc-scene__orbit--b svg {
+    animation-duration: 1.6s, 11s;
+    animation-direction: normal, reverse;
+  }
+  .doc-chip {
+    animation:
+      doc-chip-in 900ms var(--ui-ease) backwards,
+      doc-bob 6s ease-in-out infinite;
+  }
+  .doc-chip:nth-of-type(2) {
+    animation-delay:
+      150ms,
+      -1s;
+  }
+  .doc-chip:nth-of-type(3) {
+    animation-delay:
+      300ms,
+      -2s;
+  }
+  .doc-chip:nth-of-type(4) {
+    animation-delay:
+      450ms,
+      -3s;
+  }
+  .doc-chip:nth-of-type(5) {
+    animation-delay:
+      600ms,
+      -4s;
+  }
+  .doc-chip:nth-of-type(6) {
+    animation-delay:
+      750ms,
+      -5s;
+  }
+  .doc-chip__track span {
+    animation: doc-toggle 4s var(--ui-ease) infinite;
+  }
+  .doc-chip__rail span {
+    animation: doc-slide 5s ease-in-out infinite;
+  }
+  .doc-scene::before {
+    animation: doc-glow 7s ease-in-out infinite;
+  }
+}
+@keyframes doc-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes doc-spin {
+  0%,
+  100% {
+    transform: rotateX(-8deg) rotateY(-28deg);
+  }
+  50% {
+    transform: rotateX(6deg) rotateY(28deg);
+  }
+}
+@keyframes doc-split-red {
+  0%,
+  30%,
+  100% {
+    transform: none;
+  }
+  55%,
+  75% {
+    transform: translate3d(-5cqi, -4cqi, 10cqi);
+  }
+}
+@keyframes doc-split-blue {
+  0%,
+  30%,
+  100% {
+    transform: none;
+  }
+  55%,
+  75% {
+    transform: translate3d(5cqi, 4cqi, -10cqi);
+  }
+}
+@keyframes doc-orbit {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@keyframes doc-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.9);
+  }
+}
+@keyframes doc-bob {
+  50% {
+    transform: translateY(-0.75rem);
+  }
+}
+@keyframes doc-toggle {
+  0%,
+  40% {
+    translate: 1rem 0;
+  }
+  50%,
+  90% {
+    translate: 0 0;
+  }
+}
+@keyframes doc-slide {
+  0%,
+  100% {
+    inline-size: 65%;
+  }
+  50% {
+    inline-size: 25%;
+  }
+}
+@keyframes doc-glow {
+  50% {
+    opacity: 0.6;
+    scale: 1.1;
+  }
+}
+
+/* Playground: the live card, its switches and its code. */
+.doc-home__play {
+  display: grid;
+  gap: var(--ui-space-8);
+  max-inline-size: 60rem;
+  margin-inline: auto;
+  padding: var(--ui-space-16) var(--ui-space-6) var(--ui-space-24);
+}
+.doc-home__play-intro {
+  display: grid;
+  gap: var(--ui-space-3);
+  justify-items: center;
+  text-align: center;
+}
+.doc-home__play-intro h2 {
+  margin: 0;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .doc-home__stage {
+      animation: doc-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+@keyframes doc-rise {
+  from {
+    transform: translateY(3rem) scale(0.96);
+  }
+}
+
+.doc-home__stage {
+  display: grid;
+  gap: var(--ui-space-4);
+  min-inline-size: 0;
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-xl);
+  background: color-mix(in srgb, var(--ui-surface) 80%, transparent);
+  box-shadow: 0 1.5rem 4rem -1.5rem var(--ui-shadow-color);
+  backdrop-filter: blur(6px);
+}
+.doc-home__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3) var(--ui-space-4);
+}
+.doc-home__controls .doc-picker__legend {
+  margin-block-end: var(--ui-space-1);
+  color: var(--ui-text-muted);
+}
+.doc-home__swatch {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: var(--ui-radius-full);
+  background: #0059ff;
+  forced-color-adjust: none;
+}
+.doc-home__swatch--client {
+  background: #0f5132;
+}
+/* The live card has its own theme, direction and brand, so it sets its own ground. */
+.doc-home__preview {
+  padding: var(--ui-space-6);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  transition: background-color var(--ui-duration) var(--ui-ease);
+}
+.doc-home__card {
+  display: grid;
+  gap: var(--ui-space-4);
+  justify-items: start;
+}
+.doc-home__card > ui-text-field,
+.doc-home__card > ui-select,
+.doc-home__card > ui-switch {
+  justify-self: stretch;
+}
+@media (min-width: 64rem) {
+  .doc-home__hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding-block: var(--ui-space-16);
+  }
+}
+@media (max-width: 40rem) {
+  .doc-home__hero,
+  .doc-home__play {
+    padding: var(--ui-space-8) var(--ui-space-4);
+  }
+  .doc-chip--code,
+  .doc-chip--slider {
+    display: none;
+  }
+  .doc-home__counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .doc-home__stage {
+    padding: var(--ui-space-3);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-home__preview {
+    transition: none;
+  }
+}
+
+/* Token tables: a live sample of each token in the last column. */
+.doc-token__cell {
+  min-inline-size: 8.5rem;
+  vertical-align: middle;
+}
+.doc-token__preview {
+  display: inline-block;
+  max-inline-size: 100%;
+}
+.doc-token__box {
+  inline-size: 3rem;
+  block-size: 2rem;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+}
+.doc-token__chip {
+  inline-size: 3rem;
+  block-size: 2rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+}
+
+/* Typography demo: the same line in both languages. */
+.doc-type-demo {
+  display: grid;
+  gap: var(--ui-space-4);
+  inline-size: 100%;
+  overflow-wrap: break-word;
+}
+.doc-type-demo > p {
+  margin: 0;
+}
+
+/* Motion demo: a switch, a panel and a fade, all at --doc-duration. */
+.doc-motion-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-4);
+  inline-size: 100%;
+}
+.doc-motion-demo__switch {
+  display: inline-flex;
+  inline-size: 2.75rem;
+  block-size: 1.5rem;
+  padding: 0.125rem;
+  box-sizing: border-box;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-secondary);
+  transition: background-color var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo__knob {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  box-sizing: border-box;
+  transition: translate var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo__track {
+  flex: 1 1 10rem;
+  overflow: hidden;
+  padding: var(--ui-space-1);
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--ui-radius);
+  container-type: inline-size;
+}
+.doc-motion-demo__panel {
+  display: block;
+  inline-size: 5rem;
+  padding: var(--ui-space-1) var(--ui-space-2);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+  text-align: center;
+  transition: translate var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo__fade {
+  opacity: 0; /* faint text would fail contrast; hidden until it fades in */
+  transition: opacity var(--doc-duration) var(--ui-ease);
+}
+.doc-motion-demo--on .doc-motion-demo__switch {
+  background: var(--ui-primary);
+}
+.doc-motion-demo--on .doc-motion-demo__knob {
+  translate: 1.25rem;
+}
+.doc-motion-demo--on .doc-motion-demo__panel {
+  translate: calc(100cqi - 5rem);
+}
+:dir(rtl) .doc-motion-demo--on .doc-motion-demo__knob {
+  translate: -1.25rem;
+}
+:dir(rtl) .doc-motion-demo--on .doc-motion-demo__panel {
+  translate: calc(-100cqi + 5rem);
+}
+.doc-motion-demo--on .doc-motion-demo__fade {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-motion-demo * {
+    transition: none;
+  }
+}
+
+/* Z-index demo: a fan of real layers and your element across them. */
+.doc-layers {
+  position: relative;
+  isolation: isolate;
+  inline-size: 100%;
+  block-size: 8rem;
+}
+.doc-layers__card {
+  position: absolute;
+  inline-size: 28%;
+  padding: var(--ui-space-2) var(--ui-space-3);
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  font-size: var(--ui-text-sm);
+}
+.doc-layers__card--you {
+  inset-block-start: 2.5rem;
+  inset-inline: 10%;
+  inline-size: auto;
+  block-size: 4.5rem;
+  border: 2px dashed var(--ui-primary);
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+  font-weight: 600;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Direction demo. */
+.doc-direction__demo {
+  display: grid;
+  gap: var(--ui-space-4);
+  inline-size: 100%;
+}
+.doc-direction__note {
+  margin: 0;
+  border-inline-start: 4px solid var(--ui-primary);
+}
+
+/* Token tables keep names on one line; on a phone the table scrolls in its own frame. */
+.doc-token-table {
+  min-inline-size: 44rem;
+}
+.doc-token-table td code {
+  white-space: nowrap;
+}
+/* Two sliders for one demo: only the last one sticks, so they never cover each other. */
+.doc-step:has(+ .doc-step) {
+  position: static;
+  margin-block-end: 0;
+  border-block-end: 0;
+}
