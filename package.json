@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky",
+    "llms": "node tools/llms.mjs",
     "release": "node tools/release.mjs",
     "release:dry": "node tools/release.mjs --dry-run",
     "release:css": "node tools/release.mjs --projects=css",

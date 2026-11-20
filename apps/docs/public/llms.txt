@@ -1,0 +1,76 @@
+# Enigma UI
+
+> The Enigma Technology Lab design system: plain CSS tokens and component styles, with Angular and React components on top. Accessible (WCAG 2.2 AA), light and dark, right-to-left ready. Give this file to your AI assistant before it writes UI code with the kit.
+
+Packages: `@enigma-ui/css` (any stack), `@enigma-ui/angular` (Angular 22, standalone, signals), `@enigma-ui/react` (React 19, React Aria). Tailwind CSS 4.1 runs under the kit: its classes read the kit's tokens.
+
+## Rules for AI assistants
+
+Follow these every time you write code with Enigma UI.
+
+1. Use the kit's components and classes. Do not hand-build a button, field, dialog or table that the kit already has.
+2. Restyle only through the `--ui-*` tokens and Tailwind classes. Never override a `.ui-*` class, and never copy the kit's CSS into the project.
+3. Never invent props, classes or components. If a name is not in this guide, it does not exist: check the component's page on the docs site.
+4. Use colour tokens, never raw hex values: `bg-primary`, `text-on-primary`, `var(--ui-primary)`. Colours switch with the theme (`data-theme="light"` or `"dark"`, or the system setting).
+5. Space comes from the scale: `p-4`, `gap-3`, `ui-p-4` (without Tailwind). Do not write pixel values.
+6. Use logical properties (`ms-2`, `pe-4`, `start`, `end`), never `left` or `right`, so the layout flips in right-to-left languages.
+7. Always set `lang` and `dir` on `<html>`. In an Arabic app translate every label a component shows (close buttons, toast region, pagination).
+8. Every control needs a visible label. Colour never carries meaning alone: an error also has text.
+9. Put your own CSS in `@layer components` or `@layer base`, or a plain rule beats the kit's classes.
+10. Open native dialogs with `showModal()`, never `show()`.
+11. Angular: components are standalone, import each one in `imports`. Use signals and the new control flow (`@if`, `@for`). React: React 19, function components.
+12. When unsure, say so and point to the docs page instead of guessing.
+
+## Docs
+
+- [Full guide for AI assistants](https://enigma-tech-labs.github.io/enigma-ui/llms-full.txt): setup per framework, tokens, and every component's usage and options. Fetch this before writing code.
+- [Getting started](https://enigma-tech-labs.github.io/enigma-ui/getting-started): the seven setup steps
+- [Colour](https://enigma-tech-labs.github.io/enigma-ui/foundations/colour), [Typography](https://enigma-tech-labs.github.io/enigma-ui/foundations/typography), [Space](https://enigma-tech-labs.github.io/enigma-ui/foundations/space), [Layout](https://enigma-tech-labs.github.io/enigma-ui/foundations/layout), [Right to left](https://enigma-tech-labs.github.io/enigma-ui/foundations/direction)
+- [Accessibility](https://enigma-tech-labs.github.io/enigma-ui/accessibility)
+
+## Components
+
+- [Accordion](https://enigma-tech-labs.github.io/enigma-ui/components/accordion): A stack of sections that open and close, such as questions and answers.
+- [Alert dialog](https://enigma-tech-labs.github.io/enigma-ui/components/alert-dialog): A short message that needs an answer before the reader goes on: confirm a delete, keep or discard changes.
+- [Alert](https://enigma-tech-labs.github.io/enigma-ui/components/alert): A message in the page, such as a problem with the whole form or a notice about the account.
+- [Avatar](https://enigma-tech-labs.github.io/enigma-ui/components/avatar): A person's photo, or their initials when there is no photo or it fails to load.
+- [Badge](https://enigma-tech-labs.github.io/enigma-ui/components/badge): A short status label, such as the state of an order.
+- [Bottom sheet](https://enigma-tech-labs.github.io/enigma-ui/components/bottom-sheet): A panel that slides up from the bottom of the screen, for a short choice or the details of an item, mostly on phones.
+- [Breadcrumbs](https://enigma-tech-labs.github.io/enigma-ui/components/breadcrumbs): Where the page sits, as a trail of links back up.
+- [Button](https://enigma-tech-labs.github.io/enigma-ui/components/button): Styles the native button, so it keeps everything the browser gives a button: focus, Enter and Space, form submit.
+- [Calendar](https://enigma-tech-labs.github.io/enigma-ui/components/calendar): A month grid to pick a day or a range, such as a delivery day or a stay.
+- [Card](https://enigma-tech-labs.github.io/enigma-ui/components/card): A surface that groups related content: a summary, a list, a form.
+- [Checkbox](https://enigma-tech-labs.github.io/enigma-ui/components/checkbox): A yes or no that is saved with the form, such as accepting the terms.
+- [Chip input](https://enigma-tech-labs.github.io/enigma-ui/components/chip-input): A text field that collects several short values, such as toppings, email addresses or skills.
+- [Combobox](https://enigma-tech-labs.github.io/enigma-ui/components/combobox): A text field that filters a list as you type, for a long list such as countries.
+- [Command palette](https://enigma-tech-labs.github.io/enigma-ui/components/command-palette): A search over the app's actions, in a dialog.
+- [Data table](https://enigma-tech-labs.github.io/enigma-ui/components/data-table): Rows of records the reader scans and compares: orders, users, payments.
+- [Date and number fields](https://enigma-tech-labs.github.io/enigma-ui/components/date-field): The text field with the browser's own date, time and number inputs.
+- [Dialog](https://enigma-tech-labs.github.io/enigma-ui/components/dialog): A modal window for a task that needs the reader's full attention: a short form, details, terms.
+- [Divider](https://enigma-tech-labs.github.io/enigma-ui/components/divider): A thin line between groups of content.
+- [Drawer](https://enigma-tech-labs.github.io/enigma-ui/components/drawer): A side panel that slides in from the edge, for a form or the details of a row, while the list stays in sight.
+- [Empty state](https://enigma-tech-labs.github.io/enigma-ui/components/empty-state): What a list, table or page shows while it has nothing in it.
+- [Fieldset](https://enigma-tech-labs.github.io/enigma-ui/components/fieldset): A titled group of fields inside a longer form.
+- [File field](https://enigma-tech-labs.github.io/enigma-ui/components/file-field): The browser's own file input, with a label, hint and error, in a zone that also takes files dropped on it.
+- [Language switcher](https://enigma-tech-labs.github.io/enigma-ui/components/language-switcher): Switches the interface language.
+- [Menu](https://enigma-tech-labs.github.io/enigma-ui/components/menu): A short list of actions that opens from a button, such as the actions on a row.
+- [Navigation](https://enigma-tech-labs.github.io/enigma-ui/components/nav): The app's main links, in a side bar.
+- [Pagination](https://enigma-tech-labs.github.io/enigma-ui/components/pagination): Moves through long lists a page at a time.
+- [Popover](https://enigma-tech-labs.github.io/enigma-ui/components/popover): A small panel next to its button, for a few details or a couple of settings.
+- [Progress](https://enigma-tech-labs.github.io/enigma-ui/components/progress): How far a long task has got, such as an upload.
+- [Radio group](https://enigma-tech-labs.github.io/enigma-ui/components/radio-group): One choice from a short list, with every option in view.
+- [Rating](https://enigma-tech-labs.github.io/enigma-ui/components/rating): Stars out of five, to pick a score or to show one.
+- [Select](https://enigma-tech-labs.github.io/enigma-ui/components/select): One choice from a list.
+- [Skeleton](https://enigma-tech-labs.github.io/enigma-ui/components/skeleton): Grey shapes where content is loading, so the page does not jump when it arrives.
+- [Slider](https://enigma-tech-labs.github.io/enigma-ui/components/slider): A value picked along a range, such as a price limit or a volume.
+- [Spinner](https://enigma-tech-labs.github.io/enigma-ui/components/spinner): Shows that something is loading and says what, in words, to screen readers.
+- [Stat](https://enigma-tech-labs.github.io/enigma-ui/components/stat): One number with its label, and how it changed.
+- [Stepper](https://enigma-tech-labs.github.io/enigma-ui/components/stepper): A flow split into steps, such as checkout.
+- [Switch](https://enigma-tech-labs.github.io/enigma-ui/components/switch): An on or off setting that takes effect at once, with no save button.
+- [Tabs](https://enigma-tech-labs.github.io/enigma-ui/components/tabs): Views of one thing side by side, such as an order's details and its history.
+- [Tag](https://enigma-tech-labs.github.io/enigma-ui/components/tag): A label the user added or can take away, such as an active filter or a topic.
+- [Text field](https://enigma-tech-labs.github.io/enigma-ui/components/text-field): Label, input, hint and error as one control.
+- [Textarea](https://enigma-tech-labs.github.io/enigma-ui/components/textarea): The multi-line twin of the text field: the same label, hint and error, with room for a few lines.
+- [Toast](https://enigma-tech-labs.github.io/enigma-ui/components/toast): A short note after an action, such as Saved, at the bottom end of the screen.
+- [Tooltip](https://enigma-tech-labs.github.io/enigma-ui/components/tooltip): A short label for a control, shown on hover and on keyboard focus and read by screen readers as its description.
+- [Tree](https://enigma-tech-labs.github.io/enigma-ui/components/tree): Nested items that open and close, such as folders or menu categories.
