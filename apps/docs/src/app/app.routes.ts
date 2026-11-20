@@ -349,6 +349,11 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'ai',
+    loadComponent: () =>
+      import('./pages/ai-guide.component').then((m) => m.AiGuideComponent),
+  },
+  {
     path: 'accessibility',
     loadComponent: () =>
       import('./pages/accessibility.component').then(
