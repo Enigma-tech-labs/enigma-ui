@@ -1,13 +1,32 @@
-import { Component, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
-  StepComponent,
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  ButtonComponent,
+  StepComponent as UiStepComponent,
   StepperComponent,
+  SwitchComponent,
   TextFieldComponent,
 } from '@enigma-tech-lab/angular';
 import { ApiTableComponent } from '../shared/api-table.component';
 import { ExampleComponent } from '../shared/example.component';
 import { PageComponent } from '../shared/page.component';
+import { StepComponent as DocStepComponent } from '../shared/step.component';
 
 @Component({
   selector: 'app-stepper-page',
@@ -16,9 +35,13 @@ import { PageComponent } from '../shared/page.component';
     ExampleComponent,
     ApiTableComponent,
     StepperComponent,
-    StepComponent,
+    UiStepComponent,
+    DocStepComponent,
     TextFieldComponent,
+    SwitchComponent,
+    ButtonComponent,
     ReactiveFormsModule,
+    FormsModule,
   ],
   template: `
     <app-page
@@ -26,47 +49,166 @@ import { PageComponent } from '../shared/page.component';
       lead="A flow split into steps, such as checkout. Each step holds its own content, and the stepper shows the current one with Back and Next under it. The step names are buttons, so people can go back. Done steps have a tick and are read as Done, the current one is announced as the current step, and focus moves to the new step's content after each change."
       [usage]="usage"
     >
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try it</h2>
+        <p>
+          Change the options and the stepper follows. With linear, a step must
+          be marked as filled in before Next or the later steps work.
+        </p>
+        <app-step
+          label="Steps"
+          [min]="2"
+          [max]="6"
+          [valuetext]="count() + ' steps'"
+          [value]="count()"
+          (valueChange)="setCount($event)"
+          >{{ count() }} steps</app-step
+        >
+
+        <app-example
+          title="Options"
+          description="Turn linear on, then try to reach a later step before filling in the current one."
+          [code]="simple"
+        >
+          <ui-switch label="Linear" [formControl]="linear" />
+          <ui-stepper
+            class="w-full"
+            label="Options demo"
+            [linear]="linearOn()"
+            [(current)]="current"
+          >
+            @for (n of steps(); track n) {
+              <ui-step [label]="'Step ' + n" [completed]="filled().has(n)">
+                <ui-switch
+                  [label]="'Step ' + n + ' is filled in'"
+                  [ngModel]="filled().has(n)"
+                  (ngModelChange)="fill(n, $event)"
+                />
+              </ui-step>
+            }
+          </ui-stepper>
+        </app-example>
+      </section>
+
+      <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Try the screen</h2>
+        <p>
+          Set the screen width: the stepper puts each name under its circle once
+          its own box is under 30rem.
+        </p>
+        <app-step
+          label="Screen width"
+          [min]="20"
+          [max]="60"
+          [valuetext]="readout()"
+          [(value)]="width"
+          >{{ readout() }}</app-step
+        >
+
+        <app-example
+          title="At any screen width"
+          description="The same stepper in a box as wide as the slider says. It reads its own box, not the window."
+          [code]="simple"
+        >
+          <div #stage class="doc-bp" [style.block-size.px]="height()">
+            <div
+              #frame
+              class="doc-bp__frame ui-container"
+              [style.inline-size.rem]="width()"
+              [style.scale]="scale()"
+            >
+              <ui-stepper label="Screen demo" [current]="1">
+                <ui-step label="Cart"><p>2 items.</p></ui-step>
+                <ui-step label="Address"><p>Cairo.</p></ui-step>
+                <ui-step label="Payment"><p>Cash on delivery.</p></ui-step>
+                <ui-step label="Review"><p>Check your order.</p></ui-step>
+              </ui-stepper>
+            </div>
+          </div>
+        </app-example>
+      </section>
+
       <app-example
         title="Checkout, in order"
-        description="With linear, Next waits until the step is completed, and the address step is completed once the name is filled in. Press Next with it empty to see the error. Later steps cannot be chosen until then. On a narrow screen only the current step's name shows."
+        description="A whole flow. The address and card steps are completed once their fields are valid; press Next with them empty to see the errors. Finish places the order."
         [code]="basic"
       >
-        <ui-stepper
-          class="w-full"
-          label="Checkout"
-          linear
-          (blocked)="name.markAsTouched()"
-          (finish)="placed.set(true)"
-        >
-          <ui-step label="Cart">
-            <p>2 items, EGP 1,250.</p>
-          </ui-step>
-          <ui-step label="Address" [completed]="name.valid">
-            <ui-text-field
-              label="Full name"
-              autocomplete="name"
-              [formControl]="name"
-              [error]="
-                name.invalid && name.touched
-                  ? 'Enter your full name'
-                  : undefined
-              "
-              class="doc-field"
-            />
-          </ui-step>
-          <ui-step label="Payment">
-            <p>Cash on delivery.</p>
-          </ui-step>
-          <ui-step label="Review">
+        @if (placed()) {
+          <div class="doc-field">
             <p>
-              @if (placed()) {
-                Order placed.
-              } @else {
-                Press Finish to place the order.
-              }
+              Order placed. A receipt is on its way to
+              {{ address.controls.email.value }}.
             </p>
-          </ui-step>
-        </ui-stepper>
+            <button
+              ui-button
+              variant="secondary"
+              type="button"
+              (click)="startOver()"
+            >
+              Start over
+            </button>
+          </div>
+        } @else {
+          <ui-stepper
+            class="w-full"
+            label="Checkout"
+            linear
+            [(current)]="step"
+            (blocked)="showErrors($event)"
+            (finish)="placed.set(true)"
+          >
+            <ui-step label="Cart">
+              <p>2 items, EGP 1,250.</p>
+            </ui-step>
+            <ui-step label="Address" [completed]="address.valid">
+              <div class="doc-field" [formGroup]="address">
+                <ui-text-field
+                  label="Full name"
+                  autocomplete="name"
+                  formControlName="name"
+                  [error]="
+                    address.controls.name.invalid &&
+                    address.controls.name.touched
+                      ? 'Enter your full name'
+                      : undefined
+                  "
+                />
+                <ui-text-field
+                  label="Email"
+                  type="email"
+                  autocomplete="email"
+                  formControlName="email"
+                  [error]="
+                    address.controls.email.invalid &&
+                    address.controls.email.touched
+                      ? 'Enter an email like name@example.com'
+                      : undefined
+                  "
+                />
+              </div>
+            </ui-step>
+            <ui-step label="Payment" [completed]="card.valid">
+              <ui-text-field
+                class="doc-field"
+                label="Card number"
+                hint="16 digits"
+                autocomplete="cc-number"
+                [formControl]="card"
+                [error]="
+                  card.invalid && card.touched
+                    ? 'Enter the 16 digits on your card'
+                    : undefined
+                "
+              />
+            </ui-step>
+            <ui-step label="Review">
+              <p>
+                2 items, EGP 1,250, for {{ address.controls.name.value }}. Press
+                Finish to place the order.
+              </p>
+            </ui-step>
+          </ui-stepper>
+        }
       </app-example>
 
       <app-example
@@ -97,8 +239,87 @@ import { PageComponent } from '../shared/page.component';
   `,
 })
 export class StepperPageComponent {
-  protected readonly name = new FormControl('', Validators.required);
+  protected readonly address = new FormGroup({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: Validators.required,
+    }),
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
+  });
+  protected readonly card = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.pattern(/^\d{16}$/)],
+  });
+  protected readonly step = signal(0);
   protected readonly placed = signal(false);
+
+  protected showErrors(i: number): void {
+    if (i === 1) this.address.markAllAsTouched();
+    if (i === 2) this.card.markAsTouched();
+  }
+
+  protected startOver(): void {
+    this.address.reset();
+    this.card.reset();
+    this.step.set(0);
+    this.placed.set(false);
+  }
+
+  // The options demo.
+  protected readonly linear = new FormControl(false, { nonNullable: true });
+  protected readonly linearOn = toSignal(this.linear.valueChanges, {
+    initialValue: false,
+  });
+  protected readonly count = signal(4);
+  protected readonly current = signal(0);
+  protected readonly steps = computed(() =>
+    Array.from({ length: this.count() }, (_, i) => i + 1),
+  );
+  protected readonly filled = signal<ReadonlySet<number>>(new Set());
+
+  protected setCount(n: number): void {
+    this.count.set(n);
+    if (this.current() >= n) this.current.set(n - 1);
+  }
+
+  protected fill(n: number, on: boolean): void {
+    const next = new Set(this.filled());
+    if (on) next.add(n);
+    else next.delete(n);
+    this.filled.set(next);
+  }
+
+  // The screen-width demo: a box as wide as the slider, scaled down to fit the page.
+  protected readonly width = signal(24);
+  protected readonly readout = computed(
+    () => `Screen ${this.width()}rem (${this.width() * 16}px)`,
+  );
+  protected readonly scale = signal(1);
+  protected readonly height = signal<number | null>(null);
+  private readonly stage = viewChild.required<ElementRef<HTMLElement>>('stage');
+  private readonly frame = viewChild.required<ElementRef<HTMLElement>>('frame');
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const stage = this.stage().nativeElement;
+      const frame = this.frame().nativeElement;
+      const fit = () => {
+        const s = Math.min(1, stage.clientWidth / frame.offsetWidth);
+        this.scale.set(s);
+        this.height.set(frame.offsetHeight * s);
+      };
+      fit();
+      if (typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver(fit);
+      observer.observe(stage);
+      observer.observe(frame);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
   protected readonly arabicDigits = (n: number) => n.toLocaleString('ar-EG');
 
   protected readonly usage = {
@@ -111,17 +332,33 @@ export class StepperPageComponent {
 </div>`,
   };
 
+  protected readonly simple = {
+    angular: `<ui-stepper label="Checkout" [linear]="linear" [(current)]="step">
+  <ui-step label="Step 1" [completed]="done1">…</ui-step>
+  <ui-step label="Step 2" [completed]="done2">…</ui-step>
+</ui-stepper>`,
+    react: `<Stepper label="Checkout" linear={linear}
+  steps={[
+    { label: 'Step 1', content: …, completed: done1 },
+    { label: 'Step 2', content: …, completed: done2 },
+  ]} />`,
+    html: `<div class="ui-stepper">…</div>`,
+  };
+
   protected readonly basic = {
     angular: `<ui-stepper label="Checkout" linear
   [(current)]="step"
-  (blocked)="name.markAsTouched()"
+  (blocked)="showErrors($event)"
   (finish)="placeOrder()">
   <ui-step label="Cart">…</ui-step>
-  <ui-step label="Address" [completed]="name.valid">
-    <ui-text-field label="Full name" [formControl]="name"
+  <ui-step label="Address" [completed]="address.valid">
+    <ui-text-field label="Full name" formControlName="name"
       [error]="name.invalid && name.touched ? 'Enter your full name' : undefined" />
+    <ui-text-field label="Email" type="email" formControlName="email" />
   </ui-step>
-  <ui-step label="Payment">…</ui-step>
+  <ui-step label="Payment" [completed]="card.valid">
+    <ui-text-field label="Card number" [formControl]="card" />
+  </ui-step>
   <ui-step label="Review">…</ui-step>
 </ui-stepper>`,
     react: `<Stepper
