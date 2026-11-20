@@ -1,0 +1,37 @@
+{
+  "name": "@enigma-ui/vue",
+  "version": "0.0.0",
+  "description": "Core Vue 3 controls for the Enigma Technology Lab design system, styled by @enigma-ui/css.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enigma-tech-labs/enigma-ui.git",
+    "directory": "packages/vue"
+  },
+  "keywords": [
+    "vue",
+    "ui",
+    "components",
+    "accessibility",
+    "rtl"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@enigma-ui/css": "^0.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

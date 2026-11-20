@@ -1,0 +1,37 @@
+{
+  "name": "@enigma-ui/icons",
+  "version": "0.0.0",
+  "description": "Icons for the Enigma Technology Lab design system: 24 px stroke SVGs as data, as CSS classes (<i class=\"ui-icon ui-icon-search\">) and as the icon components of @enigma-ui/angular and @enigma-ui/react. Right to left ready.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enigma-tech-labs/enigma-ui.git",
+    "directory": "packages/icons"
+  },
+  "keywords": [
+    "icons",
+    "svg",
+    "design-system",
+    "css",
+    "rtl",
+    "lucide"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "style": "./icons.css",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./icons.css": "./icons.css",
+    "./svg/*": "./svg/*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
