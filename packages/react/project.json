@@ -7,9 +7,7 @@
   "implicitDependencies": ["css"],
   "release": {
     "version": {
-      "manifestRootsToUpdate": ["dist/{projectRoot}"],
-      "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"
+      "manifestRootsToUpdate": ["dist/{projectRoot}"]
     }
   },
   "targets": {

@@ -3,7 +3,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "release": "node tools/release.mjs",
+    "release:dry": "node tools/release.mjs --dry-run",
+    "release:css": "node tools/release.mjs --projects=css",
+    "release:angular": "node tools/release.mjs --projects=angular",
+    "release:react": "node tools/release.mjs --projects=react"
   },
   "private": true,
   "dependencies": {

@@ -3,11 +3,5 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/css",
   "projectType": "library",
-  "tags": ["scope:shared", "type:ui"],
-  "release": {
-    "version": {
-      "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"
-    }
-  }
+  "tags": ["scope:shared", "type:ui"]
 }

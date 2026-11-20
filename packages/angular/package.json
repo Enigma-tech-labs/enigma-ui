@@ -29,6 +29,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@enigma-ui/css": "0.0.0"
+    "@enigma-ui/css": "^0.0.0"
   }
 }

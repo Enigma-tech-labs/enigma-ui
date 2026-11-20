@@ -79,14 +79,24 @@
   "analytics": false,
   "release": {
     "projects": ["css", "angular", "react"],
+    "projectsRelationship": "independent",
+    "releaseTag": {
+      "pattern": "{projectName}-v{version}"
+    },
     "version": {
-      "conventionalCommits": true,
-      "preVersionCommand": "pnpm nx run angular:build"
+      "specifierSource": "conventional-commits",
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk",
+      "preVersionCommand": "pnpm nx run-many -t build -p angular react",
+      "preserveMatchingDependencyRanges": false
     },
     "changelog": {
       "workspaceChangelog": false,
       "projectChangelogs": {
         "createRelease": "github"
+      },
+      "git": {
+        "commitMessage": "chore(release): 🚀 publish [skip ci]"
       }
     }
   }

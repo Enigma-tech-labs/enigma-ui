@@ -104,8 +104,10 @@ import { PageComponent } from '../shared/page.component';
             add is not visible to your own imports, and step 3 imports it.
           </li>
           <li>
-            Keep every <code>&#64;enigma-ui/*</code> package on the same
-            version. Update them together, never one alone.
+            Each <code>&#64;enigma-ui/*</code> package has its own version. When
+            you update a framework package, update
+            <code>&#64;enigma-ui/css</code> with it, so your direct css install
+            matches the version the framework package depends on.
           </li>
           @if (settings.framework() === 'angular') {
             <li>
