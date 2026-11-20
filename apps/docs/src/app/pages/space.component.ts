@@ -20,8 +20,8 @@ import {
   ],
   template: `
     <app-page
-      title="Space and shadow"
-      lead="One spacing scale for padding, margin and gap, one radius, one shadow."
+      title="Space"
+      lead="One spacing scale for padding, margin and gap, one radius, two shared sizes."
     >
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Spacing</h2>
@@ -171,41 +171,6 @@ import {
         <p>Two sizes every control and row of buttons shares.</p>
         <app-token-table label="Size tokens" [rows]="sizeRows" />
       </section>
-
-      <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Shadow</h2>
-        <p>
-          Only what floats has a shadow: lists, menus, popovers, dialogs,
-          toasts. Cards stay flat.
-        </p>
-        <app-token-table label="Shadow tokens" [rows]="shadowRows" />
-      </section>
-
-      <section class="doc-section">
-        <h2 class="ui-heading doc-h2">Try the shadow</h2>
-        <p>Offset and blur grow together; the colour stays the token.</p>
-        <app-step
-          label="Depth"
-          [max]="16"
-          [valuetext]="shadow()"
-          [(value)]="depth"
-        >
-          <code>{{ shadow() }}</code>
-        </app-step>
-
-        <app-example
-          title="A floating layer"
-          description="Every menu, popover, dialog and toast reads --ui-shadow, so one override moves them all."
-          [code]="shadowCode()"
-        >
-          <div class="doc-depth" [style.--ui-shadow]="shadowValue()">
-            <div class="doc-depth__float">
-              <p class="ui-card__title">Floating</p>
-              <p>A menu, popover or dialog.</p>
-            </div>
-          </div>
-        </app-example>
-      </section>
     </app-page>
   `,
 })
@@ -324,32 +289,6 @@ export class SpaceComponent {
     },
   ];
 
-  protected readonly shadowRows: TokenRow[] = [
-    {
-      token: '--ui-shadow',
-      value: '0 8px 24px var(--ui-shadow-color)',
-      use: 'Every floating layer, with a transparent border so high contrast keeps its edge.',
-      tw: 'shadow-ui',
-      previewClass: 'doc-token__box',
-      preview: { 'box-shadow': 'var(--ui-shadow)' },
-    },
-    {
-      token: '--ui-shadow-color',
-      value: 'ink 18%, slate 40% on dark',
-      use: 'A dark shadow is lost on a dark page, so dark mode casts a light slate glow.',
-      previewClass: 'doc-token__chip',
-      preview: { background: 'var(--ui-shadow-color)' },
-    },
-    {
-      token: '--ui-backdrop',
-      value: 'rgb(11 16 32 / 0.6)',
-      use: 'Behind a dialog, drawer or bottom sheet.',
-      tw: 'bg-backdrop',
-      previewClass: 'doc-token__chip',
-      preview: { background: 'var(--ui-backdrop)' },
-    },
-  ];
-
   /** Base radius choices in rem, 0 to 1.5 in eighths; starts at the default 0.5rem. */
   protected readonly radiusSteps = Array.from({ length: 13 }, (_, i) => i / 8);
   protected readonly radiusIndex = signal(4);
@@ -375,18 +314,6 @@ export class SpaceComponent {
   });
   protected readonly radiusCode = computed(() =>
     css(`:root {\n  --ui-radius: ${this.radius()};\n}`),
-  );
-
-  /** Shadow depth: offset n px, blur 3n px; 8 is the default 0 8px 24px. */
-  protected readonly depth = signal(8);
-  protected readonly shadow = computed(
-    () => `0 ${this.depth()}px ${this.depth() * 3}px`,
-  );
-  protected readonly shadowValue = computed(
-    () => `${this.shadow()} var(--ui-shadow-color)`,
-  );
-  protected readonly shadowCode = computed(() =>
-    css(`:root {\n  --ui-shadow: ${this.shadowValue()};\n}`),
   );
 
   /** The step every demo uses; starts at --ui-space-4. */

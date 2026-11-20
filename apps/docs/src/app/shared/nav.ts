@@ -12,7 +12,8 @@ export const NAV = [
     links: [
       { path: '/foundations/colour', label: 'Colour' },
       { path: '/foundations/typography', label: 'Typography' },
-      { path: '/foundations/space', label: 'Space and shadow' },
+      { path: '/foundations/space', label: 'Space' },
+      { path: '/foundations/shadow', label: 'Shadow' },
       { path: '/foundations/z-index', label: 'Z-index' },
       { path: '/foundations/motion', label: 'Motion' },
       { path: '/foundations/focus', label: 'Focus' },
