@@ -12,7 +12,9 @@ import ts from 'typescript';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pagesDir = join(root, 'apps/docs/src/app/pages');
 const outDir = join(root, 'apps/docs/public');
-const SITE = 'https://enigma-tech-labs.github.io/enigma-ui';
+const SITE = readFileSync(join(root, 'apps/docs/src/app/shared/site.ts'), 'utf8')
+  .match(/SITE_URL = '([^']+)'/)[1]
+  .replace(/\/$/, '');
 const FRAMEWORKS = ['angular', 'react', 'html'];
 const LABEL = { angular: 'Angular', react: 'React', html: 'Plain HTML and CSS' };
 

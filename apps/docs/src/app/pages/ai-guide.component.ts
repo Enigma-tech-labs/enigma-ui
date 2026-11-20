@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { SITE_URL } from '../shared/site';
 import { CodeBlockComponent } from '../shared/code-block.component';
 import { PageComponent } from '../shared/page.component';
 
@@ -169,7 +170,7 @@ export class AiGuideComponent {
   protected readonly failed = signal(false);
   protected readonly copied = signal(false);
 
-  protected readonly fullUrl = new URL('llms-full.txt', this.doc.baseURI).href;
+  protected readonly fullUrl = `${SITE_URL}llms-full.txt`;
 
   protected readonly rule = `This project uses Enigma UI. Before writing any UI, read ${this.fullUrl} and follow its rules.`;
 
