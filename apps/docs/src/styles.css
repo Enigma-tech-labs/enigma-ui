@@ -300,20 +300,63 @@
   max-inline-size: 84rem;
   margin-inline: auto;
 }
+/* The side bar floats: a raised panel inset from the edges, lifted by the kit's own shadow. */
 .doc-nav--side {
   position: sticky;
-  inset-block-start: var(--doc-header-height);
+  inset-block-start: calc(var(--doc-header-height) + var(--ui-space-4));
   align-self: start;
   box-sizing: border-box;
-  max-block-size: calc(100dvh - var(--doc-header-height));
+  max-block-size: calc(100dvh - var(--doc-header-height) - var(--ui-space-8));
+  margin-block: var(--ui-space-4);
+  margin-inline: var(--ui-space-4) 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: var(--ui-space-6) var(--ui-space-4);
-  border-inline-end: 1px solid var(--ui-divider);
+  padding: var(--ui-space-5) var(--ui-space-3);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-xl);
+  background:
+    radial-gradient(
+      circle at 0 0,
+      color-mix(in oklab, var(--ui-primary) 14%, transparent),
+      transparent 14rem
+    ),
+    var(--ui-surface);
+  box-shadow:
+    var(--ui-shadow),
+    inset 0 1px 0 color-mix(in oklab, white 55%, transparent);
+  scrollbar-width: thin;
+}
+.doc-nav {
+  counter-reset: chapter;
+  /* One hue per chapter: the nav dot, the hero glow and the pattern all read it. */
+  --doc-hue: 262;
 }
 .doc-nav__title {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
   margin: var(--ui-space-6) 0 var(--ui-space-2);
+  padding-inline: var(--ui-space-3);
   color: var(--ui-text-muted);
+  counter-increment: chapter;
+}
+.doc-nav__title::before {
+  content: counter(chapter, decimal-leading-zero);
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 1.75rem;
+  block-size: 1.25rem;
+  border-radius: var(--ui-radius-full);
+  background: light-dark(
+    oklch(0.93 0.05 var(--doc-hue)),
+    oklch(0.32 0.08 var(--doc-hue))
+  );
+  color: light-dark(
+    oklch(0.38 0.14 var(--doc-hue)),
+    oklch(0.9 0.08 var(--doc-hue))
+  );
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
 }
 .doc-nav__title:first-child {
   margin-block-start: 0;
@@ -324,13 +367,17 @@
   list-style: none;
 }
 .doc-nav a {
+  position: relative;
   display: flex;
   align-items: center;
   min-block-size: var(--ui-control-height);
   padding-inline: var(--ui-space-3);
-  border-radius: var(--ui-radius);
+  border-radius: var(--ui-radius-lg);
   color: var(--ui-text);
   text-decoration: none;
+  transition:
+    background-color 0.15s,
+    transform 0.15s;
 }
 .doc-nav a:hover {
   background: var(--ui-secondary);
@@ -340,6 +387,24 @@
   background: var(--ui-highlight);
   color: var(--ui-on-highlight);
   font-weight: 600;
+}
+/* The page you are on gets a lit bar on the inline start edge. */
+.doc-nav a[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-block: 0.5rem;
+  inset-inline-start: 0;
+  inline-size: 3px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .doc-nav a:hover {
+    transform: translateX(2px);
+  }
+  .doc-nav a:dir(rtl):hover {
+    transform: translateX(-2px);
+  }
 }
 .doc-main {
   min-inline-size: 0;
@@ -787,7 +852,9 @@ ol.doc-list {
 }
 .doc-home__underlined {
   position: relative;
-  display: inline-block;
+  display: block;
+  inline-size: fit-content;
+  min-block-size: 1.1em;
 }
 /* A hand-drawn brand-red underline that draws itself in. */
 .doc-home__scribble {
@@ -798,7 +865,7 @@ ol.doc-list {
   block-size: 0.3em;
   overflow: visible;
   fill: none;
-  stroke: #dc4b4b;
+  stroke: var(--mk-a, #dc4b4b);
   stroke-width: 5;
   stroke-linecap: round;
   --d: 6;
@@ -857,12 +924,12 @@ ol.doc-list {
   background:
     radial-gradient(
       circle at 35% 35%,
-      color-mix(in srgb, #dc4b4b 30%, transparent),
+      color-mix(in srgb, var(--mk-a, #dc4b4b) 30%, transparent),
       transparent 60%
     ),
     radial-gradient(
       circle at 65% 65%,
-      color-mix(in srgb, #0059ff 35%, transparent),
+      color-mix(in srgb, var(--mk-b, #0059ff) 35%, transparent),
       transparent 60%
     );
   filter: blur(40px);
@@ -919,7 +986,7 @@ ol.doc-list {
   stroke: none;
 }
 .doc-scene__orbit--b .doc-scene__moon {
-  fill: #dc4b4b;
+  fill: var(--mk-a, #dc4b4b);
 }
 
 /* The Enigma mark, extruded: 14 copies of each half stacked along z, darker towards the back. */
@@ -938,7 +1005,7 @@ ol.doc-list {
   inset: 0;
   inline-size: 100%;
   block-size: 100%;
-  transform: translateZ(calc((var(--i) - 7) * 0.45cqi));
+  transform: translateZ(calc((var(--i) - 7) * 0.45cqi * var(--thick, 1)));
   filter: brightness(calc(0.45 + var(--i) * 0.03));
 }
 .doc-scene__part svg:last-child {
@@ -1033,7 +1100,8 @@ ol.doc-list {
     animation-delay: calc(var(--d, 0) * 80ms + 200ms);
   }
   .doc-scene__mark {
-    animation: doc-spin 16s ease-in-out infinite;
+    animation: doc-spin calc(16s / var(--speed, 1)) ease-in-out infinite;
+    animation-play-state: var(--spin-state, running);
   }
   /* The two halves drift apart in depth and lock back together. */
   .doc-scene__part--red {
@@ -1045,11 +1113,11 @@ ol.doc-list {
   .doc-scene__orbit svg {
     animation:
       doc-draw 1.6s var(--ui-ease) backwards,
-      doc-orbit 18s linear infinite;
+      doc-orbit calc(18s / var(--speed, 1)) linear infinite;
     animation-delay: calc(var(--d) * 80ms + 200ms), 0s;
   }
   .doc-scene__orbit--b svg {
-    animation-duration: 1.6s, 11s;
+    animation-duration: 1.6s, calc(11s / var(--speed, 1));
     animation-direction: normal, reverse;
   }
   .doc-chip {
@@ -1114,7 +1182,11 @@ ol.doc-list {
   }
   55%,
   75% {
-    transform: translate3d(-5cqi, -4cqi, 10cqi);
+    transform: translate3d(
+      calc(-5cqi * var(--boom, 1)),
+      calc(-4cqi * var(--boom, 1)),
+      calc(10cqi * var(--boom, 1))
+    );
   }
 }
 @keyframes doc-split-blue {
@@ -1125,7 +1197,11 @@ ol.doc-list {
   }
   55%,
   75% {
-    transform: translate3d(5cqi, 4cqi, -10cqi);
+    transform: translate3d(
+      calc(5cqi * var(--boom, 1)),
+      calc(4cqi * var(--boom, 1)),
+      calc(-10cqi * var(--boom, 1))
+    );
   }
 }
 @keyframes doc-orbit {
@@ -1167,6 +1243,105 @@ ol.doc-list {
   50% {
     opacity: 0.6;
     scale: 1.1;
+  }
+}
+
+/* The word that swaps in the title. */
+.doc-swap {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .doc-swap {
+    animation: doc-word 500ms var(--ui-ease) backwards;
+  }
+}
+@keyframes doc-word {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em) rotateX(-70deg);
+  }
+}
+
+/* Scene controls: a glass panel under the 3D scene. */
+.doc-home__showcase {
+  display: grid;
+  gap: var(--ui-space-4);
+  justify-items: center;
+  min-inline-size: 0;
+}
+.doc-home__showcase[data-spin='off'] {
+  --spin-state: paused;
+}
+.doc-rig {
+  display: grid;
+  gap: var(--ui-space-3);
+  inline-size: 100%;
+  max-inline-size: 30rem;
+  box-sizing: border-box;
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-xl);
+  background: color-mix(in oklab, var(--ui-surface) 78%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--ui-shadow);
+}
+.doc-rig__head,
+.doc-rig__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+}
+.doc-rig__head h2 {
+  margin: 0;
+}
+.doc-rig__row > span:first-child {
+  min-inline-size: 4.5rem;
+  font-size: var(--ui-text-sm);
+  font-weight: 600;
+}
+.doc-rig__row input[type='range'] {
+  flex: 1;
+  accent-color: var(--ui-primary);
+}
+.doc-rig__row input[type='range']:focus-visible,
+.doc-rig__swatch:has(input:focus-visible) span:first-child {
+  outline: var(--ui-focus-width) solid var(--ui-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+.doc-rig__palette {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.doc-rig__swatches {
+  display: flex;
+  gap: var(--ui-space-2);
+}
+.doc-rig__swatch {
+  cursor: pointer;
+}
+.doc-rig__swatch > span:first-of-type {
+  display: block;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border-radius: var(--ui-radius-full);
+  background: linear-gradient(135deg, var(--a) 50%, var(--b) 50%);
+  box-shadow: 0 0 0 2px var(--ui-surface);
+  transition: transform 0.15s;
+}
+.doc-rig__swatch:has(input:checked) > span:first-of-type {
+  box-shadow:
+    0 0 0 2px var(--ui-surface),
+    0 0 0 4px var(--ui-primary);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .doc-rig__swatch:hover > span:first-of-type {
+    transform: scale(1.15);
   }
 }
 
@@ -1382,6 +1557,323 @@ ol.doc-list {
   .doc-motion-demo * {
     transition: none;
   }
+}
+
+/* ---------------------------------------------------------------------------------------
+   Story chrome: every page opens on a chapter hero with its own pattern and hue.
+   --------------------------------------------------------------------------------------- */
+[data-chapter='Start'] {
+  --doc-hue: 262;
+  --doc-art: stars;
+}
+[data-chapter='Foundations'] {
+  --doc-hue: 200;
+  --doc-art: ruler;
+}
+[data-chapter='Forms'] {
+  --doc-hue: 160;
+  --doc-art: dots;
+}
+[data-chapter='Feedback'] {
+  --doc-hue: 35;
+  --doc-art: rings;
+}
+[data-chapter='Navigation'] {
+  --doc-hue: 300;
+  --doc-art: contour;
+}
+[data-chapter='Overlays'] {
+  --doc-hue: 15;
+  --doc-art: layers;
+}
+[data-chapter='Content'] {
+  --doc-hue: 235;
+  --doc-art: bricks;
+}
+
+.doc-hero {
+  --doc-line: light-dark(
+    oklch(0.55 0.12 var(--doc-hue) / 0.28),
+    oklch(0.8 0.1 var(--doc-hue) / 0.22)
+  );
+  --doc-glow: light-dark(
+    oklch(0.9 0.09 var(--doc-hue) / 0.9),
+    oklch(0.42 0.14 var(--doc-hue) / 0.55)
+  );
+  --doc-ink: light-dark(
+    oklch(0.4 0.15 var(--doc-hue)),
+    oklch(0.88 0.1 var(--doc-hue))
+  );
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-10) var(--ui-space-8);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-2xl);
+  background:
+    radial-gradient(60% 90% at 100% 0%, var(--doc-glow), transparent 70%),
+    radial-gradient(
+      40% 60% at 0% 100%,
+      color-mix(in oklab, var(--doc-glow) 55%, transparent),
+      transparent 70%
+    ),
+    var(--ui-surface);
+}
+/* The pattern sits behind the words and fades before it reaches them. */
+.doc-hero__art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--doc-pattern);
+  background-size: var(--doc-pattern-size, 28px 28px);
+  mask-image: linear-gradient(
+    to var(--doc-fade-to, right),
+    transparent 45%,
+    #000 100%
+  );
+  pointer-events: none;
+}
+.doc-hero:dir(rtl) .doc-hero__art {
+  --doc-fade-to: left;
+}
+.doc-hero > :not(.doc-hero__art) {
+  position: relative;
+}
+.doc-hero[data-chapter='Start'] .doc-hero__art {
+  /* Constellation: sparse bright dots over a finer scatter. */
+  --doc-pattern:
+    radial-gradient(circle, var(--doc-ink) 1.5px, transparent 2px),
+    radial-gradient(circle, var(--doc-line) 1px, transparent 1.5px);
+  --doc-pattern-size: 83px 71px, 23px 29px;
+  background-position:
+    0 0,
+    11px 7px;
+}
+.doc-hero[data-chapter='Foundations'] .doc-hero__art {
+  /* Blueprint ruler: a fine grid with a heavier line every fifth step. */
+  --doc-pattern:
+    linear-gradient(var(--doc-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--doc-line) 1px, transparent 1px),
+    linear-gradient(
+      color-mix(in oklab, var(--doc-ink) 45%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--doc-ink) 45%, transparent) 1px,
+      transparent 1px
+    );
+  --doc-pattern-size: 16px 16px, 16px 16px, 80px 80px, 80px 80px;
+}
+.doc-hero[data-chapter='Forms'] .doc-hero__art {
+  /* Field dots: the grid every input sits on. */
+  --doc-pattern: radial-gradient(
+    circle,
+    var(--doc-ink) 1.25px,
+    transparent 1.75px
+  );
+  --doc-pattern-size: 18px 18px;
+}
+.doc-hero[data-chapter='Feedback'] .doc-hero__art {
+  /* Ripples: signal spreading out from the corner. */
+  --doc-pattern: repeating-radial-gradient(
+    circle at 100% 0%,
+    transparent 0 22px,
+    var(--doc-line) 22px 23.5px
+  );
+  --doc-pattern-size: auto;
+}
+.doc-hero[data-chapter='Navigation'] .doc-hero__art {
+  /* Contours: a map, because this chapter is about finding the way. */
+  --doc-pattern:
+    repeating-radial-gradient(
+      ellipse 120% 70% at 85% 120%,
+      transparent 0 14px,
+      var(--doc-line) 14px 15.5px
+    ),
+    repeating-radial-gradient(
+      ellipse 70% 120% at 10% -20%,
+      transparent 0 18px,
+      var(--doc-line) 18px 19px
+    );
+  --doc-pattern-size: auto;
+}
+.doc-hero[data-chapter='Overlays'] .doc-hero__art {
+  /* Layers: slanted sheets stacked above the page. */
+  --doc-pattern: repeating-linear-gradient(
+    135deg,
+    transparent 0 20px,
+    var(--doc-line) 20px 21.5px,
+    transparent 21.5px 26px
+  );
+  --doc-pattern-size: auto;
+}
+.doc-hero[data-chapter='Content'] .doc-hero__art {
+  /* Bricks: blocks that build into a page. */
+  --doc-pattern:
+    linear-gradient(var(--doc-line) 2px, transparent 2px),
+    linear-gradient(90deg, var(--doc-line) 2px, transparent 2px),
+    linear-gradient(90deg, var(--doc-line) 2px, transparent 2px);
+  --doc-pattern-size: 64px 24px, 64px 48px, 64px 48px;
+  background-position:
+    0 0,
+    0 0,
+    32px 24px;
+}
+.doc-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  margin: 0;
+  color: var(--doc-ink);
+}
+.doc-hero__chapter {
+  padding: 0.125rem var(--ui-space-2);
+  border-radius: var(--ui-radius-full);
+  background: var(--doc-ink);
+  color: var(--ui-surface);
+}
+.doc-hero .doc-h1 {
+  margin: 0;
+}
+.doc-story {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ui-space-2) var(--ui-space-3);
+  margin: var(--ui-space-2) 0 0;
+  max-inline-size: 40rem;
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border-inline-start: 3px solid var(--doc-ink);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in oklab, var(--ui-surface) 82%, transparent);
+  backdrop-filter: blur(6px);
+  font-style: italic;
+}
+.doc-story__label {
+  color: var(--doc-ink);
+  font-size: var(--ui-text-sm);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .doc-hero__art {
+    animation: doc-art-drift 40s linear infinite;
+  }
+  @keyframes doc-art-drift {
+    to {
+      background-position: 120px 60px;
+    }
+  }
+}
+@media (max-width: 40rem) {
+  .doc-hero {
+    padding: var(--ui-space-6) var(--ui-space-4);
+    border-radius: var(--ui-radius-xl);
+  }
+}
+
+/* The page behind it all: a faint dotted sheet that fades out down the page. */
+.doc-layout:not(.doc-layout--home) {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--ui-text) 14%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 24px 24px;
+}
+.doc-layout:not(.doc-layout--home) .doc-main {
+  background: linear-gradient(to bottom, transparent, var(--ui-bg) 28rem);
+}
+
+/* Sections are beats in the story: a numbered heading, one after another. */
+.doc-page {
+  counter-reset: beat;
+}
+.doc-page > .doc-section:not(.doc-hero) {
+  counter-increment: beat;
+}
+.doc-page > .doc-section:not(.doc-hero) > .doc-h2:first-child {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+}
+.doc-page > .doc-section:not(.doc-hero) > .doc-h2:first-child::before {
+  content: counter(beat);
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-highlight);
+  color: var(--ui-on-highlight);
+  font-size: var(--ui-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animation gallery. */
+.doc-anim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--ui-space-4);
+}
+.doc-anim-card {
+  display: grid;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  align-content: start;
+}
+.doc-anim-card__stage {
+  display: grid;
+  place-items: center;
+  min-block-size: 4.5rem;
+  overflow: hidden;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-secondary);
+}
+.doc-anim-card__use {
+  color: var(--ui-text-muted, inherit);
+  font-size: var(--ui-text-sm);
+}
+.doc-anim-chip {
+  padding: var(--ui-space-1) var(--ui-space-3);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-primary);
+  color: var(--ui-on-primary);
+}
+.doc-anim-chip.ui-anim-shimmer {
+  background-color: var(--ui-border);
+  color: var(--ui-text);
+}
+.doc-anim-bars {
+  display: grid;
+  gap: var(--ui-space-1);
+  inline-size: 6rem;
+}
+.doc-anim-bars span {
+  block-size: 0.5rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary);
+}
+.doc-anim-dot {
+  position: relative;
+  display: inline-flex;
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary);
+}
+.doc-anim-dot__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary);
 }
 
 /* Z-index demo: a fan of real layers and your element across them. */

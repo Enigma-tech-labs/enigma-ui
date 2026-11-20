@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   computed,
   inject,
   linkedSignal,
@@ -96,21 +97,26 @@ const foundationCount =
           Enigma Technology Lab · Design system
         </p>
         <h1 id="home-title" class="ui-head-3xl doc-home__title">
-          One look.<br /><span class="doc-home__accent"
-            >Every
-            <span class="doc-home__underlined"
-              >frontend.<svg
-                class="doc-home__scribble"
-                viewBox="0 0 300 20"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                <path
-                  class="doc-draw"
-                  pathLength="1"
-                  d="M4 14 C 60 4, 120 4, 170 10 S 260 18, 296 6"
-                /></svg></span
-          ></span>
+          <span class="ui-visually-hidden">One look. Every frontend.</span>
+          <span aria-hidden="true">
+            One look.<br /><span class="doc-home__accent"
+              >Every
+              <span class="doc-home__underlined">
+                @for (w of [word()]; track w) {
+                  <span class="doc-swap">{{ w }}</span>
+                }
+                <svg
+                  class="doc-home__scribble"
+                  viewBox="0 0 300 20"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    class="doc-draw"
+                    pathLength="1"
+                    d="M4 14 C 60 4, 120 4, 170 10 S 260 18, 296 6"
+                  /></svg></span
+            ></span>
+          </span>
         </h1>
         <p class="ui-body-lg doc-home__lead">
           Accessible components for Angular, React and plain HTML, drawn from
@@ -139,93 +145,196 @@ const foundationCount =
         </dl>
       </div>
 
-      <!-- Decorative: the Enigma mark extruded in 3D, orbited by pieces of the kit. -->
-      <div class="doc-scene" aria-hidden="true" inert>
-        <div class="doc-scene__world">
-          <svg class="doc-scene__floor" viewBox="0 0 400 400">
-            @for (i of grid; track i) {
-              <line
-                class="doc-draw"
-                pathLength="1"
-                [attr.x1]="i * 50"
-                y1="0"
-                [attr.x2]="i * 50"
-                y2="400"
-                [style.--d]="i"
-              />
-              <line
-                class="doc-draw"
-                pathLength="1"
-                x1="0"
-                [attr.y1]="i * 50"
-                x2="400"
-                [attr.y2]="i * 50"
-                [style.--d]="i"
-              />
-            }
-          </svg>
-
-          <div class="doc-scene__orbit doc-scene__orbit--a">
-            <svg viewBox="0 0 100 100">
-              <circle class="doc-draw" pathLength="1" cx="50" cy="50" r="48" />
-              <circle class="doc-scene__moon" cx="50" cy="2" r="2.2" />
+      <div
+        class="doc-home__showcase"
+        [attr.data-spin]="spin() ? 'on' : 'off'"
+        [style]="sceneVars()"
+      >
+        <!-- Decorative: the Enigma mark extruded in 3D, orbited by pieces of the kit. -->
+        <div class="doc-scene" aria-hidden="true" inert>
+          <div class="doc-scene__world">
+            <svg class="doc-scene__floor" viewBox="0 0 400 400">
+              @for (i of grid; track i) {
+                <line
+                  class="doc-draw"
+                  pathLength="1"
+                  [attr.x1]="i * 50"
+                  y1="0"
+                  [attr.x2]="i * 50"
+                  y2="400"
+                  [style.--d]="i"
+                />
+                <line
+                  class="doc-draw"
+                  pathLength="1"
+                  x1="0"
+                  [attr.y1]="i * 50"
+                  x2="400"
+                  [attr.y2]="i * 50"
+                  [style.--d]="i"
+                />
+              }
             </svg>
-          </div>
-          <div class="doc-scene__orbit doc-scene__orbit--b">
-            <svg viewBox="0 0 100 100">
-              <circle class="doc-draw" pathLength="1" cx="50" cy="50" r="48" />
-              <circle class="doc-scene__moon" cx="50" cy="98" r="1.8" />
-            </svg>
-          </div>
 
-          <div class="doc-scene__mark">
-            @for (part of parts; track part.id) {
-              <div class="doc-scene__part doc-scene__part--{{ part.id }}">
-                @for (i of layers; track i) {
-                  <svg viewBox="255 318 515 390" [style.--i]="i">
-                    <polygon
-                      [attr.points]="part.points"
-                      [attr.fill]="part.fill"
-                    />
-                  </svg>
-                }
-              </div>
-            }
-          </div>
+            <div class="doc-scene__orbit doc-scene__orbit--a">
+              <svg viewBox="0 0 100 100">
+                <circle
+                  class="doc-draw"
+                  pathLength="1"
+                  cx="50"
+                  cy="50"
+                  r="48"
+                />
+                <circle class="doc-scene__moon" cx="50" cy="2" r="2.2" />
+              </svg>
+            </div>
+            <div class="doc-scene__orbit doc-scene__orbit--b">
+              <svg viewBox="0 0 100 100">
+                <circle
+                  class="doc-draw"
+                  pathLength="1"
+                  cx="50"
+                  cy="50"
+                  r="48"
+                />
+                <circle class="doc-scene__moon" cx="50" cy="98" r="1.8" />
+              </svg>
+            </div>
 
-          <span
-            class="doc-chip doc-chip--button"
-            style="--x: 4cqi; --y: 14cqi; --z: 9cqi"
-            >Book the visit</span
-          >
-          <span
-            class="doc-chip doc-chip--switch"
-            style="--x: 60cqi; --y: 8cqi; --z: 5cqi"
-            ><span class="doc-chip__track"><span></span></span>Dark mode</span
-          >
-          <span
-            class="doc-chip"
-            lang="ar"
-            dir="rtl"
-            style="--x: 70cqi; --y: 62cqi; --z: 12cqi"
-            ><span class="doc-chip__dot"></span>جديد</span
-          >
-          <span
-            class="doc-chip doc-chip--contrast"
-            style="--x: 2cqi; --y: 70cqi; --z: 3cqi"
-            ><b>7:1</b> AAA text</span
-          >
-          <span
-            class="doc-chip doc-chip--slider"
-            style="--x: 34cqi; --y: 86cqi; --z: 7cqi"
-            ><span class="doc-chip__rail"><span></span></span
-          ></span>
-          <code
-            class="doc-chip doc-chip--code"
-            style="--x: 70cqi; --y: 30cqi; --z: 6cqi"
-            >&lt;ui-card&gt;</code
-          >
+            <div class="doc-scene__mark">
+              @for (part of parts; track part.id) {
+                <div class="doc-scene__part doc-scene__part--{{ part.id }}">
+                  @for (i of layers; track i) {
+                    <svg viewBox="255 318 515 390" [style.--i]="i">
+                      <polygon
+                        [attr.points]="part.points"
+                        [style.fill]="part.fill"
+                      />
+                    </svg>
+                  }
+                </div>
+              }
+            </div>
+
+            <span
+              class="doc-chip doc-chip--button"
+              style="--x: 4cqi; --y: 14cqi; --z: 9cqi"
+              >Book the visit</span
+            >
+            <span
+              class="doc-chip doc-chip--switch"
+              style="--x: 60cqi; --y: 8cqi; --z: 5cqi"
+              ><span class="doc-chip__track"><span></span></span>Dark mode</span
+            >
+            <span
+              class="doc-chip"
+              lang="ar"
+              dir="rtl"
+              style="--x: 70cqi; --y: 62cqi; --z: 12cqi"
+              ><span class="doc-chip__dot"></span>جديد</span
+            >
+            <span
+              class="doc-chip doc-chip--contrast"
+              style="--x: 2cqi; --y: 70cqi; --z: 3cqi"
+              ><b>7:1</b> AAA text</span
+            >
+            <span
+              class="doc-chip doc-chip--slider"
+              style="--x: 34cqi; --y: 86cqi; --z: 7cqi"
+              ><span class="doc-chip__rail"><span></span></span
+            ></span>
+            <code
+              class="doc-chip doc-chip--code"
+              style="--x: 70cqi; --y: 30cqi; --z: 6cqi"
+              >&lt;ui-card&gt;</code
+            >
+          </div>
         </div>
+
+        <!-- Play with the moving parts. -->
+        <form
+          class="doc-rig"
+          aria-labelledby="rig-title"
+          (submit)="$event.preventDefault()"
+        >
+          <div class="doc-rig__head">
+            <h2 id="rig-title" class="ui-label">Scene controls</h2>
+            <button
+              ui-button
+              variant="secondary"
+              size="sm"
+              type="button"
+              (click)="shuffle()"
+            >
+              Surprise me
+            </button>
+          </div>
+          <fieldset class="doc-picker doc-rig__palette">
+            <legend class="ui-label doc-picker__legend">Palette</legend>
+            <div class="doc-rig__swatches">
+              @for (p of palettes; track p.id) {
+                <label class="doc-rig__swatch" [title]="p.label">
+                  <input
+                    class="ui-visually-hidden"
+                    type="radio"
+                    name="rig-palette"
+                    [checked]="palette() === p.id"
+                    (change)="palette.set(p.id)"
+                  />
+                  <span
+                    [style.--a]="p.a"
+                    [style.--b]="p.b"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="ui-visually-hidden">{{ p.label }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+          <label class="doc-rig__row">
+            <span>Speed</span>
+            <input
+              type="range"
+              min="0.3"
+              max="3"
+              step="0.1"
+              [value]="speed()"
+              (input)="speed.set(+$any($event.target).value)"
+            />
+          </label>
+          <label class="doc-rig__row">
+            <span>Depth</span>
+            <input
+              type="range"
+              min="0.2"
+              max="3"
+              step="0.1"
+              [value]="depth()"
+              (input)="depth.set(+$any($event.target).value)"
+            />
+          </label>
+          <label class="doc-rig__row">
+            <span>Split</span>
+            <input
+              type="range"
+              min="0"
+              max="3"
+              step="0.1"
+              [value]="split()"
+              (input)="split.set(+$any($event.target).value)"
+            />
+          </label>
+          <label class="doc-rig__row doc-rig__row--switch">
+            <span>Auto-spin</span>
+            <input
+              type="checkbox"
+              role="switch"
+              class="ui-switch__input"
+              [checked]="spin()"
+              (change)="spin.set(!spin())"
+            />
+          </label>
+        </form>
       </div>
     </section>
 
@@ -375,15 +484,53 @@ export class HomeComponent {
   protected readonly parts = [
     {
       id: 'red',
-      fill: '#DC4B4B',
+      fill: 'var(--mk-a)',
       points: '255,318 620,318 564,400 410,400 486,513 352,708 255,708 388,513',
     },
     {
       id: 'blue',
-      fill: '#0059FF',
+      fill: 'var(--mk-b)',
       points: '770,708 405,708 461,626 615,626 539,513 673,318 770,318 637,513',
     },
   ];
+  /** Rotating last word of the title; still for reduced motion. */
+  private static readonly WORDS = [
+    'frontend',
+    'framework',
+    'language',
+    'screen',
+    'theme',
+  ];
+  private readonly wordAt = signal(0);
+  protected readonly word = computed(
+    () => HomeComponent.WORDS[this.wordAt() % HomeComponent.WORDS.length],
+  );
+
+  /** Scene controls: every one is a CSS variable on the showcase. */
+  protected readonly palettes = [
+    { id: 'enigma', label: 'Enigma', a: '#dc4b4b', b: '#0059ff' },
+    { id: 'sunset', label: 'Sunset', a: '#ff7a45', b: '#a23bd8' },
+    { id: 'mint', label: 'Mint', a: '#14b8a6', b: '#2563eb' },
+    { id: 'candy', label: 'Candy', a: '#ff5fa2', b: '#ffc233' },
+    { id: 'mono', label: 'Mono', a: '#94a3b8', b: '#334155' },
+  ] as const;
+  protected readonly palette =
+    signal<(typeof this.palettes)[number]['id']>('enigma');
+  protected readonly speed = signal(1);
+  protected readonly depth = signal(1);
+  protected readonly split = signal(1);
+  protected readonly spin = signal(true);
+  protected readonly sceneVars = computed(() => {
+    const p = this.palettes.find((x) => x.id === this.palette())!;
+    return {
+      '--mk-a': p.a,
+      '--mk-b': p.b,
+      '--speed': this.speed(),
+      '--thick': this.depth(),
+      '--boom': this.split(),
+    };
+  });
+
   /** Pointer tilt of the 3D scene, in degrees; stays 0 for reduced motion. */
   protected readonly tx = signal(0);
   protected readonly ty = signal(0);
@@ -461,6 +608,19 @@ ${t.cities.map((c) => `      <option>${c}</option>`).join('\n')}
 
   constructor() {
     inject(Title).setTitle('Enigma UI · One look, every frontend');
+    if (!this.still.matches) {
+      const timer = setInterval(() => this.wordAt.update((n) => n + 1), 2600);
+      inject(DestroyRef).onDestroy(() => clearInterval(timer));
+    }
+  }
+
+  protected shuffle(): void {
+    const pick = <T>(xs: readonly T[]) =>
+      xs[Math.floor(Math.random() * xs.length)];
+    this.palette.set(pick(this.palettes).id);
+    this.speed.set(+(0.5 + Math.random() * 2.5).toFixed(1));
+    this.depth.set(+(0.5 + Math.random() * 2.5).toFixed(1));
+    this.split.set(+(Math.random() * 3).toFixed(1));
   }
 
   protected tilt(e: PointerEvent | null): void {

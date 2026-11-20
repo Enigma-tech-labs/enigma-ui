@@ -128,7 +128,9 @@ import { NAV } from './shared/nav';
 
     <ng-template #navLinks>
       @for (group of nav; track group.title) {
-        <h2 class="ui-label doc-nav__title">{{ group.title }}</h2>
+        <h2 class="ui-label doc-nav__title" [attr.data-chapter]="group.title">
+          {{ group.title }}
+        </h2>
         <ul>
           @for (link of group.links; track link.path) {
             <li>

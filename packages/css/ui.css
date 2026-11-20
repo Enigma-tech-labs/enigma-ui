@@ -223,9 +223,9 @@
 
   /* Motion: short, and only to show where something came from. Fast for a state
      change in place, base for fades, slow for panels that travel. */
-  --ui-duration-fast: 120ms;
-  --ui-duration: 160ms;
-  --ui-duration-slow: 200ms;
+  --ui-duration-fast: 150ms;
+  --ui-duration: 250ms;
+  --ui-duration-slow: 400ms;
   --ui-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   font-family: var(--ui-font);
@@ -2030,6 +2030,137 @@ dialog.ui-dialog::backdrop {
     animation: none;
     border-inline-end-color: currentColor;
     opacity: 0.6;
+  }
+}
+
+/*
+ * Animation utilities: one-shot entrances and feedback, plus two attention loops.
+ * Add the class when the thing appears (or toggle it to replay). Each uses opacity and
+ * transform only, stays within --ui-duration-slow (400ms), and stops under reduced motion.
+ * Loops (ping, shimmer) are for waiting, never for decoration.
+ */
+.ui-anim-fade-in {
+  animation: ui-fade-in var(--ui-duration) var(--ui-ease) both;
+}
+.ui-anim-slide-up {
+  animation: ui-slide-up var(--ui-duration-slow) var(--ui-ease) both;
+}
+.ui-anim-slide-down {
+  animation: ui-slide-down var(--ui-duration-slow) var(--ui-ease) both;
+}
+.ui-anim-slide-start {
+  animation: ui-slide-start var(--ui-duration-slow) var(--ui-ease) both;
+}
+.ui-anim-scale-in {
+  animation: ui-scale-in var(--ui-duration) var(--ui-ease) both;
+}
+.ui-anim-pop {
+  animation: ui-pop var(--ui-duration-slow) var(--ui-ease) both;
+}
+.ui-anim-shake {
+  animation: ui-shake var(--ui-duration-slow) linear both;
+}
+.ui-anim-ping {
+  animation: ui-ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.ui-anim-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, currentColor 14%, transparent),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: ui-shimmer 1.4s linear infinite;
+}
+/* Stagger: put on a parent; children enter one after another. */
+.ui-anim-stagger > * {
+  animation: ui-slide-up var(--ui-duration-slow) var(--ui-ease) both;
+  animation-delay: calc(var(--ui-stagger, 40ms) * var(--ui-i, 0));
+}
+.ui-anim-stagger > :nth-child(2) {
+  --ui-i: 1;
+}
+.ui-anim-stagger > :nth-child(3) {
+  --ui-i: 2;
+}
+.ui-anim-stagger > :nth-child(4) {
+  --ui-i: 3;
+}
+.ui-anim-stagger > :nth-child(5) {
+  --ui-i: 4;
+}
+.ui-anim-stagger > :nth-child(6) {
+  --ui-i: 5;
+}
+.ui-anim-stagger > :nth-child(7) {
+  --ui-i: 6;
+}
+.ui-anim-stagger > :nth-child(8) {
+  --ui-i: 7;
+}
+
+@keyframes ui-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+@keyframes ui-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+@keyframes ui-slide-start {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--ui-dir, 1) * -0.75rem));
+  }
+}
+@keyframes ui-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@keyframes ui-pop {
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes ui-shake {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+@keyframes ui-ping {
+  75%,
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+@keyframes ui-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+:dir(rtl) .ui-anim-slide-start {
+  --ui-dir: -1;
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*='ui-anim-'],
+  .ui-anim-stagger > * {
+    animation: none;
   }
 }
 

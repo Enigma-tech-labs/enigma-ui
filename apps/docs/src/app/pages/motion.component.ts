@@ -9,9 +9,9 @@ import {
 } from '../shared/token-table.component';
 
 const durations = [
-  ['--ui-duration-fast', '120ms', 'A change in place: the switch knob.'],
-  ['--ui-duration', '160ms', 'Fades: dialog, backdrop, accordion arrow.'],
-  ['--ui-duration-slow', '200ms', 'Panels that travel: drawer, sheet, toast.'],
+  ['--ui-duration-fast', '150ms', 'A change in place: the switch knob.'],
+  ['--ui-duration', '250ms', 'Fades: dialog, backdrop, accordion arrow.'],
+  ['--ui-duration-slow', '400ms', 'Panels that travel: drawer, sheet, toast.'],
 ].map(([token, value, use]) => ({
   token,
   value,
@@ -32,7 +32,7 @@ const durations = [
   template: `
     <app-page
       title="Motion"
-      lead="Motion shows where something came from. Nothing over 200ms, nothing with reduced motion on."
+      lead="Motion shows where something came from. Nothing over 400ms, nothing with reduced motion on."
     >
       <section class="doc-section">
         <h2 class="ui-heading doc-h2">Tokens</h2>
@@ -84,6 +84,51 @@ const durations = [
       </section>
 
       <section class="doc-section">
+        <h2 class="ui-heading doc-h2">Animations</h2>
+        <p>
+          Ready-made entrances and feedback. Add the class when the element
+          appears; press Replay to see each one again.
+        </p>
+        <button
+          type="button"
+          class="ui-button ui-button--secondary"
+          (click)="replay()"
+        >
+          Replay
+        </button>
+        <div class="doc-anim-grid">
+          @for (a of animations; track a.cls) {
+            <div class="doc-anim-card">
+              <div class="doc-anim-card__stage">
+                @if (run()) {
+                  @if (a.cls === 'ui-anim-stagger') {
+                    <div
+                      class="ui-anim-stagger doc-anim-bars"
+                      aria-hidden="true"
+                    >
+                      <span></span><span></span><span></span><span></span>
+                    </div>
+                  } @else if (a.cls === 'ui-anim-ping') {
+                    <span class="doc-anim-dot" aria-hidden="true">
+                      <span class="ui-anim-ping doc-anim-dot__ring"></span>
+                    </span>
+                  } @else {
+                    <span [class]="'doc-anim-chip ' + a.cls">Enigma</span>
+                  }
+                }
+              </div>
+              <code>{{ a.cls }}</code>
+              <span class="doc-anim-card__use">{{ a.use }}</span>
+            </div>
+          }
+        </div>
+        <p>
+          All of them stop under reduced motion. Loops (ping, shimmer) are for
+          waiting, never decoration.
+        </p>
+      </section>
+
+      <section class="doc-section">
         <h2 class="ui-heading doc-h2">Rules</h2>
         <ul class="doc-list">
           <li>
@@ -107,6 +152,24 @@ export class MotionComponent {
       tw: 'ease-ui',
     },
   ];
+
+  protected readonly animations = [
+    ['ui-anim-fade-in', 'Content that appears in place.'],
+    ['ui-anim-slide-up', 'Menus, cards and list items entering.'],
+    ['ui-anim-slide-down', 'Banners and dropdowns from above.'],
+    ['ui-anim-slide-start', 'Side panels; flips in right-to-left.'],
+    ['ui-anim-scale-in', 'Popovers and tooltips.'],
+    ['ui-anim-pop', 'Confirm a change: a badge count, a saved tick.'],
+    ['ui-anim-shake', 'An invalid field or a refused action.'],
+    ['ui-anim-stagger', 'Children enter one after another (up to 8).'],
+    ['ui-anim-ping', 'A live or new indicator; loops.'],
+    ['ui-anim-shimmer', 'A loading sweep over a placeholder; loops.'],
+  ].map(([cls, use]) => ({ cls, use }));
+  protected readonly run = signal(true);
+  protected replay(): void {
+    this.run.set(false);
+    setTimeout(() => this.run.set(true), 50);
+  }
 
   protected readonly moved = signal(false);
   /** Starts at --ui-duration. */
