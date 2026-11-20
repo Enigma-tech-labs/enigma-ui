@@ -1,6 +1,11 @@
 'use client';
 
-import { parseDate, type CalendarDate } from '@internationalized/date';
+import {
+  parseDate,
+  toCalendarDate,
+  type CalendarDate,
+  type DateValue,
+} from '@internationalized/date';
 import {
   Button,
   Calendar as AriaCalendar,
@@ -41,7 +46,9 @@ export interface RangeCalendarProps extends Shared {
   onChange?: (range: DateRange) => void;
 }
 
-const date = (iso?: string | null) => (iso ? parseDate(iso) : iso);
+// undefined leaves the calendar uncontrolled; null or '' means controlled with no date.
+const date = (iso?: string | null): CalendarDate | null | undefined =>
+  iso ? parseDate(iso) : iso === undefined ? undefined : null;
 const range = (r?: DateRange | null) =>
   r ? { start: parseDate(r.start), end: parseDate(r.end) } : r;
 
@@ -102,7 +109,8 @@ const limits = ({ min, max, isDisabled, label, className }: Shared) => ({
   className: cx('ui-calendar', className),
   minValue: date(min),
   maxValue: date(max),
-  isDateUnavailable: isDisabled && ((d: CalendarDate) => isDisabled(d.toString())),
+  isDateUnavailable:
+    isDisabled && ((d: DateValue) => isDisabled(toCalendarDate(d).toString())),
 });
 
 /**
@@ -114,12 +122,17 @@ const limits = ({ min, max, isDisabled, label, className }: Shared) => ({
  * <Calendar label="Delivery day" value={day} onChange={setDay} min="2026-11-19" />
  * ```
  */
-export function Calendar({ value, defaultValue, onChange, ...rest }: CalendarProps) {
+export function Calendar({
+  value,
+  defaultValue,
+  onChange,
+  ...rest
+}: CalendarProps) {
   return (
     <AriaCalendar
       {...limits(rest)}
-      value={date(value) as CalendarDate | null | undefined}
-      defaultValue={date(defaultValue) as CalendarDate | null | undefined}
+      value={date(value)}
+      defaultValue={date(defaultValue)}
       onChange={(d) => onChange?.(d.toString())}
     >
       <Month />
@@ -134,13 +147,20 @@ export function Calendar({ value, defaultValue, onChange, ...rest }: CalendarPro
  * <RangeCalendar label="Stay" value={stay} onChange={setStay} />
  * ```
  */
-export function RangeCalendar({ value, defaultValue, onChange, ...rest }: RangeCalendarProps) {
+export function RangeCalendar({
+  value,
+  defaultValue,
+  onChange,
+  ...rest
+}: RangeCalendarProps) {
   return (
     <AriaRangeCalendar
       {...limits(rest)}
       value={range(value)}
       defaultValue={range(defaultValue)}
-      onChange={(r) => r && onChange?.({ start: r.start.toString(), end: r.end.toString() })}
+      onChange={(r) =>
+        r && onChange?.({ start: r.start.toString(), end: r.end.toString() })
+      }
     >
       <Month inRange />
     </AriaRangeCalendar>
